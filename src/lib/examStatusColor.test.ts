@@ -7,6 +7,7 @@ import {
   countByStatus,
   getExamStatus,
   getStatusKey,
+  statusBreakdown,
 } from './examStatusColor';
 
 const TODAY = '2026-09-15T09:00:00.000Z';
@@ -233,6 +234,45 @@ describe('countByStatus', () => {
     const counts = countByStatus(EXAMS);
     for (const key of STATUS_ORDER) {
       expect(counts[key]).toBe(EXAMS.filter((e) => getStatusKey(e) === key).length);
+    }
+  });
+});
+
+describe('statusBreakdown', () => {
+  const open = () => exam({ label: 'H26', applicationStart: days(-2), confirmed: true });
+  const full = () =>
+    exam({ label: 'H26', applicationStart: days(-2), confirmed: true, full: true });
+  const closed = () =>
+    exam({ label: 'H26', applicationStart: days(-30), applicationEnd: days(-3), confirmed: true });
+
+  it('is empty for an empty set, so the profile can show its own empty state', () => {
+    expect(statusBreakdown([])).toEqual([]);
+  });
+
+  it('accounts for every listing exactly once', () => {
+    const slices = statusBreakdown([open(), open(), full(), closed()]);
+    expect(slices.reduce((n, s) => n + s.count, 0)).toBe(4);
+    expect(slices.reduce((n, s) => n + s.share, 0)).toBeCloseTo(1);
+  });
+
+  /** A 0-wide segment is invisible in the bar but a full row in the legend
+      under it, which reads as a colour you have listings in. */
+  it('drops the colours with nothing in them', () => {
+    const keys = statusBreakdown([open(), full()]).map((s) => s.tone.key);
+    expect(keys).not.toContain('undated');
+    expect(new Set(keys)).toEqual(new Set(['open', 'full']));
+  });
+
+  it('puts what blocks you first, so the bar reads left to right', () => {
+    const keys = statusBreakdown([open(), closed(), full()]).map((s) => s.tone.key);
+    expect(keys).toEqual(['full', 'closed', 'open']);
+  });
+
+  it('agrees with countByStatus over the real dataset', () => {
+    const counts = countByStatus(EXAMS);
+    for (const slice of statusBreakdown(EXAMS)) {
+      expect(slice.count).toBe(counts[slice.tone.key]);
+      expect(slice.share).toBeCloseTo(counts[slice.tone.key] / EXAMS.length);
     }
   });
 });

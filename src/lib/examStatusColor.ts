@@ -201,6 +201,36 @@ export function getStatusKey(exam: Exam): StatusKey {
   return getExamStatus(exam).tone.key;
 }
 
+export interface StatusSlice {
+  tone: StatusTone;
+  count: number;
+  /** The slice's share of the set, 0–1, for a proportional bar. */
+  share: number;
+}
+
+/**
+ * The same set of listings as one row of colours, biggest blocker first.
+ *
+ * Five saved prövningar are otherwise five dates to hold in your head, and the
+ * question underneath all of them is one question: how many can I still do
+ * something about? Ordering by `rank` puts what blocks you at the left, so the
+ * answer is the *length* of the red-and-grey run rather than a number anywhere.
+ *
+ * Empty colours are dropped — a 0-wide segment is invisible in the bar but a
+ * full row in the legend under it, which reads as a category you have listings
+ * in.
+ */
+export function statusBreakdown(exams: Exam[]): StatusSlice[] {
+  const counts = countByStatus(exams);
+  const total = exams.length;
+  if (total === 0) return [];
+  return STATUS_ORDER.filter((key) => counts[key] > 0).map((key) => ({
+    tone: STATUS_TONES[key],
+    count: counts[key],
+    share: counts[key] / total,
+  }));
+}
+
 /** How many listings sit in each colour, for the filter chips' counts. */
 export function countByStatus(exams: Exam[]): Record<StatusKey, number> {
   const counts = {
