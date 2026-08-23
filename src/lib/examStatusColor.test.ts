@@ -127,7 +127,39 @@ describe('getExamStatus', () => {
       exam({ label: 'H26', applicationStart: days(12), applicationEnd: days(30), confirmed: true }),
     );
     expect(status.tone.key).toBe('upcoming');
-    expect(status.label).toMatch(/^Öppnar /);
+    expect(status.label).toBe('Öppnar 27 sep.');
+  });
+
+  it('counts down to an opening inside a week instead of naming the date', () => {
+    const tomorrow = getExamStatus(
+      exam({ label: 'H26', applicationStart: days(1), applicationEnd: days(20), confirmed: true }),
+    );
+    expect(tomorrow.tone.key).toBe('upcoming');
+    expect(tomorrow.label).toBe('Öppnar i morgon');
+
+    const thisWeek = getExamStatus(
+      exam({ label: 'H26', applicationStart: days(4), applicationEnd: days(20), confirmed: true }),
+    );
+    expect(thisWeek.label).toBe('Öppnar om 4 dagar');
+
+    const stillAWeekOut = getExamStatus(
+      exam({ label: 'H26', applicationStart: days(7), applicationEnd: days(20), confirmed: true }),
+    );
+    expect(stillAWeekOut.label).toBe('Öppnar om 7 dagar');
+  });
+
+  /**
+   * The countdown must not promote the round out of blue. Blue means "you
+   * cannot do anything about this yet", and that is exactly as true the day
+   * before a window opens as it is two months before — the only thing that
+   * changed is how worth remembering it is.
+   */
+  it('keeps an opening-tomorrow round blue rather than green', () => {
+    const status = getExamStatus(
+      exam({ label: 'H26', applicationStart: days(1), applicationEnd: days(20), confirmed: true }),
+    );
+    expect(status.tone.key).toBe('upcoming');
+    expect(status.daysLeft).toBeNull();
   });
 
   it('greys out a deadline that has passed, and says when', () => {

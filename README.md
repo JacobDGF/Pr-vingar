@@ -74,6 +74,14 @@ Färgnyckeln under hjältebilden är också filtret: tryck på "Fullbokat" för 
 vad du missade, tryck igen för att få tillbaka allt. Färger utan innehåll visas
 inte alls — en tom "Fullbokat"-knapp är ett löfte om resultat som inte finns.
 
+Blått räknar ned på sitt eget sätt. "Öppnar 24 aug." är ett datum läsaren måste
+dra dagens datum ifrån innan det betyder något, och blått ser likadant ut vare
+sig svaret blir i morgon eller i november. Inom en vecka står avståndet i stället
+för datumet — "Öppnar i morgon", "Öppnar om 4 dagar" — precis som orange gör i
+andra änden av fönstret. Färgen ändras däremot inte: en omgång som inte öppnat är
+inget du kan göra något åt i dag, hur nära den än ligger, och får därför aldrig
+låna grönt.
+
 ### Knappen får aldrig lova mer än färgen
 
 [`src/lib/examAction.ts`](src/lib/examAction.ts) bestämmer vad knapparna längst

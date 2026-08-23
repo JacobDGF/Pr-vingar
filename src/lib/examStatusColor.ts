@@ -186,7 +186,7 @@ export function getExamStatus(exam: Exam): ExamStatus {
   if (p.applicationStart && Date.now() < new Date(p.applicationStart).getTime()) {
     return {
       tone: STATUS_TONES.upcoming,
-      label: `Öppnar ${formatShort(p.applicationStart)}`,
+      label: `Öppnar ${untilOpening(p.applicationStart)}`,
       daysLeft: null,
     };
   }
@@ -213,6 +213,27 @@ export function countByStatus(exams: Exam[]): Record<StatusKey, number> {
   } as Record<StatusKey, number>;
   for (const exam of exams) counts[getExamStatus(exam).tone.key] += 1;
   return counts;
+}
+
+/**
+ * How a not-yet-open round says when it opens.
+ *
+ * "Öppnar 24 aug." is a date the reader has to subtract today from before it
+ * means anything, and blue looks the same whether that subtraction lands on
+ * tomorrow or on November. Inside a week the distance *is* the news, so it is
+ * what the chip says; further out the date is more useful than "om 46 dagar",
+ * which nobody can place in a calendar.
+ *
+ * This mirrors what `closing` already does at the other end of the window, and
+ * it deliberately stays inside blue: an unopened round is not something the
+ * user can act on today, however close it is, so it must not borrow the colour
+ * of one that is.
+ */
+function untilOpening(dateStr: string): string {
+  const days = daysUntil(dateStr);
+  if (days === 1) return 'i morgon';
+  if (days <= 7) return `om ${days} dagar`;
+  return formatShort(dateStr);
 }
 
 function formatShort(dateStr: string): string {
