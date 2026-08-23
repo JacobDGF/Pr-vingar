@@ -149,6 +149,16 @@ vägrar är värdar som känner igen klienten, inte takten; de står i `BOT_BLOC
 och rapporteras som "kunde inte kontrolleras" i stället för som fel, annars
 drunknar en verklig död länk i röd text som alltid är röd.
 
+Omfrågningen väntar innan den börjar, och väntar längre andra gången (5 s, sedan
+30 s). Ögonblicket direkt efter den parallella omgången är det sämsta som finns
+att fråga om igen: rate-limiterns fönster är som färskast just då, och en
+strypt värd svarar 503 en gång till och rapporteras som död. Så gick det för
+fyra länkar den 23 augusti — `botkyrka.alvis.se` och
+`minasidor.kunskapsforbundet.se` bland dem — som alla svarade 200 på exakt
+samma anrop några minuter senare. Två omgångar räcker: en värd som fortfarande
+vägrar efter en halv minuts tystnad vägrar oss, inte takten, och det är det
+rapporten ska säga.
+
 Priset för en rad i `BOT_BLOCKED` är att en länk som faktiskt dör där måste
 upptäckas för hand, så listan hålls så kort som bevisen tillåter. Alvis och
 `www.falun.se` låg där på en 503 som visade sig vara vår egen rate-limiting —
