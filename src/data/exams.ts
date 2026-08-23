@@ -3264,15 +3264,15 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid F/IG-betyg inom ett år från betygssättning',
     nextPeriod: {
-      // Växjö publicerar sina två perioder som en stående tabell utan årtal
-      // ("15 februari – 22 februari", "15 augusti – 22 augusti"). Period 2
-      // stängde 22 augusti 2026, så nästa förekomst av period 1 är februari
-      // 2027 — det är samma datum skolan skrivit, inte ett gissat.
+      // Samma form som Köping: Växjö publicerar sina två perioder som en
+      // stående tabell utan årtal, och period 2 (15–22 augusti) stängde
+      // 22 augusti 2026. Att skriva 2027 i period 1 vore att fylla i ett
+      // årtal anordnaren inte satt dit — se koping-kompetenscenter, som
+      // avgjorde samma fråga åt andra hållet i augusti. Datumen står i
+      // etiketten, där de är skolans ord och inte appens nedräkning.
       label:
-        'Period 1: anmälan öppnar 15 februari, sista anmälningsdag 22 februari, sista betalningsdag 7 mars, prövning ska vara genomförd senast 30 juni. Alla prövningar genomförs på plats i Växjö.',
-      applicationStart: '2027-02-15',
-      applicationEnd: '2027-02-22',
-      confirmed: true,
+        'Två perioder per år, utan utsatta årtal: period 1 har anmälan 15–22 februari, sista betalningsdag 7 mars och prövningen genomförd senast 30 juni; period 2 har anmälan 15–22 augusti och prövningen genomförd senast 30 december. Alla prövningar görs på plats i Växjö.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,

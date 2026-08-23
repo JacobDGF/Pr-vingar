@@ -31,6 +31,12 @@ Fem regler styr datan, och de testas i
 
 - **Inga gissade datum.** `nextPeriod.confirmed` är `false` när anordnaren inte
   har publicerat datum. Då visar appen ingen period alls, utan länkar vidare.
+  Ett årtal räknas som ett datum. Några anordnare — Köping och Växjö i dag —
+  publicerar sin rytm i stället för sin kalender: "sista anmälningsdag
+  1 februari", "period 1: 15–22 februari", år efter år utan årtal. Att fylla i
+  vilket år som är nästa är appens gissning, inte skolans besked, hur enkel
+  räkningen än ser ut. Rytmen står i `label` med skolans egna ord, och
+  listningen är odaterad.
 - **Länken ska leda till anmälan.** `registrationUrl` pekar så nära själva
   bokningen som anordnaren tillåter — e-tjänsten, kurslistan eller kassan, inte
   en informationssida, när ett djupare mål finns.
