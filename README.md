@@ -31,6 +31,10 @@ Fem regler styr datan, och de testas i
 
 - **Inga gissade datum.** `nextPeriod.confirmed` är `false` när anordnaren inte
   har publicerat datum. Då visar appen ingen period alls, utan länkar vidare.
+  Ett årtal räknas som ett datum. Att fylla i vilket år som är nästa är appens
+  gissning, inte skolans besked, hur enkel räkningen än ser ut. Se
+  [rytmen](#en-rytm-är-inte-ett-datum) för anordnarna som bara publicerar
+  dagarna.
 - **Länken ska leda till anmälan.** `registrationUrl` pekar så nära själva
   bokningen som anordnaren tillåter — e-tjänsten, kurslistan eller kassan, inte
   en informationssida, när ett djupare mål finns.
@@ -47,6 +51,33 @@ Fem regler styr datan, och de testas i
   två omgångar hos samma skola hör hemma i samma listnings etikett. Två kort
   läser som två skolor, där den ena råkar vara fullbokad.
 
+### En rytm är inte ett datum
+
+Några anordnare publicerar sin rytm i stället för sin kalender. Köping skriver
+"sista anmälningsdag 1 februari" och "7 juni", Växjö "period 1: 15–22 februari",
+Ljungby "senast 20 september eller 20 oktober för hösten" — år efter år, utan
+årtal på någon av dem.
+
+Det är inte samma sak som tystnad, och det var precis så appen visade dem:
+"Datum ej satt", tillsammans med skolorna vars sidor inte säger någonting alls.
+`nextPeriod.recurring` bär dagarna som rena `MM-DD`, och tre saker följer:
+
+- Kortet säger **"Söks 15–22 feb."** i stället för "Datum ej satt". Året
+  formateras bort, inte utelämnat — `MM-DD` tolkas mot ett fast skottår så att
+  29 februari överlever, och bara dag och månad läses tillbaka.
+- Listningen sorteras **över** anordnarna som inte publicerar något, och under
+  omgångarna med riktiga datum. Sorteringsnyckeln vet om fönstret har vänt över
+  nyår: den 24 augusti är "1 februari" åtta månader bort och "20 september"
+  fyra veckor, och en rak `MM-DD`-jämförelse skulle sätta februari först.
+- Färgen ändras inte. Den frågan färgen svarar på — kan jag boka det här? — har
+  samma svar som för en tyst sida, så rytmen stannar i neutralt och rör aldrig
+  grönt, nedräkningen eller `.ics`-exporten.
+
+Datan tillåter inte frågan om vilket som gäller: `recurring` och en bekräftad
+period kan inte ligga på samma listning, och varje fönster måste vara ett bart
+`MM-DD` — båda testade i [`src/data/exams.test.ts`](src/data/exams.test.ts), så
+inget årtal kan läcka in bakvägen.
+
 ### En färg per listning
 
 [`src/lib/examStatusColor.ts`](src/lib/examStatusColor.ts) är den enda platsen
@@ -54,14 +85,14 @@ som bestämmer vilken färg en listning har. Kortets kant, pillret över bilden,
 datumtexten, kartans nål och detaljvyns banner läser alla ur samma tabell, så de
 kan inte säga olika saker om samma omgång.
 
-| Färg       | Betyder                                               |
-| ---------- | ----------------------------------------------------- |
-| 🔴 Röd     | Fullbokat — anordnaren har sagt att platserna är slut |
-| ⚪ Grå     | Anmälan stängde (datumet står på kortet)              |
-| 🟠 Orange  | Öppen, men stänger inom en vecka                      |
-| 🟢 Grön    | Öppen för anmälan i dag                               |
-| 🔵 Blå     | Datum satt, anmälan har inte öppnat än                |
-| ⬜ Neutral | Anordnaren har inte publicerat några datum            |
+| Färg       | Betyder                                                          |
+| ---------- | ---------------------------------------------------------------- |
+| 🔴 Röd     | Fullbokat — anordnaren har sagt att platserna är slut            |
+| ⚪ Grå     | Anmälan stängde (datumet står på kortet)                         |
+| 🟠 Orange  | Öppen, men stänger inom en vecka                                 |
+| 🟢 Grön    | Öppen för anmälan i dag                                          |
+| 🔵 Blå     | Datum satt, anmälan har inte öppnat än                           |
+| ⬜ Neutral | Ingen omgång att räkna ned till — inga datum, eller bara en rytm |
 
 Rött betyder en enda sak, och det är den regel hela paletten vilar på. Tidigare
 sa rött både "fullbokat" (du kan inte boka) och "3 dagar kvar" (du kan boka,
@@ -73,6 +104,14 @@ gränsen.
 Färgnyckeln under hjältebilden är också filtret: tryck på "Fullbokat" för att se
 vad du missade, tryck igen för att få tillbaka allt. Färger utan innehåll visas
 inte alls — en tom "Fullbokat"-knapp är ett löfte om resultat som inte finns.
+
+Blått räknar ned på sitt eget sätt. "Öppnar 24 aug." är ett datum läsaren måste
+dra dagens datum ifrån innan det betyder något, och blått ser likadant ut vare
+sig svaret blir i morgon eller i november. Inom en vecka står avståndet i stället
+för datumet — "Öppnar i morgon", "Öppnar om 4 dagar" — precis som orange gör i
+andra änden av fönstret. Färgen ändras däremot inte: en omgång som inte öppnat är
+inget du kan göra något åt i dag, hur nära den än ligger, och får därför aldrig
+låna grönt.
 
 ### Knappen får aldrig lova mer än färgen
 
@@ -134,6 +173,16 @@ gång till, en i taget — då svarar en överbelastad värd 200. Det som fortfa
 vägrar är värdar som känner igen klienten, inte takten; de står i `BOT_BLOCKED`
 och rapporteras som "kunde inte kontrolleras" i stället för som fel, annars
 drunknar en verklig död länk i röd text som alltid är röd.
+
+Omfrågningen väntar innan den börjar, och väntar längre andra gången (5 s, sedan
+30 s). Ögonblicket direkt efter den parallella omgången är det sämsta som finns
+att fråga om igen: rate-limiterns fönster är som färskast just då, och en
+strypt värd svarar 503 en gång till och rapporteras som död. Så gick det för
+fyra länkar den 23 augusti — `botkyrka.alvis.se` och
+`minasidor.kunskapsforbundet.se` bland dem — som alla svarade 200 på exakt
+samma anrop några minuter senare. Två omgångar räcker: en värd som fortfarande
+vägrar efter en halv minuts tystnad vägrar oss, inte takten, och det är det
+rapporten ska säga.
 
 Priset för en rad i `BOT_BLOCKED` är att en länk som faktiskt dör där måste
 upptäckas för hand, så listan hålls så kort som bevisen tillåter. Alvis och

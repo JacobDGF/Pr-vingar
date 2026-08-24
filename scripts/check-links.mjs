@@ -151,18 +151,46 @@ console.log(`Kontrollerar ${urls.length} unika länkar från ${SOURCE.replace(RO
 
 const results = await mapPool(urls, check, CONCURRENCY);
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * How long to let a host forget the burst before asking it again.
+ *
+ * The serial retry used to start the instant the parallel pass ended, 1,5 s per
+ * URL. That is the wrong moment: the rate limiter's window is at its freshest
+ * exactly then, so a throttled host answers 503 a second time and gets reported
+ * as dead. Four links were reported dead that way on 2026-08-23 —
+ * botkyrka.alvis.se and minasidor.kunskapsforbundet.se among them — and all
+ * four answered 200 to the same request, with the same headers, a few minutes
+ * later.
+ *
+ * So the rounds back off instead: a pause before the first, longer before the
+ * second. Two rounds is where it stops — a host that still refuses after half a
+ * minute of quiet is refusing us, not pacing us, and that is what the report
+ * should say.
+ */
+const RETRY_ROUNDS = [5_000, 30_000];
+
 /** Re-ask the ones that may only have been throttled, one at a time. */
 async function recheck(all) {
-  const retry = all.filter((r) => !r.ok && RETRYABLE.includes(r.status));
-  if (!retry.length) return all;
-  console.log(`↻ ${retry.length} svarade trögt — kontrollerar dem en i taget…\n`);
-  const fixed = new Map();
-  for (const r of retry) {
-    await new Promise((resolve) => setTimeout(resolve, 1_500));
-    const second = await check(r);
-    if (second.ok) fixed.set(r.url, second);
+  let current = all;
+  for (const [round, settle] of RETRY_ROUNDS.entries()) {
+    const retry = current.filter((r) => !r.ok && RETRYABLE.includes(r.status));
+    if (!retry.length) break;
+    console.log(
+      `↻ ${retry.length} svarade trögt — väntar ${settle / 1000} s och kontrollerar dem en i taget` +
+        ` (omgång ${round + 1} av ${RETRY_ROUNDS.length})…\n`,
+    );
+    await sleep(settle);
+    const fixed = new Map();
+    for (const r of retry) {
+      const second = await check(r);
+      if (second.ok) fixed.set(r.url, second);
+      else await sleep(1_500);
+    }
+    current = current.map((r) => fixed.get(r.url) ?? r);
   }
-  return all.map((r) => fixed.get(r.url) ?? r);
+  return current;
 }
 
 const checked = await recheck(results);

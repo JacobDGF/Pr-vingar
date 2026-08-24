@@ -13,12 +13,14 @@ import {
   Pencil,
   Plus,
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useStore } from '../store/useStore';
+import { Exam } from '../types';
 import { Avatar } from '../components/Avatar';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { fileToAvatarDataUrl, initialsOf } from '../lib/avatar';
 import { CompletedExamSheet, CompletedExamDraft } from '../components/CompletedExamSheet';
+import { SavedStatusBar } from '../components/SavedStatusBar';
 import { summarizeGrades, gradeBadgeClass } from '../lib/grades';
 
 function SettingRow({
@@ -55,6 +57,7 @@ export function Profile() {
     currentUser,
     updateUser,
     savedExams,
+    exams,
     setActiveTab,
     setShowingFaq,
     updateCompletedExam,
@@ -76,6 +79,13 @@ export function Profile() {
 
   const grades = summarizeGrades(currentUser.completedExams);
   const completed = currentUser.completedExams;
+  const savedListings = useMemo(
+    () =>
+      savedExams
+        .map((se) => exams.find((e) => e.id === se.examId))
+        .filter((e): e is Exam => e !== undefined),
+    [savedExams, exams],
+  );
 
   const startEdit = (field: NonNullable<typeof editing>, value: string) => {
     setEditing(field);
@@ -238,6 +248,10 @@ export function Profile() {
             </button>
           </div>
         </div>
+
+        {/* Saved-status bar — the profile's first answer, in the app's own
+            status colours. */}
+        <SavedStatusBar exams={savedListings} onBrowse={() => setActiveTab('discover')} />
 
         {/* Goal */}
         <div className="bg-surface border-[1.5px] border-line rounded-[32px] p-6">

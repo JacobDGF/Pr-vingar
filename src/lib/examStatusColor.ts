@@ -1,9 +1,10 @@
-import { Exam } from '../types';
+import { Exam, RecurringWindow } from '../types';
 import {
   daysUntil,
   hasApplicationClosed,
   isFullyBooked,
   isOpenForRegistration,
+  nextRecurringWindow,
 } from './examStatus';
 
 /**
@@ -112,7 +113,8 @@ export const STATUS_TONES: Record<StatusKey, StatusTone> = {
   undated: {
     key: 'undated',
     shortLabel: 'Datum saknas',
-    meaning: 'Anordnaren har inte publicerat några datum. Länken går till deras egen sida.',
+    meaning:
+      'Ingen omgång att räkna ned till — anordnaren har inte satt datum, eller publicerar bara sin årsrytm. Länken går till deras egen sida.',
     chip: 'bg-ink text-white',
     softChip: 'bg-cream text-ink-soft border border-line',
     rail: 'bg-line',
@@ -164,7 +166,17 @@ export function getExamStatus(exam: Exam): ExamStatus {
   }
 
   if (!p.confirmed) {
-    return { tone: STATUS_TONES.undated, label: 'Datum ej satt', daysLeft: null };
+    // A provider who publishes a standing rhythm knows more than one who
+    // publishes nothing, and the card can pass that on without inventing the
+    // year: "Söks 15–22 feb." rather than "Datum ej satt". The colour stays
+    // neutral, because the question the colour answers — can I book this? — has
+    // the same answer either way.
+    const rhythm = nextRecurringWindow(exam);
+    return {
+      tone: STATUS_TONES.undated,
+      label: rhythm ? `Söks ${formatWindow(rhythm)}` : 'Datum ej satt',
+      daysLeft: null,
+    };
   }
 
   if (isOpenForRegistration(exam)) {
@@ -186,7 +198,7 @@ export function getExamStatus(exam: Exam): ExamStatus {
   if (p.applicationStart && Date.now() < new Date(p.applicationStart).getTime()) {
     return {
       tone: STATUS_TONES.upcoming,
-      label: `Öppnar ${formatShort(p.applicationStart)}`,
+      label: `Öppnar ${untilOpening(p.applicationStart)}`,
       daysLeft: null,
     };
   }
@@ -199,6 +211,36 @@ export function getExamStatus(exam: Exam): ExamStatus {
 /** Shorthand for the common case of only needing the colour bucket. */
 export function getStatusKey(exam: Exam): StatusKey {
   return getExamStatus(exam).tone.key;
+}
+
+export interface StatusSlice {
+  tone: StatusTone;
+  count: number;
+  /** The slice's share of the set, 0–1, for a proportional bar. */
+  share: number;
+}
+
+/**
+ * The same set of listings as one row of colours, biggest blocker first.
+ *
+ * Five saved prövningar are otherwise five dates to hold in your head, and the
+ * question underneath all of them is one question: how many can I still do
+ * something about? Ordering by `rank` puts what blocks you at the left, so the
+ * answer is the *length* of the red-and-grey run rather than a number anywhere.
+ *
+ * Empty colours are dropped — a 0-wide segment is invisible in the bar but a
+ * full row in the legend under it, which reads as a category you have listings
+ * in.
+ */
+export function statusBreakdown(exams: Exam[]): StatusSlice[] {
+  const counts = countByStatus(exams);
+  const total = exams.length;
+  if (total === 0) return [];
+  return STATUS_ORDER.filter((key) => counts[key] > 0).map((key) => ({
+    tone: STATUS_TONES[key],
+    count: counts[key],
+    share: counts[key] / total,
+  }));
 }
 
 /** How many listings sit in each colour, for the filter chips' counts. */
@@ -215,6 +257,50 @@ export function countByStatus(exams: Exam[]): Record<StatusKey, number> {
   return counts;
 }
 
+/**
+ * How a not-yet-open round says when it opens.
+ *
+ * "Öppnar 24 aug." is a date the reader has to subtract today from before it
+ * means anything, and blue looks the same whether that subtraction lands on
+ * tomorrow or on November. Inside a week the distance *is* the news, so it is
+ * what the chip says; further out the date is more useful than "om 46 dagar",
+ * which nobody can place in a calendar.
+ *
+ * This mirrors what `closing` already does at the other end of the window, and
+ * it deliberately stays inside blue: an unopened round is not something the
+ * user can act on today, however close it is, so it must not borrow the colour
+ * of one that is.
+ */
+function untilOpening(dateStr: string): string {
+  const days = daysUntil(dateStr);
+  if (days === 1) return 'i morgon';
+  if (days <= 7) return `om ${days} dagar`;
+  return formatShort(dateStr);
+}
+
 function formatShort(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
+}
+
+/**
+ * A standing window as "15–22 feb." or "senast 1 feb." — day and month only.
+ *
+ * The year is formatted out rather than left out: `MM-DD` is parsed against a
+ * fixed leap year so 29 February survives, and only day and month are ever
+ * read back off it.
+ */
+function formatWindow(window: RecurringWindow): string {
+  const end = formatMonthDay(window.end);
+  if (!window.start) return `senast ${end}`;
+  const start = formatMonthDay(window.start);
+  // "15–22 feb." when both fall in the same month, "28 feb.–3 mars" otherwise.
+  const sameMonth = window.start.slice(0, 2) === window.end.slice(0, 2);
+  return sameMonth ? `${start.split(' ')[0]}–${end}` : `${start}–${end}`;
+}
+
+function formatMonthDay(monthDay: string): string {
+  return new Date(`2024-${monthDay}T12:00:00`).toLocaleDateString('sv-SE', {
+    day: 'numeric',
+    month: 'short',
+  });
 }

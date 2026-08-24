@@ -7,6 +7,7 @@ import {
   countByStatus,
   getExamStatus,
   getStatusKey,
+  statusBreakdown,
 } from './examStatusColor';
 
 const TODAY = '2026-09-15T09:00:00.000Z';
@@ -127,7 +128,39 @@ describe('getExamStatus', () => {
       exam({ label: 'H26', applicationStart: days(12), applicationEnd: days(30), confirmed: true }),
     );
     expect(status.tone.key).toBe('upcoming');
-    expect(status.label).toMatch(/^Öppnar /);
+    expect(status.label).toBe('Öppnar 27 sep.');
+  });
+
+  it('counts down to an opening inside a week instead of naming the date', () => {
+    const tomorrow = getExamStatus(
+      exam({ label: 'H26', applicationStart: days(1), applicationEnd: days(20), confirmed: true }),
+    );
+    expect(tomorrow.tone.key).toBe('upcoming');
+    expect(tomorrow.label).toBe('Öppnar i morgon');
+
+    const thisWeek = getExamStatus(
+      exam({ label: 'H26', applicationStart: days(4), applicationEnd: days(20), confirmed: true }),
+    );
+    expect(thisWeek.label).toBe('Öppnar om 4 dagar');
+
+    const stillAWeekOut = getExamStatus(
+      exam({ label: 'H26', applicationStart: days(7), applicationEnd: days(20), confirmed: true }),
+    );
+    expect(stillAWeekOut.label).toBe('Öppnar om 7 dagar');
+  });
+
+  /**
+   * The countdown must not promote the round out of blue. Blue means "you
+   * cannot do anything about this yet", and that is exactly as true the day
+   * before a window opens as it is two months before — the only thing that
+   * changed is how worth remembering it is.
+   */
+  it('keeps an opening-tomorrow round blue rather than green', () => {
+    const status = getExamStatus(
+      exam({ label: 'H26', applicationStart: days(1), applicationEnd: days(20), confirmed: true }),
+    );
+    expect(status.tone.key).toBe('upcoming');
+    expect(status.daysLeft).toBeNull();
   });
 
   it('greys out a deadline that has passed, and says when', () => {
@@ -155,6 +188,54 @@ describe('getExamStatus', () => {
       }),
     );
     expect(status.tone.key).toBe('full');
+  });
+
+  /**
+   * The one thing that must never happen: a year on screen that the provider
+   * never published. Everything else about the rhythm is a convenience.
+   */
+  it('names the days of a standing rhythm, and never the year', () => {
+    const status = getExamStatus(
+      exam({
+        label: 'Två perioder per år',
+        confirmed: false,
+        recurring: [
+          { start: '02-15', end: '02-22' },
+          { start: '08-15', end: '08-22' },
+        ],
+      }),
+    );
+    expect(status.tone.key).toBe('undated');
+    expect(status.label).toBe('Söks 15–22 feb.');
+    expect(status.label).not.toMatch(/\d{4}/);
+  });
+
+  it('says "senast" when the provider only publishes a closing day', () => {
+    const status = getExamStatus(
+      exam({ label: 'Två omgångar', confirmed: false, recurring: [{ end: '02-01' }] }),
+    );
+    expect(status.label).toBe('Söks senast 1 feb.');
+  });
+
+  it('spells out both months when a window straddles two', () => {
+    const status = getExamStatus(
+      exam({ label: '', confirmed: false, recurring: [{ start: '10-28', end: '11-04' }] }),
+    );
+    expect(status.label).toBe('Söks 28 okt.–4 nov.');
+  });
+
+  it('still says "Datum ej satt" when there is no rhythm either', () => {
+    const status = getExamStatus(exam({ label: 'Se skolans sida', confirmed: false }));
+    expect(status.label).toBe('Datum ej satt');
+  });
+
+  /** A rhythm is not a booking. It must not borrow green, or a countdown. */
+  it('keeps a standing rhythm out of the bookable colours', () => {
+    const status = getExamStatus(
+      exam({ label: '', confirmed: false, recurring: [{ end: '09-20' }] }),
+    );
+    expect(['open', 'closing', 'upcoming']).not.toContain(status.tone.key);
+    expect(status.daysLeft).toBeNull();
   });
 
   it('leaves an unconfirmed period colourless rather than inventing a state', () => {
@@ -201,6 +282,45 @@ describe('countByStatus', () => {
     const counts = countByStatus(EXAMS);
     for (const key of STATUS_ORDER) {
       expect(counts[key]).toBe(EXAMS.filter((e) => getStatusKey(e) === key).length);
+    }
+  });
+});
+
+describe('statusBreakdown', () => {
+  const open = () => exam({ label: 'H26', applicationStart: days(-2), confirmed: true });
+  const full = () =>
+    exam({ label: 'H26', applicationStart: days(-2), confirmed: true, full: true });
+  const closed = () =>
+    exam({ label: 'H26', applicationStart: days(-30), applicationEnd: days(-3), confirmed: true });
+
+  it('is empty for an empty set, so the profile can show its own empty state', () => {
+    expect(statusBreakdown([])).toEqual([]);
+  });
+
+  it('accounts for every listing exactly once', () => {
+    const slices = statusBreakdown([open(), open(), full(), closed()]);
+    expect(slices.reduce((n, s) => n + s.count, 0)).toBe(4);
+    expect(slices.reduce((n, s) => n + s.share, 0)).toBeCloseTo(1);
+  });
+
+  /** A 0-wide segment is invisible in the bar but a full row in the legend
+      under it, which reads as a colour you have listings in. */
+  it('drops the colours with nothing in them', () => {
+    const keys = statusBreakdown([open(), full()]).map((s) => s.tone.key);
+    expect(keys).not.toContain('undated');
+    expect(new Set(keys)).toEqual(new Set(['open', 'full']));
+  });
+
+  it('puts what blocks you first, so the bar reads left to right', () => {
+    const keys = statusBreakdown([open(), closed(), full()]).map((s) => s.tone.key);
+    expect(keys).toEqual(['full', 'closed', 'open']);
+  });
+
+  it('agrees with countByStatus over the real dataset', () => {
+    const counts = countByStatus(EXAMS);
+    for (const slice of statusBreakdown(EXAMS)) {
+      expect(slice.count).toBe(counts[slice.tone.key]);
+      expect(slice.share).toBeCloseTo(counts[slice.tone.key] / EXAMS.length);
     }
   });
 });
