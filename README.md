@@ -207,6 +207,23 @@ Jönköping, Kalmar och Kronoberg) tar tyst bort tre län ur filtret. Landskapet
 får däremot gärna ligga kvar som `tag` — då hittar en sökning på "småland"
 fortfarande fram.
 
+## Mina prövningar räknar bara det du kan boka
+
+[`src/lib/savedPlan.ts`](src/lib/savedPlan.ts) bygger både kalendern och siffrorna
+över de sparade, och båda följde tidigare sina egna regler. "Att betala" summerade
+varenda sparad listning — även de fullbokade och de vars anmälan stängde i juli —
+och blev en nota för platser ingen kan köpa. Nu summeras bara de omgångar som
+`getExamAction(...).live` säger går att boka, alltså exakt de som får en
+bokningsknapp i detaljvyn, och raden under säger "1 av 2 går att boka" när något
+faller bort.
+
+Kalendern målade samtidigt en deadline som passerat för tre veckor sedan i samma
+orange som en som är en vecka bort. En dag som varit är grå nu, med samma grå som
+kortet använder för "Anmälan stängde", och den ligger i teckenförklaringen som ett
+eget läge i stället för som en färg som saknas. En fullbokad omgång lämnar inga
+datum alls i kalendern: varje datum på den handlar om att anmäla sig till eller
+skriva en prövning anordnaren redan sagt är full.
+
 ## Profil och community
 
 Profilen svarar på en fråga innan alla andra: hur många av dina sparade

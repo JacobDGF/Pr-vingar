@@ -4,53 +4,17 @@ import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { Exam, SavedExam } from '../types';
 import { compareByPeriod } from '../lib/examStatus';
-
-/** The three kinds of date a saved round can put in your calendar. */
-type EventKind = 'opens' | 'closes' | 'exam';
-
-const EVENT_TONE: Record<EventKind, { label: string; dot: string; tint: string; ink: string }> = {
-  opens: {
-    label: 'Anmälan öppnar',
-    dot: 'bg-brand-500',
-    tint: 'bg-brand-50',
-    ink: 'text-brand-700',
-  },
-  closes: {
-    label: 'Anmälan stänger',
-    dot: 'bg-orange-600',
-    tint: 'bg-orange-50',
-    ink: 'text-orange-700',
-  },
-  exam: {
-    label: 'Prövningsperiod',
-    dot: 'bg-accent2-500',
-    tint: 'bg-accent2-50',
-    ink: 'text-accent2-700',
-  },
-};
-
-interface CalEvent {
-  date: string;
-  kind: EventKind;
-  title: string;
-  where: string;
-}
-
-function eventsFor(exams: Exam[]): CalEvent[] {
-  const out: CalEvent[] = [];
-  for (const e of exams) {
-    const p = e.nextPeriod;
-    if (!p.confirmed) continue;
-    const where = `${e.course} · ${e.schoolName}`;
-    if (p.applicationStart)
-      out.push({ date: p.applicationStart, kind: 'opens', title: 'Anmälan öppnar', where });
-    if (p.applicationEnd)
-      out.push({ date: p.applicationEnd, kind: 'closes', title: 'Sista anmälningsdag', where });
-    if (p.examWindowStart)
-      out.push({ date: p.examWindowStart, kind: 'exam', title: 'Prövningsperiod', where });
-  }
-  return out.sort((a, b) => a.date.localeCompare(b.date));
-}
+import {
+  CalEvent,
+  EVENT_TONES,
+  EventKind,
+  PAST_TONE,
+  eventsFor,
+  nextOpening,
+  payableTotal,
+  toneFor,
+  todayIso,
+} from '../lib/savedPlan';
 
 function monthLabel(y: number, m: number) {
   return new Date(y, m, 1).toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
@@ -68,12 +32,12 @@ function Calendar({ events }: { events: CalEvent[] }) {
   const blanks = leadingBlanks(cursor.y, cursor.m);
   const iso = (d: number) =>
     `${cursor.y}-${String(cursor.m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-  const todayIso = today.toISOString().slice(0, 10);
+  const today0 = todayIso(today);
 
-  const byDay = new Map<string, EventKind>();
+  const byDay = new Map<string, CalEvent>();
   for (const ev of events) {
     // First event of the day wins the colour; the list below shows them all.
-    if (!byDay.has(ev.date)) byDay.set(ev.date, ev.kind);
+    if (!byDay.has(ev.date)) byDay.set(ev.date, ev);
   }
 
   const step = (delta: number) =>
@@ -109,16 +73,20 @@ function Calendar({ events }: { events: CalEvent[] }) {
           </div>
         </div>
 
+        {/* The legend carries the grey too: a day that has been is a state of
+            its own here, not a missing colour. */}
         <div className="flex gap-2.5 flex-wrap mb-4">
-          {(Object.keys(EVENT_TONE) as EventKind[]).map((k) => (
-            <span
-              key={k}
-              className={`inline-flex items-center gap-2 font-bold text-[12.5px] px-[15px] py-2.5 rounded-full ${EVENT_TONE[k].tint} ${EVENT_TONE[k].ink}`}
-            >
-              <span className={`w-2.5 h-2.5 rounded-full ${EVENT_TONE[k].dot}`} />
-              {EVENT_TONE[k].label}
-            </span>
-          ))}
+          {[...(Object.keys(EVENT_TONES) as EventKind[]).map((k) => EVENT_TONES[k]), PAST_TONE].map(
+            (tone) => (
+              <span
+                key={tone.label}
+                className={`inline-flex items-center gap-2 font-bold text-[12.5px] px-[15px] py-2.5 rounded-full ${tone.tint} ${tone.ink}`}
+              >
+                <span className={`w-2.5 h-2.5 rounded-full ${tone.dot}`} />
+                {tone.label}
+              </span>
+            ),
+          )}
         </div>
 
         <div className="grid grid-cols-7 gap-2">
@@ -136,14 +104,14 @@ function Calendar({ events }: { events: CalEvent[] }) {
           {Array.from({ length: days }, (_, i) => {
             const d = i + 1;
             const key = iso(d);
-            const kind = byDay.get(key);
-            const isToday = key === todayIso;
+            const ev = byDay.get(key);
+            const isToday = key === today0;
             return (
               <div
                 key={d}
                 className={`aspect-square rounded-[18px] flex flex-col items-center justify-center gap-1 text-[15px] font-bold tnum ${
-                  kind
-                    ? `${EVENT_TONE[kind].dot} text-white`
+                  ev
+                    ? `${toneFor(ev).dot} text-white`
                     : isToday
                       ? 'bg-ink text-cream'
                       : 'bg-cream text-ink-soft'
@@ -151,7 +119,7 @@ function Calendar({ events }: { events: CalEvent[] }) {
               >
                 {d}
                 <span
-                  className={`w-[7px] h-[7px] rounded-full ${kind ? 'bg-white/60' : 'bg-transparent'}`}
+                  className={`w-[7px] h-[7px] rounded-full ${ev ? 'bg-white/60' : 'bg-transparent'}`}
                 />
               </div>
             );
@@ -167,13 +135,14 @@ function Calendar({ events }: { events: CalEvent[] }) {
         ) : (
           monthEvents.map((ev, i) => {
             const d = new Date(ev.date);
+            const tone = toneFor(ev);
             return (
               <div
                 key={i}
                 className="flex items-center gap-[18px] bg-surface border-[1.5px] border-line rounded-[26px] px-[22px] py-[18px]"
               >
                 <span
-                  className={`w-[52px] h-[52px] rounded-[18px] flex flex-col items-center justify-center text-white flex-shrink-0 leading-[1.05] ${EVENT_TONE[ev.kind].dot}`}
+                  className={`w-[52px] h-[52px] rounded-[18px] flex flex-col items-center justify-center text-white flex-shrink-0 leading-[1.05] ${tone.dot}`}
                 >
                   <span className="font-hero text-[22px] tnum">{d.getDate()}</span>
                   <span className="text-[9px] font-bold uppercase tracking-[.06em]">
@@ -181,9 +150,18 @@ function Calendar({ events }: { events: CalEvent[] }) {
                   </span>
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="font-display font-semibold text-[19px]">{ev.title}</p>
+                  <p
+                    className={`font-display font-semibold text-[19px] ${ev.past ? 'text-ink-faint line-through decoration-1' : ''}`}
+                  >
+                    {ev.title}
+                  </p>
                   <p className="text-[13.5px] text-ink-soft mt-px truncate">{ev.where}</p>
                 </div>
+                {ev.past && (
+                  <span className="flex-shrink-0 text-[11.5px] font-bold uppercase tracking-[.06em] text-ink-faint">
+                    Varit
+                  </span>
+                )}
               </div>
             );
           })
@@ -208,14 +186,8 @@ export function Exams() {
 
   const savedList = saved.map((s) => s.exam);
   const events = useMemo(() => eventsFor(savedList), [savedList]);
-
-  /** The next application opening among the saved rounds. */
-  const nextOpen = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    return events.filter((e) => e.kind === 'opens' && e.date >= today)[0];
-  }, [events]);
-
-  const toPay = savedList.reduce((sum, e) => sum + e.price, 0);
+  const nextOpen = useMemo(() => nextOpening(savedList), [savedList]);
+  const pay = useMemo(() => payableTotal(savedList), [savedList]);
 
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-cream">
@@ -282,12 +254,19 @@ export function Exams() {
                     : '—'}
                 </p>
               </div>
+              {/* Only what you can still book. A summed price that includes a
+                  fullbokad omgång is a bill for a seat nobody can buy. */}
               <div className="flex-1 min-w-[200px] bg-amber-accent-50 rounded-[28px] px-6 py-[22px]">
                 <p className="text-[10.5px] font-bold uppercase tracking-[.1em] text-amber-accent">
                   Att betala
                 </p>
                 <p className="font-hero text-[38px] sm:text-[46px] leading-none mt-1 text-amber-accent tnum">
-                  {toPay.toLocaleString('sv-SE')} kr
+                  {pay.total.toLocaleString('sv-SE')} kr
+                </p>
+                <p className="text-[12px] font-bold text-ink-soft mt-1.5">
+                  {pay.unreachable === 0
+                    ? `${pay.count} ${pay.count === 1 ? 'omgång' : 'omgångar'} att boka`
+                    : `${pay.count} av ${savedList.length} går att boka`}
                 </p>
               </div>
             </div>
