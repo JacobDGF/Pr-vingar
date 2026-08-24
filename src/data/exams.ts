@@ -209,6 +209,9 @@ const THIN_LAN_2_VERIFIED = '2026-08-19';
 // Fullbokat-svep 2026-08-20: läste alla 95 nåbara anordnarsidor efter
 // anordnarens egna ord för "det finns inga platser kvar".
 const FULL_SWEEP_VERIFIED = '2026-08-20';
+// Tre län som bar två listningar var (2026-08-24): Kalmar, Kronoberg och
+// Uppsala. Alla tre anordnare är lästa ur kommunens egen sida samma dag.
+const THIN_LAN_3_VERIFIED = '2026-08-24';
 
 /**
  * For providers who put the anmälan on their own page — but only while the
@@ -4365,6 +4368,139 @@ export const EXAMS: Exam[] = [
       'välja rätt kurs. Vuxnas lärande nås på vuxnaslarande@skola.sala.se.',
     tags: ['komvux', 'sala', 'västmanland'],
     verifiedAt: THIN_LAN_2_VERIFIED,
+  },
+  {
+    id: 'komvux-i-oskarshamn-oskarshamn-flera-kurser-kontakta-skolan',
+    schoolName: 'Komvux i Oskarshamn',
+    provider: 'Oskarshamns kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Oskarshamn',
+    region: 'Kalmar',
+    address: 'Stengatan 21, 572 55 Oskarshamn',
+    lat: 57.2571,
+    lng: 16.4453,
+    price: 500,
+    priceNote:
+      '500 kr per kurs. Betalningen görs först efter beslutet, under vecka 38–39, och en beviljad ' +
+      'prövning som inte hunnit genomföras när perioden är slut är förbrukad.',
+    // Oskarshamn publicerar hela tidsplanen med årtal, båda terminerna, i en
+    // punktlista — ovanligt tydligt, så perioden går att stå för rakt av.
+    nextPeriod: {
+      label:
+        'Höstterminen 2026: anmälan 10–28 augusti, besked vecka 38, prövningsperiod 28 september–6 november',
+      applicationStart: '2026-08-10',
+      applicationEnd: '2026-08-28',
+      examWindowStart: '2026-09-28',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    // Ingen blankett och ingen e-tjänst: kommunen skriver "kontakta våra
+    // studievägledare för att göra en ansökan", och komvux@oskarshamn.se är
+    // adressen som står bredvid. Länken går därför till sidan som bär både
+    // tidsplanen och adresserna, med stegen utskrivna här i stället.
+    registration: {
+      kind: 'email',
+      ctaLabel: 'Läs hur du anmäler dig',
+      landing:
+        'Anmälan görs genom kommunens studie- och yrkesvägledare — länken går till sidan med tidsplanen och deras kontaktuppgifter.',
+      steps: [
+        'Mejla komvux@oskarshamn.se med kurs, kurskod och personnummer senast 28 augusti',
+        'Vänta på beslutet, som meddelas under vecka 38',
+        'Betala 500 kr per kurs under vecka 38–39 — läraren hör av sig för att boka tid',
+      ],
+    },
+    registrationUrl:
+      'https://www.oskarshamn.se/forskola-och-utbildning/utbildning-for-vuxna/komvux-komvux-som-anpassad-utbildning-och-sfi/komvux/provning/',
+    infoUrl:
+      'https://www.oskarshamn.se/forskola-och-utbildning/utbildning-for-vuxna/komvux-komvux-som-anpassad-utbildning-och-sfi/komvux/provning/',
+    description:
+      'Oskarshamn håller två prövningsperioder per läsår och tar emot högst två prövningar per person och period. ' +
+      'Prövningen läses in på egen hand utan lärarhandledning och kan innehålla skriftliga, muntliga och praktiska ' +
+      'moment. Nästa omgång efter höstens är vårterminen 2027, med anmälan 8 februari–1 mars.',
+    tags: ['komvux', 'flera ämnen', 'oskarshamn', 'kalmar'],
+    verifiedAt: THIN_LAN_3_VERIFIED,
+  },
+  {
+    id: 'komvux-haganas-almhult-flera-kurser-kontakta-skolan-for-kurs',
+    schoolName: 'Komvux Haganäs',
+    provider: 'Älmhults kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Älmhult',
+    region: 'Kronoberg',
+    address: 'Haganässkolan, Östra Esplanaden 15, 343 33 Älmhult',
+    lat: 56.5518,
+    lng: 14.1553,
+    price: 500,
+    priceNote:
+      '500 kr per kurs, betalas innan prövningen startar och återbetalas inte. Du kan anmäla dig ' +
+      'till högst två kurser, och kvittot ska visas upp vid varje provtillfälle.',
+    // Älmhult skriver ut dagarna men aldrig årtalet ("Den 1 september är sista
+    // dag för anmälan och betalning ... under höstterminen"). Samma bedömning
+    // som för Köping och Sala: årtalet är inte vårt att fylla i.
+    nextPeriod: {
+      label:
+        'Ordinarie tillfällen med sista anmälnings- och betalningsdag 1 februari (vårterminen) och ' +
+        '1 september (höstterminen). Älmhult skriver inte ut årtalen — e-tjänsten visar vilken omgång som är öppen.',
+      confirmed: false,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://etjanst.almhult.se/oversikt/overview/354',
+    infoUrl: 'https://www.almhult.se/vuxenutbildning/utbildningar/sarskildprovning.5829.html',
+    description:
+      'Komvux Haganäs ger prövning enbart i de kurser som finns i skolans eget kursutbud, och inläsningen sker helt ' +
+      'utan lärarstöd. Efter anmälningstidens utgång hör ansvarig lärare eller studie- och yrkesvägledaren av sig med ' +
+      'tid och upplägg. Betyget skrivs ut cirka en vecka efter prövningen och skickas hem.',
+    tags: ['komvux', 'flera ämnen', 'älmhult', 'kronoberg', 'småland'],
+    verifiedAt: THIN_LAN_3_VERIFIED,
+  },
+  {
+    id: 'vuxenutbildningen-tierp-provning-via-nti-skolan-tierp-flera',
+    schoolName: 'Vuxenutbildningen Tierp (prövning via NTI-skolan)',
+    provider: 'Tierps kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Tierp',
+    region: 'Uppsala',
+    address: 'Högbergsskolan, Palmgatan 11, 815 80 Tierp (slutproven skrivs på plats i Uppsala)',
+    lat: 60.3479,
+    lng: 17.5016,
+    price: 500,
+    priceNote:
+      '500 kr per prövning enligt NTI-skolans villkor, som faktureras i efterhand. Kostnadsfritt om ' +
+      'du har betyget F i samma kurs från komvux och skickar in betygskopian före sista anmälningsdag.',
+    // Kommunen skriver ut båda fönstren med årtal på sin komvuxsida. Anmälan
+    // för höstens omgång stängde 14 augusti; prövningsperioden ligger kvar
+    // framåt, så listningen är stängd för anmälan men inte förbi.
+    nextPeriod: {
+      label: 'Höstterminen 2026: ansökan 10–14 augusti, prövningsperiod 14 september–30 oktober',
+      applicationStart: '2026-08-10',
+      applicationEnd: '2026-08-14',
+      examWindowStart: '2026-09-14',
+      examWindowEnd: '2026-10-30',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://forms.office.com/e/N330L95SXH',
+    infoUrl:
+      'https://www.tierp.se/tierp.se/forskola-och-utbildning/studera-som-vuxen/komvux---vuxenutbildning-pa-grundlaggande-och-gymnasial-niva.html',
+    description:
+      'Tierps prövningar genomförs av NTI-skolan på uppdrag av kommunen, men alla slutprov skrivs på plats i Uppsala. ' +
+      'Anmälan görs i kommunens eget formulär, som låser sig när ansökningsperioden stängt — nästa fönster annonseras ' +
+      'på kommunens komvuxsida. Frågor går till vuxenutbildningen@tierp.se.',
+    tags: ['komvux', 'flera ämnen', 'tierp', 'uppsala', 'distans'],
+    verifiedAt: THIN_LAN_3_VERIFIED,
   },
 ];
 
