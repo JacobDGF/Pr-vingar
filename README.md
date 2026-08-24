@@ -215,10 +215,30 @@ enda stapel i statusfärgerna, med en rad per färg under, och varje sparad rad
 bär sin egen färg i stället för ett datum som inte säger om omgången är kvar.
 Fem sparade prövningar är annars fem datum att hålla i huvudet.
 
-I communityn har varje inlägg en färgad kant efter sin sort — fråga, tips,
-diskussion, seger — och filterknapparna bär samma färg med antalet i. Sorten
-var tidigare en emoji och inget mer, och en emoji är det enda på ett kort som
-en läsare i ett flöde inte hinner läsa som en kategori.
+### Forumet har sin egen färgtabell
+
+[`src/lib/postKind.ts`](src/lib/postKind.ts) är communityns motsvarighet till
+`examStatusColor.ts`: en färg per sort, och allt som visar en sort läser ur den.
+Varje tråd bär sorten som en kant till vänster och som ett piller bland de andra,
+i samma färg som filterknappen som hittar den — fråga är magenta, tips gult,
+diskussion teal, seger grönt.
+
+Rött finns inte med. Rött betyder fullbokat i den här appen, och en tråd kan
+inte vara full; ett test håller gränsen. Sorten var tidigare bara ett fält i
+datan som ingenting läste, och innan dess en emoji inne i texten — det enda på
+ett kort som en läsare i ett flöde inte hinner läsa som en kategori.
+
+Filterraden byggs ur inläggen, precis som färgnyckeln i Upptäck: en sort utan
+innehåll visas inte, och ämnesrummen räknas fram ur posternas egna `subject`.
+Rummen var tidigare tre namn skrivna i kod — Matematik, Engelska och en
+textsökning på "avgifter" — medan trådarna om Kemi, Fysik och Historia bara gick
+att nå via "Allt".
+
+Den som skriver väljer sort innan hen postar, och fältet antar färgen; tidigare
+gick varje inlägg iväg som "fråga" oavsett vad det var. En obesvarad fråga märks
+ut med form i stället för färg — svarsräknaren blir ihålig — eftersom färgen på
+tråden redan svarar på "vad är det här", och en andra färg för "behöver den mig"
+hade lämnat kortet med två svar på en gång.
 
 ### Profilbilder
 

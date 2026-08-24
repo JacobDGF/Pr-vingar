@@ -69,6 +69,10 @@ export function Community() {
   };
 
   const draftTone = KIND_TONES[draftKind];
+  // The kind picker appears once there is something to label. At rest the tab
+  // opens on one composer bar instead of three rows of controls, and typing is
+  // a signal that can't be lost the way a blur between mousedown and click can.
+  const composing = draft.length > 0;
 
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-cream">
@@ -87,11 +91,11 @@ export function Community() {
         {/* Colour by kind. Each chip carries its own colour and its count, and a
             kind nobody has written in is not shown at all — an empty filter is
             a promise of results that do not exist. */}
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           <button
             onClick={() => setKind(null)}
             aria-pressed={kind === null}
-            className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
+            className={`flex-shrink-0 rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
               kind === null
                 ? 'bg-ink text-cream'
                 : 'bg-surface text-ink-soft border-[1.5px] border-line hover:border-ink'
@@ -108,8 +112,8 @@ export function Community() {
                 onClick={() => setKind(on ? null : k)}
                 aria-pressed={on}
                 title={tone.meaning}
-                className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
-                  on ? tone.chip : `${tone.softChip} hover:-translate-y-0.5`
+                className={`flex-shrink-0 rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
+                  on ? tone.chip : tone.softChip
                 }`}
               >
                 {tone.label} <span className="tnum opacity-70">{kindCounts[k]}</span>
@@ -120,14 +124,14 @@ export function Community() {
 
         {/* The rooms, read out of the posts rather than named in code. */}
         {rooms.length > 0 && (
-          <div className="flex gap-2 flex-wrap items-center">
-            <span className="text-[12px] font-bold uppercase tracking-[.06em] text-ink-faint">
+          <div className="flex gap-2 items-center overflow-x-auto scrollbar-hide -mt-2 pb-1">
+            <span className="flex-shrink-0 text-[12px] font-bold uppercase tracking-[.06em] text-ink-faint">
               Ämne
             </span>
             <button
               onClick={() => setRoom(null)}
               aria-pressed={room === null}
-              className={`rounded-full px-3.5 py-2 text-[12.5px] font-bold transition-colors ${
+              className={`flex-shrink-0 rounded-full px-3.5 py-2 text-[12.5px] font-bold transition-colors ${
                 room === null ? 'bg-sand text-ink' : 'text-ink-soft hover:text-ink'
               }`}
             >
@@ -138,7 +142,7 @@ export function Community() {
                 key={r.subject}
                 onClick={() => setRoom(room === r.subject ? null : r.subject)}
                 aria-pressed={room === r.subject}
-                className={`rounded-full px-3.5 py-2 text-[12.5px] font-bold transition-colors ${
+                className={`flex-shrink-0 rounded-full px-3.5 py-2 text-[12.5px] font-bold transition-colors ${
                   room === r.subject ? 'bg-sand text-ink' : 'text-ink-soft hover:text-ink'
                 }`}
               >
@@ -172,32 +176,34 @@ export function Community() {
 
         {/* What kind of post this is — the same four colours as the filters, so
             the chip the author picks is the chip the thread wears. */}
-        <div className="flex gap-2 flex-wrap -mt-2.5">
-          {KIND_ORDER.map((k) => {
-            const tone = KIND_TONES[k];
-            const on = draftKind === k;
-            return (
-              <button
-                key={k}
-                onClick={() => setDraftKind(k)}
-                aria-pressed={on}
-                title={tone.meaning}
-                className={`rounded-full px-3.5 py-1.5 text-[12.5px] font-bold transition-colors ${
-                  on
-                    ? tone.chip
-                    : 'bg-surface text-ink-soft border-[1.5px] border-line hover:border-ink'
-                }`}
-              >
-                {tone.label}
-              </button>
-            );
-          })}
-          {room && (
-            <span className="rounded-full px-3.5 py-1.5 text-[12.5px] font-bold bg-sand text-ink-soft">
-              i {room}
-            </span>
-          )}
-        </div>
+        {composing && (
+          <div className="flex gap-2 flex-wrap -mt-2.5 animate-rise-in">
+            {KIND_ORDER.map((k) => {
+              const tone = KIND_TONES[k];
+              const on = draftKind === k;
+              return (
+                <button
+                  key={k}
+                  onClick={() => setDraftKind(k)}
+                  aria-pressed={on}
+                  title={tone.meaning}
+                  className={`rounded-full px-3.5 py-1.5 text-[12.5px] font-bold transition-colors ${
+                    on
+                      ? tone.chip
+                      : 'bg-surface text-ink-soft border-[1.5px] border-line hover:border-ink'
+                  }`}
+                >
+                  {tone.label}
+                </button>
+              );
+            })}
+            {room && (
+              <span className="rounded-full px-3.5 py-1.5 text-[12.5px] font-bold bg-sand text-ink-soft">
+                i {room}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Threads */}
         <div className="flex flex-col gap-3">
