@@ -1,9 +1,10 @@
-import { Exam } from '../types';
+import { Exam, RecurringWindow } from '../types';
 import {
   daysUntil,
   hasApplicationClosed,
   isFullyBooked,
   isOpenForRegistration,
+  nextRecurringWindow,
 } from './examStatus';
 
 /**
@@ -112,7 +113,8 @@ export const STATUS_TONES: Record<StatusKey, StatusTone> = {
   undated: {
     key: 'undated',
     shortLabel: 'Datum saknas',
-    meaning: 'Anordnaren har inte publicerat några datum. Länken går till deras egen sida.',
+    meaning:
+      'Ingen omgång att räkna ned till — anordnaren har inte satt datum, eller publicerar bara sin årsrytm. Länken går till deras egen sida.',
     chip: 'bg-ink text-white',
     softChip: 'bg-cream text-ink-soft border border-line',
     rail: 'bg-line',
@@ -164,7 +166,17 @@ export function getExamStatus(exam: Exam): ExamStatus {
   }
 
   if (!p.confirmed) {
-    return { tone: STATUS_TONES.undated, label: 'Datum ej satt', daysLeft: null };
+    // A provider who publishes a standing rhythm knows more than one who
+    // publishes nothing, and the card can pass that on without inventing the
+    // year: "Söks 15–22 feb." rather than "Datum ej satt". The colour stays
+    // neutral, because the question the colour answers — can I book this? — has
+    // the same answer either way.
+    const rhythm = nextRecurringWindow(exam);
+    return {
+      tone: STATUS_TONES.undated,
+      label: rhythm ? `Söks ${formatWindow(rhythm)}` : 'Datum ej satt',
+      daysLeft: null,
+    };
   }
 
   if (isOpenForRegistration(exam)) {
@@ -268,4 +280,27 @@ function untilOpening(dateStr: string): string {
 
 function formatShort(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
+}
+
+/**
+ * A standing window as "15–22 feb." or "senast 1 feb." — day and month only.
+ *
+ * The year is formatted out rather than left out: `MM-DD` is parsed against a
+ * fixed leap year so 29 February survives, and only day and month are ever
+ * read back off it.
+ */
+function formatWindow(window: RecurringWindow): string {
+  const end = formatMonthDay(window.end);
+  if (!window.start) return `senast ${end}`;
+  const start = formatMonthDay(window.start);
+  // "15–22 feb." when both fall in the same month, "28 feb.–3 mars" otherwise.
+  const sameMonth = window.start.slice(0, 2) === window.end.slice(0, 2);
+  return sameMonth ? `${start.split(' ')[0]}–${end}` : `${start}–${end}`;
+}
+
+function formatMonthDay(monthDay: string): string {
+  return new Date(`2024-${monthDay}T12:00:00`).toLocaleDateString('sv-SE', {
+    day: 'numeric',
+    month: 'short',
+  });
 }

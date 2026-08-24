@@ -159,6 +159,38 @@ describe('EXAMS dataset', () => {
     expect(bad.map((e) => e.id)).toEqual([]);
   });
 
+  /**
+   * A standing rhythm is the *alternative* to a date, never a companion to one.
+   *
+   * The whole point of `recurring` is that the provider published days without
+   * a year (#39). A listing that also has a confirmed period would be saying
+   * both "here is the round" and "here is the pattern", and the app would have
+   * to pick — so the dataset doesn't allow the question.
+   */
+  it('keeps the standing rhythm off any listing that has a real date', () => {
+    const bad = EXAMS.filter((e) => e.nextPeriod.confirmed && e.nextPeriod.recurring?.length);
+    expect(bad.map((e) => e.id)).toEqual([]);
+  });
+
+  it('writes every standing window as a bare MM-DD, so no year can leak out', () => {
+    const bad: string[] = [];
+    for (const e of EXAMS) {
+      for (const w of e.nextPeriod.recurring ?? []) {
+        for (const value of [w.start, w.end]) {
+          if (value !== undefined && !/^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(value)) {
+            bad.push(`${e.id}: ${value}`);
+          }
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it('never leaves a standing rhythm empty — an empty list reads as no rhythm', () => {
+    const bad = EXAMS.filter((e) => e.nextPeriod.recurring && e.nextPeriod.recurring.length === 0);
+    expect(bad.map((e) => e.id)).toEqual([]);
+  });
+
   it('files every listing under one of Sweden’s 21 län', () => {
     const strays = [...new Set(EXAMS.map((e) => e.region))].filter((r) => !LAN.includes(r));
     expect(strays).toEqual([]);

@@ -7,6 +7,9 @@ import {
   applicationCell,
   compareByPeriod,
   daysUntil,
+  hasRecurringPeriod,
+  nextRecurringWindow,
+  periodSortRank,
 } from './examStatus';
 import { Exam, NextPeriod } from '../types';
 
@@ -351,5 +354,93 @@ describe('applicationCell', () => {
         }),
       ),
     ).toBe('provider');
+  });
+});
+
+describe('nextRecurringWindow', () => {
+  const vaxjo = () =>
+    examWith({
+      label: '',
+      confirmed: false,
+      recurring: [
+        { start: '02-15', end: '02-22' },
+        { start: '08-15', end: '08-22' },
+      ],
+    });
+
+  it('is null for a listing without a standing rhythm', () => {
+    at('2026-08-23T12:00:00Z');
+    expect(nextRecurringWindow(examWith({ label: '', confirmed: false }))).toBeNull();
+    expect(hasRecurringPeriod(examWith({ label: '', confirmed: false }))).toBe(false);
+  });
+
+  it('picks the window whose last day is still ahead', () => {
+    at('2026-06-01T12:00:00Z');
+    expect(nextRecurringWindow(vaxjo())?.end).toBe('08-22');
+  });
+
+  it('counts the last day itself as still ahead', () => {
+    at('2026-08-22T12:00:00Z');
+    expect(nextRecurringWindow(vaxjo())?.end).toBe('08-22');
+  });
+
+  /** The day after the last window of the year, the next one is in January —
+      wrapping is what makes it a rhythm rather than a date that has passed. */
+  it('wraps to the first window of the year once the last has gone', () => {
+    at('2026-08-23T12:00:00Z');
+    expect(nextRecurringWindow(vaxjo())?.end).toBe('02-22');
+  });
+
+  it('never hands back a year', () => {
+    at('2026-08-23T12:00:00Z');
+    const w = nextRecurringWindow(vaxjo());
+    expect(w?.end).toMatch(/^\d{2}-\d{2}$/);
+    expect(w?.start).toMatch(/^\d{2}-\d{2}$/);
+  });
+
+  it('reads the windows in date order, not the order they were written', () => {
+    at('2026-03-01T12:00:00Z');
+    const scrambled = examWith({
+      label: '',
+      confirmed: false,
+      recurring: [{ end: '10-20' }, { end: '02-20' }, { end: '09-20' }, { end: '04-01' }],
+    });
+    expect(nextRecurringWindow(scrambled)?.end).toBe('04-01');
+  });
+});
+
+describe('periodSortRank with a standing rhythm', () => {
+  const rhythm = (...ends: string[]) =>
+    examWith({ label: '', confirmed: false, recurring: ends.map((end) => ({ end })) });
+
+  it('sorts a rhythm above a provider that publishes nothing', () => {
+    at('2026-08-23T12:00:00Z');
+    const [rankRhythm] = periodSortRank(rhythm('09-20'));
+    const [rankSilent] = periodSortRank(examWith({ label: '', confirmed: false }));
+    expect(rankRhythm).toBeLessThan(rankSilent);
+  });
+
+  it('still sorts a rhythm below a round with a real date ahead', () => {
+    at('2026-08-23T12:00:00Z');
+    const [rankDated] = periodSortRank(
+      examWith({ label: '', confirmed: true, applicationEnd: '2026-09-06' }),
+    );
+    expect(rankDated).toBeLessThan(periodSortRank(rhythm('09-20'))[0]);
+  });
+
+  /** A wrapped window is eight months out; an unwrapped one may be four weeks.
+      A plain MM-DD compare would put February ahead of September. */
+  it('puts a window still to come this year ahead of one that has wrapped', () => {
+    at('2026-08-23T12:00:00Z');
+    const soon = rhythm('09-20');
+    const wrapped = rhythm('02-01');
+    expect(compareByPeriod(soon, wrapped)).toBeLessThan(0);
+    expect(compareByPeriod(wrapped, soon)).toBeGreaterThan(0);
+  });
+
+  it('sorts a rhythm ahead of a round whose deadline has passed', () => {
+    at('2026-08-23T12:00:00Z');
+    const gone = examWith({ label: '', confirmed: true, applicationEnd: '2026-08-01' });
+    expect(compareByPeriod(rhythm('09-20'), gone)).toBeLessThan(0);
   });
 });

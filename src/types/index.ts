@@ -1,9 +1,37 @@
+/**
+ * One application window as the provider publishes it: a day and a month, no
+ * year. `MM-DD`, so `'02-15'` is 15 February.
+ */
+export interface RecurringWindow {
+  /** Day the window opens, when the provider names one. */
+  start?: string;
+  /** Last day to apply. Always published — it is the point of the rhythm. */
+  end: string;
+}
+
 export interface NextPeriod {
   label: string;
   applicationStart?: string;
   applicationEnd?: string;
   examWindowStart?: string;
   examWindowEnd?: string;
+  /**
+   * The provider's standing periodplan, when they publish a rhythm instead of
+   * a calendar: "sista anmälningsdag 1 februari", "period 1: 15–22 februari",
+   * year after year with no year on it.
+   *
+   * Kept apart from the dated fields on purpose. Writing which year is next
+   * would be the app's arithmetic and not the school's word, so a recurring
+   * period is never `confirmed` and never reaches the countdown, the calendar
+   * export or the map's "öppen"-count. What it does buy is the difference
+   * between *"we don't know"* and *"we know exactly which days, just not which
+   * year"* — the card can say "Söks 15–22 feb." instead of "Datum ej satt",
+   * and the listing sorts above the providers who publish nothing at all.
+   *
+   * Windows go in the provider's own order; the app picks whichever comes next
+   * in the year from today.
+   */
+  recurring?: RecurringWindow[];
   /** True when we have a real confirmed date for this period. When false, the UI must not present a fabricated date — link out instead. */
   confirmed: boolean;
   /**

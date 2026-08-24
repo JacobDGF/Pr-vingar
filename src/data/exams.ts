@@ -3264,14 +3264,15 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid F/IG-betyg inom ett år från betygssättning',
     nextPeriod: {
-      // Samma form som Köping: Växjö publicerar sina två perioder som en
-      // stående tabell utan årtal, och period 2 (15–22 augusti) stängde
-      // 22 augusti 2026. Att skriva 2027 i period 1 vore att fylla i ett
-      // årtal anordnaren inte satt dit — se koping-kompetenscenter, som
-      // avgjorde samma fråga åt andra hållet i augusti. Datumen står i
-      // etiketten, där de är skolans ord och inte appens nedräkning.
+      // Växjö publicerar sina två perioder som en stående tabell utan årtal.
+      // `recurring` bär dagarna, `confirmed: false` bär att året inte är
+      // vårt att fylla i — se #39.
       label:
         'Två perioder per år, utan utsatta årtal: period 1 har anmälan 15–22 februari, sista betalningsdag 7 mars och prövningen genomförd senast 30 juni; period 2 har anmälan 15–22 augusti och prövningen genomförd senast 30 december. Alla prövningar görs på plats i Växjö.',
+      recurring: [
+        { start: '02-15', end: '02-22' },
+        { start: '08-15', end: '08-22' },
+      ],
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
@@ -3977,6 +3978,7 @@ export const EXAMS: Exam[] = [
       // stans, och årtalet är inte vårt att fylla i.
       label:
         'Två omgångar per år: sista anmälningsdag 1 februari för prövning i maj eller juni, och 7 juni för prövning i november. Köping skriver inte ut årtalen — hör med studievägledarna vilken omgång som är öppen.',
+      recurring: [{ end: '02-01' }, { end: '06-07' }],
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
@@ -4093,10 +4095,15 @@ export const EXAMS: Exam[] = [
       '500 kr per prövningstillfälle, betalas i förskott — kvittot visas upp vid prövningen. ' +
       'Kostnadsfritt om du redan har betyget F/IG i kursen.',
     nextPeriod: {
+      // Ljungby står i samma tabell utan årtal som Köping och Växjö: "Anmäl
+      // dig senast: 20 september eller 20 oktober för hösten, 20 februari
+      // eller 1 april för våren." Listningen bar 2026-09-20 som bekräftat
+      // datum, vilket var årtalet påfyllt av oss och inte av kommunen — se
+      // #39. Dagarna ligger i `recurring` nu.
       label:
-        'Hösten 2026 har två prövningstillfällen. Anmäl dig senast 20 september eller 20 oktober. (Våren: senast 20 februari eller 1 april.)',
-      applicationEnd: '2026-09-20',
-      confirmed: true,
+        'Två prövningstillfällen per termin, utan utsatta årtal: anmäl dig senast 20 september eller 20 oktober för hösten, 20 februari eller 1 april för våren.',
+      recurring: [{ end: '02-20' }, { end: '04-01' }, { end: '09-20' }, { end: '10-20' }],
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,

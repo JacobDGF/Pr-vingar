@@ -190,6 +190,54 @@ describe('getExamStatus', () => {
     expect(status.tone.key).toBe('full');
   });
 
+  /**
+   * The one thing that must never happen: a year on screen that the provider
+   * never published. Everything else about the rhythm is a convenience.
+   */
+  it('names the days of a standing rhythm, and never the year', () => {
+    const status = getExamStatus(
+      exam({
+        label: 'Två perioder per år',
+        confirmed: false,
+        recurring: [
+          { start: '02-15', end: '02-22' },
+          { start: '08-15', end: '08-22' },
+        ],
+      }),
+    );
+    expect(status.tone.key).toBe('undated');
+    expect(status.label).toBe('Söks 15–22 feb.');
+    expect(status.label).not.toMatch(/\d{4}/);
+  });
+
+  it('says "senast" when the provider only publishes a closing day', () => {
+    const status = getExamStatus(
+      exam({ label: 'Två omgångar', confirmed: false, recurring: [{ end: '02-01' }] }),
+    );
+    expect(status.label).toBe('Söks senast 1 feb.');
+  });
+
+  it('spells out both months when a window straddles two', () => {
+    const status = getExamStatus(
+      exam({ label: '', confirmed: false, recurring: [{ start: '10-28', end: '11-04' }] }),
+    );
+    expect(status.label).toBe('Söks 28 okt.–4 nov.');
+  });
+
+  it('still says "Datum ej satt" when there is no rhythm either', () => {
+    const status = getExamStatus(exam({ label: 'Se skolans sida', confirmed: false }));
+    expect(status.label).toBe('Datum ej satt');
+  });
+
+  /** A rhythm is not a booking. It must not borrow green, or a countdown. */
+  it('keeps a standing rhythm out of the bookable colours', () => {
+    const status = getExamStatus(
+      exam({ label: '', confirmed: false, recurring: [{ end: '09-20' }] }),
+    );
+    expect(['open', 'closing', 'upcoming']).not.toContain(status.tone.key);
+    expect(status.daysLeft).toBeNull();
+  });
+
   it('leaves an unconfirmed period colourless rather than inventing a state', () => {
     const status = getExamStatus(exam({ label: 'Se skolans sida', confirmed: false }));
     expect(status.tone.key).toBe('undated');

@@ -31,12 +31,10 @@ Fem regler styr datan, och de testas i
 
 - **Inga gissade datum.** `nextPeriod.confirmed` är `false` när anordnaren inte
   har publicerat datum. Då visar appen ingen period alls, utan länkar vidare.
-  Ett årtal räknas som ett datum. Några anordnare — Köping och Växjö i dag —
-  publicerar sin rytm i stället för sin kalender: "sista anmälningsdag
-  1 februari", "period 1: 15–22 februari", år efter år utan årtal. Att fylla i
-  vilket år som är nästa är appens gissning, inte skolans besked, hur enkel
-  räkningen än ser ut. Rytmen står i `label` med skolans egna ord, och
-  listningen är odaterad.
+  Ett årtal räknas som ett datum. Att fylla i vilket år som är nästa är appens
+  gissning, inte skolans besked, hur enkel räkningen än ser ut. Se
+  [rytmen](#en-rytm-är-inte-ett-datum) för anordnarna som bara publicerar
+  dagarna.
 - **Länken ska leda till anmälan.** `registrationUrl` pekar så nära själva
   bokningen som anordnaren tillåter — e-tjänsten, kurslistan eller kassan, inte
   en informationssida, när ett djupare mål finns.
@@ -53,6 +51,33 @@ Fem regler styr datan, och de testas i
   två omgångar hos samma skola hör hemma i samma listnings etikett. Två kort
   läser som två skolor, där den ena råkar vara fullbokad.
 
+### En rytm är inte ett datum
+
+Några anordnare publicerar sin rytm i stället för sin kalender. Köping skriver
+"sista anmälningsdag 1 februari" och "7 juni", Växjö "period 1: 15–22 februari",
+Ljungby "senast 20 september eller 20 oktober för hösten" — år efter år, utan
+årtal på någon av dem.
+
+Det är inte samma sak som tystnad, och det var precis så appen visade dem:
+"Datum ej satt", tillsammans med skolorna vars sidor inte säger någonting alls.
+`nextPeriod.recurring` bär dagarna som rena `MM-DD`, och tre saker följer:
+
+- Kortet säger **"Söks 15–22 feb."** i stället för "Datum ej satt". Året
+  formateras bort, inte utelämnat — `MM-DD` tolkas mot ett fast skottår så att
+  29 februari överlever, och bara dag och månad läses tillbaka.
+- Listningen sorteras **över** anordnarna som inte publicerar något, och under
+  omgångarna med riktiga datum. Sorteringsnyckeln vet om fönstret har vänt över
+  nyår: den 24 augusti är "1 februari" åtta månader bort och "20 september"
+  fyra veckor, och en rak `MM-DD`-jämförelse skulle sätta februari först.
+- Färgen ändras inte. Den frågan färgen svarar på — kan jag boka det här? — har
+  samma svar som för en tyst sida, så rytmen stannar i neutralt och rör aldrig
+  grönt, nedräkningen eller `.ics`-exporten.
+
+Datan tillåter inte frågan om vilket som gäller: `recurring` och en bekräftad
+period kan inte ligga på samma listning, och varje fönster måste vara ett bart
+`MM-DD` — båda testade i [`src/data/exams.test.ts`](src/data/exams.test.ts), så
+inget årtal kan läcka in bakvägen.
+
 ### En färg per listning
 
 [`src/lib/examStatusColor.ts`](src/lib/examStatusColor.ts) är den enda platsen
@@ -60,14 +85,14 @@ som bestämmer vilken färg en listning har. Kortets kant, pillret över bilden,
 datumtexten, kartans nål och detaljvyns banner läser alla ur samma tabell, så de
 kan inte säga olika saker om samma omgång.
 
-| Färg       | Betyder                                               |
-| ---------- | ----------------------------------------------------- |
-| 🔴 Röd     | Fullbokat — anordnaren har sagt att platserna är slut |
-| ⚪ Grå     | Anmälan stängde (datumet står på kortet)              |
-| 🟠 Orange  | Öppen, men stänger inom en vecka                      |
-| 🟢 Grön    | Öppen för anmälan i dag                               |
-| 🔵 Blå     | Datum satt, anmälan har inte öppnat än                |
-| ⬜ Neutral | Anordnaren har inte publicerat några datum            |
+| Färg       | Betyder                                                          |
+| ---------- | ---------------------------------------------------------------- |
+| 🔴 Röd     | Fullbokat — anordnaren har sagt att platserna är slut            |
+| ⚪ Grå     | Anmälan stängde (datumet står på kortet)                         |
+| 🟠 Orange  | Öppen, men stänger inom en vecka                                 |
+| 🟢 Grön    | Öppen för anmälan i dag                                          |
+| 🔵 Blå     | Datum satt, anmälan har inte öppnat än                           |
+| ⬜ Neutral | Ingen omgång att räkna ned till — inga datum, eller bara en rytm |
 
 Rött betyder en enda sak, och det är den regel hela paletten vilar på. Tidigare
 sa rött både "fullbokat" (du kan inte boka) och "3 dagar kvar" (du kan boka,
