@@ -227,13 +227,21 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
           </div>
         </div>
 
-        {/* Price info */}
-        <div className="mb-8 flex items-start gap-2.5 bg-trust-50 border border-trust-100 rounded-md p-3.5">
-          <ShieldCheck size={18} className="text-trust-600 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-trust-700 leading-relaxed">
-            Avgiften för betygsprövning är lagstadgad och kostar{' '}
-            <span className="font-semibold">500 kr</span> per prövning hos alla anordnare (gratis om
-            du redan har betyget F). Inget pris att filtrera på.
+        {/* Price info.
+            This panel used to state the waiver as one national rule — "500 kr
+            hos alla anordnare (gratis om du redan har betyget F)" — and the
+            app's own dataset disproves it: {@link getPriceRule} finds providers
+            who charge "oavsett tidigare betyg", and more who waive the fee only
+            for an F set at their own school, or within a year of it. The fee
+            itself is fixed, so there is still nothing to filter on; the waiver
+            is the part that varies, and each listing now says its own version. */}
+        <div className="mb-8 flex items-start gap-2.5 bg-cream border border-line rounded-md p-3.5">
+          <ShieldCheck size={18} className="text-ink-soft flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-ink-soft leading-relaxed">
+            Avgiften är lagstadgad och samma överallt: <span className="font-semibold">500 kr</span>{' '}
+            per prövning — inget pris att filtrera på. Om ett tidigare F gör den gratis avgör
+            däremot varje anordnare själv, och alla gör inte det. Villkoren står under{' '}
+            <span className="font-semibold">Vad det kostar</span> på varje prövning.
           </p>
         </div>
 
