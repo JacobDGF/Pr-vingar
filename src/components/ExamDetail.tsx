@@ -18,6 +18,7 @@ import {
   Check,
   Clock,
   ListChecks,
+  Wallet,
 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { Exam } from '../types';
@@ -28,6 +29,8 @@ import { getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getExamAction } from '../lib/examAction';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
+import { getPriceRule } from '../lib/priceRule';
+import { getFreshness } from '../lib/freshness';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 
 /**
@@ -124,6 +127,8 @@ export function ExamDetail() {
   const action = getExamAction(exam);
   const calendarEvents = examCalendarEvents(exam);
   const stat = applicationStat(exam);
+  const price = getPriceRule(exam);
+  const freshness = getFreshness(exam);
   const hero = HERO_GRADIENT[status.tone.key] ?? HERO_DEFAULT;
   // The design was drawn around "Matematik 2b". A third of the dataset reads
   // "Flera kurser (Ma 1a–5, kontakta skolan för kurskod)", which set five
@@ -250,13 +255,11 @@ export function ExamDetail() {
                 {/* Three numbers, the ones people compare listings on */}
                 <div className="grid grid-cols-3 gap-2 mt-6 lg:mt-0 lg:w-[380px] lg:flex-shrink-0">
                   {[
-                    {
-                      k: 'Pris',
-                      v: `${exam.price} kr`,
-                      n: /kostnadsfri|gratis/i.test(exam.priceNote ?? '')
-                        ? 'gratis vid tidigare F'
-                        : 'se villkor nedan',
-                    },
+                    // The note comes from lib/priceRule.ts, which reads the
+                    // provider's own wording rather than assuming the national
+                    // waiver applies. The words it lands on are shown in full
+                    // in the "Vad det kostar" panel below.
+                    { k: 'Pris', v: `${exam.price} kr`, n: price.note },
                     { k: 'Anmälan', v: stat.value, n: stat.note },
                     {
                       k: 'Prövning',
@@ -349,11 +352,56 @@ export function ExamDetail() {
               )}
             </div>
 
-            {/* Where the facts came from */}
-            <p className="inline-flex items-center gap-1.5 text-trust-700 text-[12.5px] font-medium px-1">
-              <ShieldCheck size={14} className="flex-shrink-0" />
-              Kontrollerat mot {exam.provider} {formatShort(exam.verifiedAt)}
-            </p>
+            {/* What it costs, in the provider's own words.
+                The hero's price tile used to read "se villkor nedan" and there
+                were no villkor below: `priceNote` was carried on every listing
+                and rendered nowhere. This is where it lands, under the one
+                colour that answers the question people actually have about the
+                money — whether a prior F makes it free. */}
+            <div className="bg-surface rounded-3xl border border-line p-4 lg:p-5">
+              <div className="flex items-start gap-3">
+                <span className="w-9 h-9 bg-cream rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Wallet size={18} className="text-ink-soft" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <p className="font-display font-semibold text-ink text-[19px] leading-tight">
+                      Vad det kostar
+                    </p>
+                    <span
+                      className={`font-bold text-[12.5px] px-3 py-1.5 rounded-full ${price.chip}`}
+                    >
+                      {price.chipLabel}
+                    </span>
+                  </div>
+                  <p className="text-ink-soft text-[13.5px] leading-relaxed mt-1.5">
+                    {price.detail}
+                  </p>
+                  {price.fromProvider && (
+                    <p className="text-ink-faint text-[11.5px] mt-1.5">
+                      {exam.provider}s egen formulering.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Where the facts came from — and how long ago. The line was green
+                whatever the date said, so a check from June read as confidently
+                as one from this morning. See lib/freshness.ts. */}
+            <div className="px-1">
+              <p
+                className={`inline-flex items-center gap-1.5 text-[12.5px] font-medium ${freshness.text}`}
+              >
+                <ShieldCheck size={14} className={`flex-shrink-0 ${freshness.icon}`} />
+                Kontrollerat mot {exam.provider} {freshness.age} ({freshness.date})
+              </p>
+              {freshness.advice && (
+                <p className="text-ink-soft text-[11.5px] leading-relaxed mt-0.5">
+                  {freshness.advice}
+                </p>
+              )}
+            </div>
 
             {/* Tabs */}
             <div className="grid grid-cols-3 gap-2">

@@ -98,6 +98,48 @@ läser först och gör allt själv. När `infoUrl` och `registrationUrl` är sam
 härleds `site` till anordnarens startsida — alltid ur `infoUrl`, aldrig ur
 bokningslänken, eftersom "skolans webbplats" inte betyder alvis.se.
 
+### Vad det kostar, enligt anordnaren själv
+
+Avgiften är 500 kr enligt Skolverkets förordning, och samma förordning låter
+anordnaren efterskänka den för den som redan har ett F i kursen. Appen sa det
+som **en** nationell regel — "500 kr hos alla anordnare (gratis om du redan har
+betyget F)" — och datan den levererar motsäger den. Karlskoga tar 500 kr
+"oavsett tidigare betyg". Trelleborg efterskänker bara för den som var inskriven
+i Trelleborg. Flera kräver att F:et satts inom komvux, Växjö att det satts inom
+ett år. Den som läser upp ett F är precis appens användare, så det är det
+påstående appen minst av allt har råd att ha fel om: att ha fel kostar 500 kr.
+
+[`src/lib/priceRule.ts`](src/lib/priceRule.ts) härleder svaret per listning ur
+anordnarens egen `priceNote`, och gör det medvetet pessimistiskt — en
+efterskänkning med förbehåll blir `conditionalFree`, och det anordnaren inte
+skrivit om blir `unstated`. Färgen får lova för lite. Den får inte lova för
+mycket.
+
+| Färg      | Betyder                                                         |
+| --------- | --------------------------------------------------------------- |
+| 🟢 Grön   | Gratis vid tidigare F — utan förbehåll                          |
+| 🟠 Orange | Gratis vid F, men anordnaren har villkorat det                  |
+| ⚪ Grå    | Ingen rabatt vid F, eller anordnaren har inte sagt något om det |
+
+Heuristiken är aldrig sista ordet: `priceNote` fanns på nästan varje listning
+och renderades ingenstans — pristalet i hjälten sa "se villkor nedan" och det
+fanns inga villkor nedan. Nu ligger anordnarens mening ordagrant i panelen
+"Vad det kostar", direkt under knapparna, med färgchippet över sig.
+
+### Hur gammal är kontrollen
+
+`verifiedAt` säger vilken dag någon läste anordnarens sida. Detaljvyn har alltid
+visat det — som "Kontrollerat mot Växjö kommun 24 juni", i samma trygga gröna
+oavsett vad datumet sa, och utan årtal. En kontroll från 2024 och en från i går
+var samma mening i samma färg.
+
+Det är samma förfall som datumreglerna på korten finns för, vänt mot appen
+själv. [`src/lib/freshness.ts`](src/lib/freshness.ts) ger raden en ålder, ett
+årtal och en färg: grön inom 30 dagar, orange därefter, grå efter 90 — och från
+orange och uppåt en rad som säger att anordnarens egen sida är den bättre
+källan. Kontrollen åldras nu synligt i stället för att se lika frisk ut för
+alltid.
+
 ### Anmälningsflöden
 
 [`src/lib/registrationFlow.ts`](src/lib/registrationFlow.ts) härleder ur
@@ -249,6 +291,14 @@ Därför två utvägar, båda helt lokala:
 - Profilfliken exporterar allt appen vet om användaren som JSON. Allt ligger i
   en enda webbläsares `localStorage`, så exporten är den enda säkerhetskopia som
   finns — den ligger direkt ovanför knappen som raderar originalet.
+
+## Tillgänglighet
+
+`index.html` låste tidigare zoomen (`maximum-scale=1.0, user-scalable=no`). Det
+är ett WCAG-fel (1.4.4 Resize text), och det slår hårdast mot precis den här
+appen: det som ska läsas är datum, kurskoder och villkor för 500 kr, på en
+telefon. Nypzoom är på igen, och `viewport-fit=cover` håller layouten under
+hacket.
 
 ## Deploy
 

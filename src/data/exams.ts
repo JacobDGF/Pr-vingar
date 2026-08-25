@@ -209,6 +209,9 @@ const THIN_LAN_2_VERIFIED = '2026-08-19';
 // Fullbokat-svep 2026-08-20: läste alla 95 nåbara anordnarsidor efter
 // anordnarens egna ord för "det finns inga platser kvar".
 const FULL_SWEEP_VERIFIED = '2026-08-20';
+// Datumsvep 2026-08-25: läste om de anordnare vars omgång `check:dates`
+// rapporterade som helt förbi.
+const AUG_25_VERIFIED = '2026-08-25';
 
 /**
  * For providers who put the anmälan on their own page — but only while the
@@ -3242,10 +3245,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid F/IG-betyg inom ett år från betygssättning',
     nextPeriod: {
+      // Period 2 2026 closed on 22 August. Växjö publishes the same two windows
+      // every year on the same page — 15–22 February and 15–22 August — so the
+      // next one someone can actually apply to is period 1 2027.
       label:
-        'Period 2 2026: anmälan öppnar 15 augusti, sista anmälningsdag 22 augusti, prövning ska vara genomförd senast 30 december',
-      applicationStart: '2026-08-15',
-      applicationEnd: '2026-08-22',
+        'Period 1 2027: anmälan öppnar 15 februari, sista anmälningsdag 22 februari, prövning ska vara genomförd senast 30 juni; avgiften betalas senast 7 mars',
+      applicationStart: '2027-02-15',
+      applicationEnd: '2027-02-22',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -3255,7 +3261,7 @@ export const EXAMS: Exam[] = [
     description:
       'Växjö kommun har två anmälningsperioder per år för prövning, max två kurser/ämnesnivåer per tillfälle, med betalning via e-tjänst efter godkänd anmälan.',
     tags: ['komvux', 'växjö', 'småland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: AUG_25_VERIFIED,
   },
   {
     id: 'axel-weudelskolan-kunskapsnavet-kalmar-flera-kurser-kontakta',
