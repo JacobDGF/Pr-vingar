@@ -250,6 +250,37 @@ Därför två utvägar, båda helt lokala:
   en enda webbläsares `localStorage`, så exporten är den enda säkerhetskopia som
   finns — den ligger direkt ovanför knappen som raderar originalet.
 
+## När appen går sönder
+
+Fyra av fem flikar hämtas med `import()` första gången de öppnas, och varje
+deploy byter namn på de filerna — `rsync --delete` i deployen tar bort förra
+byggets chunkar i samma ögonblick som det nya landar. En användare som hade
+appen öppen över en deploy och sedan trycker på en flik hen inte besökt ännu ber
+alltså om en fil som inte finns. Importen avvisas, React river hela trädet, och
+appen blir vit utan något att trycka på. Verifierat i Chromium mot ett riktigt
+bygge: efter en 404 på `Profile-*.js` fanns varken flikraden eller ordet
+"Profil" kvar i DOM:en.
+
+Det är inte ett fel i fliken, och det får inte visas som ett. Rättningen ligger
+redan på servern — sidan behöver bara hämta den.
+[`src/lib/chunkError.ts`](src/lib/chunkError.ts) känner igen just den sortens
+fel på webbläsarens egna ord (tre formuleringar för samma sak, plus den
+`text/html` GitHub Pages svarar med när filen är borta) och
+[`src/components/ErrorBoundary.tsx`](src/components/ErrorBoundary.tsx) laddar om
+i stället för att be om ursäkt.
+
+Två fel, två svar. Allt annat än en försvunnen chunk får en förklaring på
+svenska och en väg vidare, aldrig en omladdning: en omladdning kastar bort vad
+användaren höll på med och kraschar troligen igen. Omladdningen sker heller
+aldrig två gånger inom en minut — en sida som laddar om sig själv i en slinga är
+värre än en sida som står still och säger vad som hänt, för då hinner ingen läsa
+felet.
+
+Gränsen går per flik och per ark, inte runt hela appen. En trasig flik ska vara
+lika stor som fliken: flikraden står kvar och de andra fyra fungerar. Ett ark som
+ligger över allt annat (`overlay`) får sitt fallback i samma storlek som arket,
+med en Stäng-knapp — appen bakom är hel, och det är dit användaren ska.
+
 ## Deploy
 
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) kör lint,
