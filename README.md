@@ -33,7 +33,12 @@ Fem regler styr datan, och de testas i
   har publicerat datum. Då visar appen ingen period alls, utan länkar vidare.
 - **Länken ska leda till anmälan.** `registrationUrl` pekar så nära själva
   bokningen som anordnaren tillåter — e-tjänsten, kurslistan eller kassan, inte
-  en informationssida, när ett djupare mål finns.
+  en informationssida, när ett djupare mål finns. `infoUrl` har samma krav åt
+  andra hållet: den ska peka på sidan där anordnaren skriver datumen appen
+  visar. Härnösands `infoUrl` låg på kommunens e-tjänstsida, som beskriver hur
+  man ansöker men inte när — tabellen med "Vecka 39 / 5 augusti" står på komvux
+  egen prövningssida, och det är dit den som vill kontrollera ett datum ska
+  komma.
 - **Anordnarens ord gäller före kalendern.** `nextPeriod.full` sätts när
   anordnaren själv skrivit att omgången är fullbokad. Då är listningen stängd
   för anmälan även om datumen ser öppna ut, och nedräkningen tystnar — ett
@@ -45,7 +50,12 @@ Fem regler styr datan, och de testas i
   äldre datum är mindre som text.
 - **Samma skola och kurs listas en gång.** Datan växer en anordnare i taget, och
   två omgångar hos samma skola hör hemma i samma listnings etikett. Två kort
-  läser som två skolor, där den ena råkar vara fullbokad.
+  läser som två skolor, där den ena råkar vara fullbokad. Två _kurser_ är
+  däremot två kort, även när de heter nästan samma sak: Vux Huddinge prövar
+  svenska som andraspråk både enligt Gy11 (`SVASVA01`, `SVASVA03`) och Gy25
+  (`SVEA1000X`, `SVEA3000X`), med ett eget förberedelsedokument per kod. Den som
+  läser fel dokument förbereder sig på fel prov, så att slå ihop dem till ett
+  kort med två koder vore att dölja just den skillnad som betyder något.
 
 ### En färg per listning
 

@@ -209,6 +209,9 @@ const THIN_LAN_2_VERIFIED = '2026-08-19';
 // Fullbokat-svep 2026-08-20: läste alla 95 nåbara anordnarsidor efter
 // anordnarens egna ord för "det finns inga platser kvar".
 const FULL_SWEEP_VERIFIED = '2026-08-20';
+// Datasvep 2026-08-26 (#45): de listningar check:dates pekade ut som gångna,
+// lästa mot anordnarens egen sida i stället för mot etiketten i datan.
+const AUG_26_VERIFIED = '2026-08-26';
 
 /**
  * For providers who put the anmälan on their own page — but only while the
@@ -1143,12 +1146,19 @@ export const EXAMS: Exam[] = [
     // page also offers a PDF blankett as an alternative route.
     registrationUrl:
       'https://education.service.tieto.com/AdultApplication.Student/#/search-offering/kv?domain=harnosandedu',
+    // infoUrl pekade till 2026-08-26 på e-tjänstsidan, som beskriver hur man
+    // ansöker men inte när: den nämner bara vecka 34 för legitimationskontroll.
+    // Datumen appen visar står i stället i tabellen "Prövningstillfällen och
+    // sista ansökningsdag för prövningar 2026" på komvux egen prövningssida
+    // (Vecka 39 / 5 augusti, sidan uppdaterad 2026-08-27). En användare som
+    // följer "skolans webbplats" för att kontrollera ett datum ska landa på
+    // sidan där datumet står.
     infoUrl:
-      'https://harnosand.se/e-tjanster-och-blanketter/utbildning-och-forskola/vuxenutbildning/ansokan-om-sarskild-provning-inom-kommunal-vuxenutbildning.html',
+      'https://harnosand.se/barn--utbildning/vuxenutbildning/att-studera-pa-komvux/provning.html',
     description:
-      'Nästa prövningstillfälle startar vecka 39 2026 (21-27 september), med sista ansökningsdag 5 augusti 2026. Legitimationskontroll måste göras på plats hos studerandeservice under vecka 34 efter antagningsbesked.',
+      'Nästa prövningstillfälle startar vecka 39 2026 (21-27 september), med sista ansökningsdag 5 augusti 2026 — det enda tillfälle kommunen har kvar i sin tabell för 2026. Legitimationskontroll måste göras på plats hos studerandeservice under vecka 34 efter antagningsbesked, och du kan bara söka en kurs per prövningstillfälle.',
     tags: ['kommun', 'gymnasial', 'flera-amnen'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: AUG_26_VERIFIED,
   },
   {
     id: 'jamtlands-gymnasium-provning-for-vuxenstuderande-ostersund-f',
@@ -2098,7 +2108,7 @@ export const EXAMS: Exam[] = [
       'https://www.huddinge.se/forskola-skola/vuxenutbildning/provning-validering-och-nivatest/provning-pa-komvux',
     description:
       'Vux Huddinge erbjuder prövning två gånger per år i svenska som andraspråk. Prövningen tar två dagar: skriftlig examination första dagen och muntlig examination andra dagen. Betalning sker via Swish.',
-    tags: ['komvux', 'svenska som andraspråk', 'huddinge'],
+    tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy11'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
   {
@@ -2132,8 +2142,82 @@ export const EXAMS: Exam[] = [
       'https://www.huddinge.se/forskola-skola/vuxenutbildning/provning-validering-och-nivatest/provning-pa-komvux',
     description:
       'Vux Huddinge erbjuder också prövning i Svenska som andraspråk 1, samma anmälningsperiod och villkor som nivå 3. Begränsat antal platser, principen är först till kvarn.',
-    tags: ['komvux', 'svenska som andraspråk', 'huddinge'],
+    tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy11'],
     verifiedAt: NATIONWIDE_VERIFIED,
+  },
+  // Huddinge listar fyra kurser, inte två: SVASVA01/SVASVA03 enligt Gy11 och
+  // SVEA1000X/SVEA3000X enligt Gy25, var och en med sitt eget
+  // förberedelsedokument på kommunens sida. De är alltså skilda prövningar med
+  // skilda innehåll, inte samma prövning under två koder — den som förbereder
+  // sig på fel dokument förbereder sig på fel prov. Därför fyra listningar, med
+  // läroplanen som tag så att en sökning på "gy25" hittar hela gruppen.
+  {
+    id: 'vux-huddinge-huddinge-svenska-som-andrasprak-niva-1',
+    schoolName: 'Vux Huddinge',
+    provider: 'Huddinge kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk, nivå 1',
+    courseCode: 'SVEA1000X',
+    level: 'Komvux',
+    city: 'Huddinge',
+    region: 'Stockholm',
+    address: 'Huddinge (adress bekräftas vid anmälan)',
+    lat: 59.2378,
+    lng: 17.9819,
+    price: 500,
+    priceNote:
+      '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
+    nextPeriod: {
+      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
+      applicationStart: '2026-07-27',
+      applicationEnd: '2026-08-23',
+      examWindowStart: '2026-09-14',
+      examWindowEnd: '2026-09-14',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://huddinge.alvis.se/provning/amnesomrade',
+    infoUrl:
+      'https://www.huddinge.se/forskola-skola/vuxenutbildning/provning-validering-och-nivatest/provning-pa-komvux',
+    description:
+      'Gy25-motsvarigheten till Svenska som andraspråk 1, med eget förberedelsedokument hos Huddinge. Samma anmälningsperiod, avgift och upplägg som de andra tre: två dagar, skriftlig examination först och muntlig dagen efter, betalning via Swish. Kontrollera med din vägledare vilken läroplan ditt betyg ska följa innan du anmäler dig.',
+    tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy25'],
+    verifiedAt: AUG_26_VERIFIED,
+  },
+  {
+    id: 'vux-huddinge-huddinge-svenska-som-andrasprak-niva-3',
+    schoolName: 'Vux Huddinge',
+    provider: 'Huddinge kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk, nivå 3',
+    courseCode: 'SVEA3000X',
+    level: 'Komvux',
+    city: 'Huddinge',
+    region: 'Stockholm',
+    address: 'Huddinge (adress bekräftas vid anmälan)',
+    lat: 59.2378,
+    lng: 17.9819,
+    price: 500,
+    priceNote:
+      '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
+    nextPeriod: {
+      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
+      applicationStart: '2026-07-27',
+      applicationEnd: '2026-08-23',
+      examWindowStart: '2026-09-14',
+      examWindowEnd: '2026-09-14',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://huddinge.alvis.se/provning/amnesomrade',
+    infoUrl:
+      'https://www.huddinge.se/forskola-skola/vuxenutbildning/provning-validering-och-nivatest/provning-pa-komvux',
+    description:
+      'Gy25-motsvarigheten till Svenska som andraspråk 3, med eget förberedelsedokument hos Huddinge. Anmälan är bindande och platsen är inte garanterad förrän avgiften är betald — kommunen skriver själva att anmälan kan behöva stänga före sista anmälningsdag när platserna tar slut.',
+    tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy25'],
+    verifiedAt: AUG_26_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-kunskapsparken-sollentuna-sollentuna-flera',
@@ -2648,6 +2732,13 @@ export const EXAMS: Exam[] = [
       examWindowStart: '2026-10-05',
       examWindowEnd: '2026-10-25',
       confirmed: true,
+      // Karlskoga sätter ut fullbokat i sin egen kurstabell, och säger själva
+      // vad märket betyder: "Prövningarna har begränsat antal platser. När en
+      // prövningskurs är fulltecknad kommer vi att markera den i listan nedan
+      // med Ej sökbar." Matematik 3b/3c (Gy11) står med EJ SÖKBAR där
+      // 2026-08-26; Engelska 6 på samma sida gör det inte, så bara den ena av
+      // kommunens två listningar är stängd.
+      full: true,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
@@ -2657,9 +2748,9 @@ export const EXAMS: Exam[] = [
     infoUrl:
       'https://karlskoga.se/utbildning--barnomsorg/vuxenutbildning/provning/provning-gymnasiekurser.html',
     description:
-      'Prövning i Matematik 3b/3c på Vuxnas lärande Karlskoga har obligatoriska prövningsveckor 41–43 hösten 2026; ansökan öppen 10–20 augusti 2026, avgift 500 kr.',
+      'Prövning i Matematik 3b/3c på Vuxnas lärande Karlskoga har obligatoriska prövningsveckor 41–43 hösten 2026; ansökan var öppen 10–20 augusti 2026, avgift 500 kr. Kursen står som EJ SÖKBAR i kommunens kurstabell, vilket enligt sidan betyder att den är fulltecknad.',
     tags: ['matematik', 'gymnasial', 'örebro'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: AUG_26_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-falun-falu-larcentrum-falun-flera-kurser-k',
