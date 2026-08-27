@@ -38,7 +38,10 @@ Fem regler styr datan, och de testas i
   visar. Härnösands `infoUrl` låg på kommunens e-tjänstsida, som beskriver hur
   man ansöker men inte när — tabellen med "Vecka 39 / 5 augusti" står på komvux
   egen prövningssida, och det är dit den som vill kontrollera ett datum ska
-  komma.
+  komma. Göteborg är undantaget som bekräftar regeln: där står datumen på
+  kursens egen sida i Alvis, alltså på `registrationUrl`. `infoUrl` bär i
+  stället anordnarens regler — avgift, upplägg, vem som får pröva — eftersom
+  goteborg.se inte skriver ut ett enda provdatum.
 - **Anordnarens ord gäller före kalendern.** `nextPeriod.full` sätts när
   anordnaren själv skrivit att omgången är fullbokad. Då är listningen stängd
   för anmälan även om datumen ser öppna ut, och nedräkningen tystnar — ett
@@ -225,6 +228,57 @@ taggen finns till för gav noll träffar. Nu ligger det i
 fältet som bär det som inte har någon kolumn — landskapet under länet,
 läroplanen en kurs hör till (`gy11`/`gy25`) — och varje sådant är ett ord någon
 skriver i rutan.
+
+## AI-prövning: frågan som en mening
+
+Resten av appen ber användaren ta isär sin fråga först — kommun i ett filter,
+ämne i ett annat, sortera på datum, och sedan läsa korten för att räkna ut
+vilka omgångar man fortfarande hinner med. Meningen de kom med, "jag bor i
+Göteborg och vill höja mitt betyg i Matte 2b innan december", innehåller redan
+alla tre. Fliken [`src/tabs/AiProvning.tsx`](src/tabs/AiProvning.tsx) tar emot
+den meningen och svarar med listningar.
+
+[`src/lib/examQuery.ts`](src/lib/examQuery.ts) gör tolkningen, och den läser
+sitt ordförråd ur `EXAMS` i stället för att hålla en egen lista bredvid: varje
+kommun, län, kurs och kurskod appen känner till är därmed ett ord som fungerar,
+och en omdöpt kurs i datan kan inte tyst sluta gå att söka på. Ovanpå det ligger
+bara vardagsspråket — "matte" är matematik, "sva" är svenska som andraspråk,
+"gbg" är Göteborg — och tiden: "innan december" är sista november, "i höst" är
+årets sista dag, "före 15 oktober" är den dagen.
+
+Tre regler bär skärmen:
+
+- **Ingenting kan sägas som datan inte redan säger.** Svarsmeningarna byggs av
+  fält ur träffarna — ett antal, en kommun datan stavar, en deadline en
+  anordnare publicerat. Det finns ingen väg genom koden som producerar ett
+  datum eller en avgift som inte står i en listning.
+- **"Vi vet inte" är inte "nej".** En omgång vars anordnare bara skrivit när
+  anmälan öppnar har inte sagt något om när prövningen är över. Den får därför
+  ingen "blir inte klar till din tid"-märkning — `inTime` har tre lägen, inte
+  två, och testet _"says nothing about a round whose provider published no end
+  date"_ håller gränsen.
+- **Noll träffar är sällan det ärliga svaret.** Finns inte kursen i den kommun
+  användaren skrev, men väl någon annanstans, vidgas sökningen och skärmen
+  säger att den gjorde det. Att svara "0 träffar" vore sant och oanvändbart:
+  var kursen finns är precis det den som frågar saknar.
+
+### Vad som inte byggdes, och varför
+
+Uppdraget beskriver ett anrop till Anthropics Messages API som svarens motor,
+med den filtrerade sökningen som fallback. Det byggdes inte, och fallbacken är
+det som ligger i fliken.
+
+Appen har ingen server. Den byggs till statiska filer och publiceras på GitHub
+Pages, så allt som körs gör det i användarens webbläsare — och en API-nyckel i
+en klientbundle är en publicerad hemlighet, läsbar för vem som helst som öppnar
+sajten och debiterad någon annan. Att be varje elev klistra in sin egen nyckel
+vore inte heller produkten: ett gymnasiebetyg ska inte kräva ett API-konto.
+
+Vägen dit går via en liten proxy som håller nyckeln på sin egen sida —
+en serverless-funktion som tar emot frågan, lägger på nyckeln och anropar
+`/v1/messages`. Den dagen den finns är `answerQuery` fortfarande det som väljer
+vilka listningar som skickas med som kontext, och fortfarande det svar som
+visas om anropet misslyckas.
 
 ## Profil och community
 

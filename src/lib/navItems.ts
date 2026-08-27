@@ -1,4 +1,4 @@
-import { Compass, BookMarked, Users, History, User } from 'lucide-react';
+import { Compass, Sparkles, BookMarked, Users, History, User } from 'lucide-react';
 import { TabId } from '../types';
 
 /**
@@ -60,6 +60,24 @@ export const NAV_ITEMS: {
       ink: 'text-brand-500',
       hover: 'hover:bg-brand-50',
       solid: 'bg-brand-500',
+    },
+  },
+  {
+    id: 'ai',
+    label: 'AI-prövning',
+    hint: 'Skriv din fråga fritt',
+    icon: Sparkles,
+    // The one tab that gets no hue of its own. The five below are five
+    // destinations; this one is the app answering in its own voice, and the
+    // ink it is written in says that better than a sixth colour would — a
+    // palette that keeps growing stops being a palette.
+    tone: {
+      gradient: 'bg-ink',
+      glow: 'shadow-[0_8px_20px_-4px] shadow-ink/40',
+      tint: 'bg-sand',
+      ink: 'text-ink',
+      hover: 'hover:bg-sand',
+      solid: 'bg-ink',
     },
   },
   {
