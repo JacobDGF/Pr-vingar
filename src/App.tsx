@@ -7,7 +7,9 @@ import { Sidebar } from './components/Sidebar';
 import { ExamDetail } from './components/ExamDetail';
 import { FaqSheet } from './components/FaqSheet';
 import { UpdateBanner } from './components/UpdateBanner';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { useVersionCheck } from './hooks/useVersionCheck';
+import { NAV_ITEMS } from './lib/navItems';
 import { Discover } from './tabs/Discover';
 import { TabId } from './types';
 
@@ -36,19 +38,30 @@ function TabFallback() {
   );
 }
 
+const TAB_LABELS: Record<TabId, string> = Object.fromEntries(
+  NAV_ITEMS.map((item) => [item.id, item.label]),
+) as Record<TabId, string>;
+
 function TabPanel({ tab, active }: { tab: TabId; active: boolean }) {
   const Component = TAB_COMPONENTS[tab];
   return (
     <div className={`h-full ${active ? 'block' : 'hidden'}`}>
-      <Suspense fallback={<TabFallback />}>
-        <Component />
-      </Suspense>
+      {/* One boundary per tab, inside the panel and outside Suspense: four of
+          the five tabs arrive over the network, and a chunk that 404s after a
+          deploy would otherwise take the whole app — nav included — down with
+          it. Keyed by tab so a crash in one is not inherited by the next. */}
+      <ErrorBoundary key={tab} label={TAB_LABELS[tab]}>
+        <Suspense fallback={<TabFallback />}>
+          <Component />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 }
 
 export default function App() {
-  const { activeTab, showingExamDetail, showingFaq, setShowingFaq } = useStore();
+  const { activeTab, showingExamDetail, setShowingExamDetail, showingFaq, setShowingFaq } =
+    useStore();
   const [loading, setLoading] = useState(true);
   const updateAvailable = useVersionCheck();
 
@@ -89,8 +102,24 @@ export default function App() {
         <BottomNav />
       </div>
 
-      {showingExamDetail && <ExamDetail />}
-      {showingFaq && <FaqSheet onClose={() => setShowingFaq(false)} />}
+      {/* The sheets render over the whole app, so an error in one of them used
+          to leave a black backdrop and nothing else. Their boundary covers the
+          screen the same way and offers the way out the broken sheet can't. */}
+      {showingExamDetail && (
+        <ErrorBoundary
+          key={showingExamDetail}
+          label="Prövningen"
+          overlay
+          onDismiss={() => setShowingExamDetail(null)}
+        >
+          <ExamDetail />
+        </ErrorBoundary>
+      )}
+      {showingFaq && (
+        <ErrorBoundary label="Vanliga frågor" overlay onDismiss={() => setShowingFaq(false)}>
+          <FaqSheet onClose={() => setShowingFaq(false)} />
+        </ErrorBoundary>
+      )}
       {updateAvailable && <UpdateBanner />}
     </div>
   );

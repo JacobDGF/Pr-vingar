@@ -13,6 +13,7 @@ import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
 import { StatusFilterBar } from '../components/StatusFilterBar';
 import { haversineDistanceKm } from '../lib/distance';
+import { matchesQuery } from '../lib/examSearch';
 import { isOpenForRegistration, compareByPeriod } from '../lib/examStatus';
 import { getStatusKey } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
@@ -99,15 +100,7 @@ export function Discover() {
 
   const filtered = useMemo(() => {
     const result = exams.filter((e) => {
-      const q = searchQuery.toLowerCase();
-      const matchesSearch =
-        !q ||
-        e.schoolName.toLowerCase().includes(q) ||
-        e.subject.toLowerCase().includes(q) ||
-        e.course.toLowerCase().includes(q) ||
-        e.city.toLowerCase().includes(q) ||
-        e.courseCode.toLowerCase().includes(q) ||
-        e.provider.toLowerCase().includes(q);
+      const matchesSearch = matchesQuery(e, searchQuery);
       const matchesSubject = !filterSubject || e.subject === filterSubject;
       const matchesRegion = !filterRegion || e.region === filterRegion;
       const matchesCity = city === 'Hela Sverige' || e.city === city;

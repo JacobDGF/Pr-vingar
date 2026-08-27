@@ -33,7 +33,12 @@ Fem regler styr datan, och de testas i
   har publicerat datum. Då visar appen ingen period alls, utan länkar vidare.
 - **Länken ska leda till anmälan.** `registrationUrl` pekar så nära själva
   bokningen som anordnaren tillåter — e-tjänsten, kurslistan eller kassan, inte
-  en informationssida, när ett djupare mål finns.
+  en informationssida, när ett djupare mål finns. `infoUrl` har samma krav åt
+  andra hållet: den ska peka på sidan där anordnaren skriver datumen appen
+  visar. Härnösands `infoUrl` låg på kommunens e-tjänstsida, som beskriver hur
+  man ansöker men inte när — tabellen med "Vecka 39 / 5 augusti" står på komvux
+  egen prövningssida, och det är dit den som vill kontrollera ett datum ska
+  komma.
 - **Anordnarens ord gäller före kalendern.** `nextPeriod.full` sätts när
   anordnaren själv skrivit att omgången är fullbokad. Då är listningen stängd
   för anmälan även om datumen ser öppna ut, och nedräkningen tystnar — ett
@@ -45,7 +50,12 @@ Fem regler styr datan, och de testas i
   äldre datum är mindre som text.
 - **Samma skola och kurs listas en gång.** Datan växer en anordnare i taget, och
   två omgångar hos samma skola hör hemma i samma listnings etikett. Två kort
-  läser som två skolor, där den ena råkar vara fullbokad.
+  läser som två skolor, där den ena råkar vara fullbokad. Två _kurser_ är
+  däremot två kort, även när de heter nästan samma sak: Vux Huddinge prövar
+  svenska som andraspråk både enligt Gy11 (`SVASVA01`, `SVASVA03`) och Gy25
+  (`SVEA1000X`, `SVEA3000X`), med ett eget förberedelsedokument per kod. Den som
+  läser fel dokument förbereder sig på fel prov, så att slå ihop dem till ett
+  kort med två koder vore att dölja just den skillnad som betyder något.
 
 ### En färg per listning
 
@@ -207,6 +217,15 @@ Jönköping, Kalmar och Kronoberg) tar tyst bort tre län ur filtret. Landskapet
 får däremot gärna ligga kvar som `tag` — då hittar en sökning på "småland"
 fortfarande fram.
 
+Det stod så här redan innan sökningen kunde det. Predikatet bodde inne i
+Discover och läste sex fält, men aldrig `tags`, så en sökning på precis det
+taggen finns till för gav noll träffar. Nu ligger det i
+[`src/lib/examSearch.ts`](src/lib/examSearch.ts) med ett test som söker
+"småland" i den riktiga datan och kräver träffar i mer än ett län. Taggarna är
+fältet som bär det som inte har någon kolumn — landskapet under länet,
+läroplanen en kurs hör till (`gy11`/`gy25`) — och varje sådant är ett ord någon
+skriver i rutan.
+
 ## Profil och community
 
 Profilen svarar på en fråga innan alla andra: hur många av dina sparade
@@ -249,6 +268,37 @@ Därför två utvägar, båda helt lokala:
 - Profilfliken exporterar allt appen vet om användaren som JSON. Allt ligger i
   en enda webbläsares `localStorage`, så exporten är den enda säkerhetskopia som
   finns — den ligger direkt ovanför knappen som raderar originalet.
+
+## När appen går sönder
+
+Fyra av fem flikar hämtas med `import()` första gången de öppnas, och varje
+deploy byter namn på de filerna — `rsync --delete` i deployen tar bort förra
+byggets chunkar i samma ögonblick som det nya landar. En användare som hade
+appen öppen över en deploy och sedan trycker på en flik hen inte besökt ännu ber
+alltså om en fil som inte finns. Importen avvisas, React river hela trädet, och
+appen blir vit utan något att trycka på. Verifierat i Chromium mot ett riktigt
+bygge: efter en 404 på `Profile-*.js` fanns varken flikraden eller ordet
+"Profil" kvar i DOM:en.
+
+Det är inte ett fel i fliken, och det får inte visas som ett. Rättningen ligger
+redan på servern — sidan behöver bara hämta den.
+[`src/lib/chunkError.ts`](src/lib/chunkError.ts) känner igen just den sortens
+fel på webbläsarens egna ord (tre formuleringar för samma sak, plus den
+`text/html` GitHub Pages svarar med när filen är borta) och
+[`src/components/ErrorBoundary.tsx`](src/components/ErrorBoundary.tsx) laddar om
+i stället för att be om ursäkt.
+
+Två fel, två svar. Allt annat än en försvunnen chunk får en förklaring på
+svenska och en väg vidare, aldrig en omladdning: en omladdning kastar bort vad
+användaren höll på med och kraschar troligen igen. Omladdningen sker heller
+aldrig två gånger inom en minut — en sida som laddar om sig själv i en slinga är
+värre än en sida som står still och säger vad som hänt, för då hinner ingen läsa
+felet.
+
+Gränsen går per flik och per ark, inte runt hela appen. En trasig flik ska vara
+lika stor som fliken: flikraden står kvar och de andra fyra fungerar. Ett ark som
+ligger över allt annat (`overlay`) får sitt fallback i samma storlek som arket,
+med en Stäng-knapp — appen bakom är hel, och det är dit användaren ska.
 
 ## Deploy
 
