@@ -188,6 +188,111 @@ const COMPONENTS_FLERA: ExamComponent[] = [
   },
 ];
 
+const TIPS_BIOLOGI = [
+  'Repetera cellbiologi, genetik och evolution — de återkommer i nästan varje prov.',
+  'Rita egna scheman över ekosystem och kretslopp i stället för att läsa om texten.',
+  'Gamla nationella prov i biologi visar hur mycket resonemang som krävs i svaren.',
+  'Läs på om laborationssäkerhet och hur en labbrapport ska se ut inför labbprovet.',
+];
+
+const COMPONENTS_BIOLOGI: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: '2–4 timmar',
+    description: 'Teori enligt ämnesplanen: cellbiologi, genetik, ekologi och evolution.',
+  },
+  {
+    name: 'Laborationsprov',
+    duration: '3–4 timmar',
+    description: 'Praktisk laboration på plats, enligt anordnarens prövningsinstruktion.',
+  },
+];
+
+const TIPS_HISTORIA = [
+  'Bygg en egen tidslinje över epokerna — kronologin bär de flesta frågorna.',
+  'Träna på källkritik: vem skrev källan, när, och i vilket syfte.',
+  'Öva på att jämföra orsaker och konsekvenser i stället för att räkna upp årtal.',
+  'Läs igenom ämnesplanens centrala innehåll och pricka av vad du redan kan.',
+];
+
+const COMPONENTS_HISTORIA: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: '2,5–4 timmar',
+    description: 'Epoker, källkritik och historiebruk enligt kursens centrala innehåll.',
+  },
+];
+
+const TIPS_RELIGION = [
+  'Lär dig världsreligionernas grunddrag och vad som skiljer inriktningarna åt.',
+  'Repetera de etiska modellerna och öva på att tillämpa dem på ett konkret fall.',
+  'Träna på att skriva jämförande svar — religionskunskap bedömer analys, inte fakta.',
+  'Följ religionsfrågor i nyheterna för exempel du kan använda i dina svar.',
+];
+
+const COMPONENTS_RELIGION: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: '2,5–4 timmar',
+    description: 'Världsreligioner, livsåskådningar och etiska modeller enligt ämnesplanen.',
+  },
+];
+
+const TIPS_FILOSOFI = [
+  'Lär dig skilja på de klassiska kunskapsteoretiska positionerna och deras argument.',
+  'Öva på att rekonstruera ett argument: premisser, slutsats, och var det brister.',
+  'Repetera de normativa etiska teorierna och kritiken mot var och en av dem.',
+  'Skriv korta egna resonemang — filosofiprovet bedömer hur du för ett argument.',
+];
+
+const COMPONENTS_FILOSOFI: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: '2,5–4 timmar',
+    description: 'Kunskapsteori, vetenskapsteori, etik och argumentationsanalys.',
+  },
+];
+
+const TIPS_FORETAGSEKONOMI = [
+  'Räkna på resultat- och balansräkning tills posterna sitter utan mall.',
+  'Lär dig kalkylmodellerna (bidrag, påslag, nollpunkt) och när de används.',
+  'Repetera marknadsföringens grundmodeller och koppla dem till riktiga företag.',
+  'Öva på att motivera ett beslut ekonomiskt — det är där betygsstegen ligger.',
+];
+
+const COMPONENTS_FORETAGSEKONOMI: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: '2,5–4 timmar',
+    description: 'Kalkylering, redovisning, marknadsföring och organisation enligt ämnesplanen.',
+  },
+];
+
+const TIPS_IDROTT = [
+  'Läs på om träningslära, kost och ergonomi — teoriprovet väger tungt.',
+  'Kom i form i god tid: fystesterna går inte att läsa in kvällen innan.',
+  'Fråga läraren på informationsmötet exakt vilka moment som ingår och när de sker.',
+  'Repetera hur du planerar och utvärderar din egen träning enligt ämnesplanen.',
+];
+
+const COMPONENTS_IDROTT: ExamComponent[] = [
+  {
+    name: 'Obligatoriskt informationsmöte',
+    duration: '1–2 timmar',
+    description: 'Läraren går igenom prövningens moment och när de praktiska testerna sker.',
+  },
+  {
+    name: 'Praktiska moment och fystester',
+    duration: 'Varierar',
+    description: 'Praktisk examination på tider läraren meddelar vid informationsmötet.',
+  },
+  {
+    name: 'Skriftligt prov',
+    duration: '2–4 timmar',
+    description: 'Träningslära, hälsa, kost och ergonomi enligt kursens centrala innehåll.',
+  },
+];
+
 // Second research pass covering providers outside the initial 23 (nationwide sweep).
 const NATIONWIDE_VERIFIED = '2026-07-12';
 const STHLM_LAN_VERIFIED = '2026-08-09';
@@ -212,6 +317,20 @@ const FULL_SWEEP_VERIFIED = '2026-08-20';
 // Datasvep 2026-08-26 (#45): de listningar check:dates pekade ut som gångna,
 // lästa mot anordnarens egen sida i stället för mot etiketten i datan.
 const AUG_26_VERIFIED = '2026-08-26';
+// Göteborgssvep 2026-08-27: hela Prövningsenhetens kurskatalog i Alvis läst
+// kurs för kurs. Datumen står bara där — goteborg.se beskriver reglerna, men
+// vilket datum just din kurs prövas, och när anmälan till det tillfället
+// stänger, står på kursens egen sida i katalogen.
+const GBG_SWEEP_VERIFIED = '2026-08-27';
+// Samma dag, utanför Göteborg: Hermods Stockholmslänk läst om mot stadens egen
+// sida, som numera pekar på en annan adress än den datan bar.
+const AUG_27_VERIFIED = '2026-08-27';
+
+/** Prövningsenheten Göteborg, ordagrant från deras sida "Avgift för prövning". */
+const GBG_PRICE_NOTE =
+  '500 kr per kurs och prövningstillfälle. Betalas senast fyra veckor före provet och ' +
+  'återbetalas inte vid återbud. Avgiftsfritt bara om du både har betyget F i kursen och ' +
+  'samtidigt läser andra kurser inom komvux.';
 
 /**
  * For providers who put the anmälan on their own page — but only while the
@@ -237,6 +356,30 @@ function publishedOnPage(what: string, when: string): Exam['registration'] {
       `${what[0].toUpperCase()}${what.slice(1)} finns på sidan ${when}`,
       'Fyll i anmälan för din kurs',
       'Betala avgiften enligt anordnarens instruktioner',
+    ],
+  };
+}
+
+/**
+ * Prövningsenheten Göteborg's booking, reached one course at a time.
+ *
+ * The derived `coursepicker` flow says "välj ämnesområde och din kurs i
+ * listan" — right for the catalogue's front page, wrong for these links, which
+ * already land on the course. What is left to pick is the *prövningstillfälle*:
+ * each course runs two or three times a term, each occasion with its own
+ * provdatum and its own closing date, and only the ones with seats left are
+ * bookable at all. That choice is the whole reason the deep link is worth
+ * having, so the steps name it.
+ */
+function alvisCourse(): Exam['registration'] {
+  return {
+    kind: 'coursepicker',
+    ctaLabel: 'Välj prövningstillfälle',
+    landing: 'Länken går till kursens egen sida i Alvis, där terminens prövningstillfällen står.',
+    steps: [
+      'Välj ett sökbart prövningstillfälle och lägg det i kurskorgen',
+      'Logga in och skicka in anmälan',
+      'Betala avgiften enligt bekräftelsen — senast fyra veckor före provet',
     ],
   };
 }
@@ -379,12 +522,16 @@ export const EXAMS: Exam[] = [
     nextPeriod: sthlmAutumn2026('2026-08-26', 'onsdag 26 augusti 2026'),
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://sites.google.com/a/edu.hermods.se/provning-stockholm',
+    // Checked 2026-08-27: vuxenutbildning.stockholm länkar numera till
+    // .../provning-stockholms-stad. Den gamla adressen lever, men landar på en
+    // meny över 24 kommuner i Storstockholm — den som klickar "Anmäl dig" på en
+    // Stockholmslistning ska inte behöva välja kommun igen.
+    registrationUrl: 'https://sites.google.com/edu.hermods.se/provning-stockholms-stad',
     infoUrl: 'https://hermods.se/komvux/provning/',
     description:
       'Hermods erbjuder prövning i Matematik 2b på kontrakt åt anslutna kommuner, med skriftligt prov på plats i Liljeholmen.',
     tags: ['matematik', 'stockholm', 'hermods'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: AUG_27_VERIFIED,
   },
   {
     id: 'nti-ma2b',
@@ -679,6 +826,78 @@ export const EXAMS: Exam[] = [
     verifiedAt: FULL_SWEEP_VERIFIED,
   },
   {
+    id: 'goteborg-ma1b',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Matematik',
+    course: 'Matematik 1b',
+    courseCode: 'MATMAT01b',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 29 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 1 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-01',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-09-29',
+      confirmed: true,
+    },
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12458',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Matematik 1b hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut.',
+    tags: ['matematik', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-ma1c',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Matematik',
+    course: 'Matematik 1c',
+    courseCode: 'MATMAT01c',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 29 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 1 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-01',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-09-29',
+      confirmed: true,
+    },
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12459',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Matematik 1c hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut.',
+    tags: ['matematik', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
     id: 'goteborg-ma2b',
     schoolName: 'Prövningsenheten Göteborg',
     provider: 'Göteborgs Stad',
@@ -688,26 +907,254 @@ export const EXAMS: Exam[] = [
     level: 'Komvux',
     city: 'Göteborg',
     region: 'Västra Götaland',
-    address: 'Brogatan 4, Göteborg',
-    lat: 57.7089,
-    lng: 11.9746,
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
     price: 500,
-    priceNote:
-      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
+    priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
-      applicationStart: '2026-07-01',
+        'Prövningsdatum 29 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 1 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-01',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-09-29',
       confirmed: true,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser',
-    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12465',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
     description:
-      'Göteborgs Stads Prövningsenhet samordnar betygsprövning i gymnasiekurser för hela kommunen, bokningsbart löpande via Alvis.',
-    tags: ['matematik', 'goteborg'],
-    verifiedAt: VERIFIED,
+      'Prövning i Matematik 2b hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut. Kursen bygger på underliggande kurs i ämnet. Se ' +
+      'ämnesplanen för mer information.',
+    tags: ['matematik', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-ma2c',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Matematik',
+    course: 'Matematik 2c',
+    courseCode: 'MATMAT02c',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 29 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 1 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-01',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-09-29',
+      confirmed: true,
+    },
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12466',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Matematik 2c hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut. Kursen bygger på underliggande kurs i ämnet. Se ' +
+      'ämnesplanen för mer information.',
+    tags: ['matematik', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-ma3b',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Matematik',
+    course: 'Matematik 3b',
+    courseCode: 'MATMAT03b',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 29 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 1 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-01',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-09-29',
+      confirmed: true,
+    },
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12467',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Matematik 3b hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut. Kursen bygger på underliggande kurs i ämnet. Se ' +
+      'ämnesplanen för mer information.',
+    tags: ['matematik', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-ma3c',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Matematik',
+    course: 'Matematik 3c',
+    courseCode: 'MATMAT03c',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 29 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 1 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-01',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-09-29',
+      confirmed: true,
+    },
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12468',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Matematik 3c hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut. Kursen bygger på underliggande kurs i ämnet. Se ' +
+      'ämnesplanen för mer information.',
+    tags: ['matematik', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-ma4',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Matematik',
+    course: 'Matematik 4',
+    courseCode: 'MATMAT04',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 29 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 1 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-01',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-09-29',
+      confirmed: true,
+    },
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12486',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Matematik 4 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut. Kursen bygger på underliggande kurs i ämnet. Se ' +
+      'ämnesplanen för mer information.',
+    tags: ['matematik', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-ma5',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Matematik',
+    course: 'Matematik 5',
+    courseCode: 'MATMAT05',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 29 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 1 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-01',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-09-29',
+      confirmed: true,
+    },
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12488',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Matematik 5 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut. Kursen bygger på underliggande kurs i ämnet. Se ' +
+      'ämnesplanen för mer information.',
+    tags: ['matematik', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-eng5',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Engelska',
+    course: 'Engelska 5',
+    courseCode: 'ENGENG05',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 13 okt. 2026, 17:30–22:00. Anmälan i Alvis stänger 15 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: ' +
+        'Provdag 2 är torsdag 15 oktober kl. 17.30-21.30.',
+      applicationEnd: '2026-09-15',
+      examWindowStart: '2026-10-13',
+      examWindowEnd: '2026-10-15',
+      confirmed: true,
+    },
+    components: COMPONENTS_ENGELSKA,
+    studyTips: TIPS_ENGELSKA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12356',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Engelska 5 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut.',
+    tags: ['engelska', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
   },
   {
     id: 'goteborg-eng6',
@@ -719,56 +1166,297 @@ export const EXAMS: Exam[] = [
     level: 'Komvux',
     city: 'Göteborg',
     region: 'Västra Götaland',
-    address: 'Brogatan 4, Göteborg',
-    lat: 57.7089,
-    lng: 11.9746,
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
     price: 500,
-    priceNote:
-      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
+    priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
-      applicationStart: '2026-07-01',
+        'Prövningsdatum 13 okt. 2026, 17:30–22:00. Anmälan i Alvis stänger 15 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: ' +
+        'Provdag 2 är torsdag 15 oktober kl. 17.30-21.30.',
+      applicationEnd: '2026-09-15',
+      examWindowStart: '2026-10-13',
+      examWindowEnd: '2026-10-15',
       confirmed: true,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
+    registration: alvisCourse(),
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12372',
-    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
     description:
-      'Betygsprövning i Engelska 6 via Göteborgs Stads Prövningsenhet. Platsantal varierar och uppdateras löpande.',
-    tags: ['engelska', 'goteborg'],
-    verifiedAt: VERIFIED,
+      'Prövning i Engelska 6 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut. Kursen bygger på underliggande kurs engelska 5. Vid ' +
+      'behov repeterar du även ordförråd, grammatik och realia med hjälp av en lärobok för ' +
+      'engelska 5.',
+    tags: ['engelska', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
   },
   {
-    id: 'goteborg-kemi1',
+    id: 'goteborg-eng7',
     schoolName: 'Prövningsenheten Göteborg',
     provider: 'Göteborgs Stad',
-    subject: 'Kemi',
-    course: 'Kemi 1',
-    courseCode: 'KEMKEM01',
+    subject: 'Engelska',
+    course: 'Engelska 7',
+    courseCode: 'ENGENG07',
     level: 'Komvux',
     city: 'Göteborg',
     region: 'Västra Götaland',
-    address: 'Brogatan 4, Göteborg',
-    lat: 57.7089,
-    lng: 11.9746,
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
     price: 500,
-    priceNote:
-      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
+    priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
-      applicationStart: '2026-07-01',
+        'Anmälan till omgången med prövningsdatum 22 sep. 2026 stängde 25 aug. 2026. Nästa ' +
+        'omgång publiceras i Alvis kurskatalog. Prövningen har fler obligatoriska moment: ' +
+        'Provdag 2 är torsdag 24 september kl. 17.30-22.30.',
+      applicationEnd: '2026-08-25',
+      examWindowStart: '2026-09-22',
+      examWindowEnd: '2026-09-24',
       confirmed: true,
     },
-    components: COMPONENTS_KEMI,
-    studyTips: TIPS_KEMI,
-    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12401',
-    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
-    description: 'Betygsprövning i Kemi 1 via Göteborgs Stads Prövningsenhet.',
-    tags: ['kemi', 'goteborg'],
-    verifiedAt: VERIFIED,
+    components: COMPONENTS_ENGELSKA,
+    studyTips: TIPS_ENGELSKA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12373',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Engelska 7 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut. Kursen bygger på underliggande kurser engelska 5 och ' +
+      'engelska 6. Repetera dina kunskaper i engelska 7 med hjälp av lämplig lärobok. Välj ' +
+      'gärna en lärobok med övningar i läs- och hörförståelse. Vid behov repeterar du även ' +
+      'engelska 5 och engelska 6.',
+    tags: ['engelska', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-sve1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Svenska',
+    course: 'Svenska 1',
+    courseCode: 'SVESVE01',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 6 okt. 2026, 17:30–22:30. Anmälan i Alvis stänger 8 sep. 2026 — eller ' +
+        'tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: Provdag 2 ' +
+        'är torsdag 8 oktober kl. 17.30-22.30.',
+      applicationEnd: '2026-09-08',
+      examWindowStart: '2026-10-06',
+      examWindowEnd: '2026-10-08',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12546',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Svenska 1 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium.',
+    tags: ['svenska', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-sve2',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Svenska',
+    course: 'Svenska 2',
+    courseCode: 'SVESVE02',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 6 okt. 2026, 17:30–22:30. Anmälan i Alvis stänger 8 sep. 2026 — eller ' +
+        'tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: Provdag 2 ' +
+        'är torsdag 8 oktober kl. 17.30-22.30.',
+      applicationEnd: '2026-09-08',
+      examWindowStart: '2026-10-06',
+      examWindowEnd: '2026-10-08',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12547',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Svenska 2 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Kursen bygger på underliggande kurs ' +
+      'svenska 1. Vid behov repeterar du även dina kunskaper i underliggande kurs.',
+    tags: ['svenska', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-sve3',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Svenska',
+    course: 'Svenska 3',
+    courseCode: 'SVESVE03',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 6 okt. 2026, 17:30–22:30. Anmälan i Alvis stänger 8 sep. 2026 — eller ' +
+        'tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: Provdag 2 ' +
+        'är torsdag 8 oktober kl. 17.30-22.30.',
+      applicationEnd: '2026-09-08',
+      examWindowStart: '2026-10-06',
+      examWindowEnd: '2026-10-08',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12548',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Svenska 3 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Kursen bygger på underliggande kurser ' +
+      'svenska 1 och svenska 2. Vid behov repeterar du även dina kunskaper i underliggande ' +
+      'kurser.',
+    tags: ['svenska', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-sva1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 1',
+    courseCode: 'SVASVA01',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 6 okt. 2026, 17:30–22:30. Anmälan i Alvis stänger 8 sep. 2026 — eller ' +
+        'tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: Provdag 2 ' +
+        'är torsdag 8 oktober kl. 17.30-22.30.',
+      applicationEnd: '2026-09-08',
+      examWindowStart: '2026-10-06',
+      examWindowEnd: '2026-10-08',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12542',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Svenska som andraspråk 1 hos Göteborgs Stads Prövningsenhet. Du läser in ' +
+      'kursen på egen hand och examineras på Burgårdens gymnasium.',
+    tags: ['svenska som andraspråk', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-sva2',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 2',
+    courseCode: 'SVASVA02',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 6 okt. 2026, 17:30–22:30. Anmälan i Alvis stänger 8 sep. 2026 — eller ' +
+        'tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: Provdag 2 ' +
+        'är torsdag 8 oktober kl. 17.30-22.30.',
+      applicationEnd: '2026-09-08',
+      examWindowStart: '2026-10-06',
+      examWindowEnd: '2026-10-08',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12543',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Svenska som andraspråk 2 hos Göteborgs Stads Prövningsenhet. Du läser in ' +
+      'kursen på egen hand och examineras på Burgårdens gymnasium. Kursen bygger på ' +
+      'underliggande kurs svenska som andraspråk 1. Vid behov repeterar du även dina ' +
+      'kunskaper i underliggande kurs.',
+    tags: ['svenska som andraspråk', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-sva3',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 3',
+    courseCode: 'SVASVA03',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 6 okt. 2026, 17:30–22:30. Anmälan i Alvis stänger 8 sep. 2026 — eller ' +
+        'tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: Provdag 2 ' +
+        'är torsdag 8 oktober kl. 17.30-22.30.',
+      applicationEnd: '2026-09-08',
+      examWindowStart: '2026-10-06',
+      examWindowEnd: '2026-10-08',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12544',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Svenska som andraspråk 3 hos Göteborgs Stads Prövningsenhet. Du läser in ' +
+      'kursen på egen hand och examineras på Burgårdens gymnasium. Kursen bygger på ' +
+      'underliggande kurser svenska som andraspråk 1 och svenska som andraspråk 2. Vid behov ' +
+      'repeterar du även dina kunskaper i underliggande kurser.',
+    tags: ['svenska som andraspråk', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
   },
   {
     id: 'goteborg-fysik1a',
@@ -780,25 +1468,768 @@ export const EXAMS: Exam[] = [
     level: 'Komvux',
     city: 'Göteborg',
     region: 'Västra Götaland',
-    address: 'Brogatan 4, Göteborg',
-    lat: 57.7089,
-    lng: 11.9746,
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
     price: 500,
-    priceNote:
-      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
+    priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
-      applicationStart: '2026-07-01',
+        'Prövningsdatum 8 okt. 2026, 17:30–22:30. Anmälan i Alvis stänger 10 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-10',
+      examWindowStart: '2026-10-08',
+      examWindowEnd: '2026-10-08',
       confirmed: true,
     },
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
+    registration: alvisCourse(),
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12376',
-    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
-    description: 'Betygsprövning i Fysik 1a via Göteborgs Stads Prövningsenhet.',
-    tags: ['fysik', 'goteborg'],
-    verifiedAt: VERIFIED,
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Fysik 1a hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut.',
+    tags: ['fysik', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-fysik2',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Fysik',
+    course: 'Fysik 2',
+    courseCode: 'FYSFYS02',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 8 okt. 2026, 17:30–21:30. Anmälan i Alvis stänger 10 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-10',
+      examWindowStart: '2026-10-08',
+      examWindowEnd: '2026-10-08',
+      confirmed: true,
+    },
+    components: COMPONENTS_FYSIK,
+    studyTips: TIPS_FYSIK,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15043',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Fysik 2 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen hand ' +
+      'och examineras på Burgårdens gymnasium. Antalet platser i kursen är begränsat och ' +
+      'anmälan stänger när de är slut. Kursen bygger på underliggande kurs i ämnet.',
+    tags: ['fysik', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-kemi1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Kemi',
+    course: 'Kemi 1',
+    courseCode: 'KEMKEM01',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address:
+      'Burgårdens gymnasium, ingång B-3 från gården vid Valhallagatan, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 29 sep. 2026, 09:00–12:00. Anmälan i Alvis stänger 1 sep. 2026 — ' +
+        'eller tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: ' +
+        'Obligatorisk introduktion till laborationer har du tisdag 29 september kl. 9-12. ' +
+        'Skriftligt prov på teori och säkerhet vid laboration gör du tisdag 6 oktober kl. ' +
+        '17.30-21.30. Laborationsprov gör du tisdag 20 oktober kl. 9-15. Skriftligt prov på ' +
+        'laborationer och beräkningar gör du tisdag 3 november kl. 17.30-21.30.',
+      applicationEnd: '2026-09-01',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-11-03',
+      confirmed: true,
+    },
+    components: COMPONENTS_KEMI,
+    studyTips: TIPS_KEMI,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12401',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Kemi 1 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen hand ' +
+      'och examineras på Burgårdens gymnasium.',
+    tags: ['kemi', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-kemi2',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Kemi',
+    course: 'Kemi 2',
+    courseCode: 'KEMKEM02',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address:
+      'Burgårdens gymnasium, ingång B-3 från gården vid Valhallagatan, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 6 okt. 2026, 09:00–12:00. Anmälan i Alvis stänger 8 sep. 2026 — eller ' +
+        'tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: ' +
+        'Obligatorisk introduktion till laborationer har du tisdag 6 oktober kl. 9-12. ' +
+        'Skriftligt prov på teori och säkerhet vid laboration, gör du torsdag 15 oktober kl. ' +
+        '17.30-21.30. Laborationsprov gör du tisdag 3 november kl. 9-15. Skriftligt prov på ' +
+        'laborationer och beräkningar, gör du tisdag 10 november kl. 17.30-21.30.',
+      applicationEnd: '2026-09-08',
+      examWindowStart: '2026-10-06',
+      examWindowEnd: '2026-11-10',
+      confirmed: true,
+    },
+    components: COMPONENTS_KEMI,
+    studyTips: TIPS_KEMI,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12411',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Kemi 2 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen hand ' +
+      'och examineras på Burgårdens gymnasium. Kursen bygger på underliggande kurs kemi 1.',
+    tags: ['kemi', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-biologi1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Biologi',
+    course: 'Biologi 1',
+    courseCode: 'BIOBIO01',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 6 okt. 2026, 17:30–21:30. Anmälan i Alvis stänger 8 sep. 2026 — eller ' +
+        'tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: ' +
+        'Skriftligt prov gör du tisdag 6 oktober kl. 17.30-21.30. Laborationsprov gör du ' +
+        'torsdag den 22 oktober kl. 08.15-11.45.',
+      applicationEnd: '2026-09-08',
+      examWindowStart: '2026-10-06',
+      examWindowEnd: '2026-10-22',
+      confirmed: true,
+    },
+    components: COMPONENTS_BIOLOGI,
+    studyTips: TIPS_BIOLOGI,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12369',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Biologi 1 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium.',
+    tags: ['biologi', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-biologi2',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Biologi',
+    course: 'Biologi 2',
+    courseCode: 'BIOBIO02',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 3 nov. 2026, 17:30–21:30. Anmälan i Alvis stänger 6 okt. 2026 — eller ' +
+        'tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: ' +
+        'Skriftligt prov gör du tisdag 3 november kl. 17.30-21.30. Laborationsprov gör du ' +
+        'torsdag den 19 november kl. 08.15-11.45.',
+      applicationEnd: '2026-10-06',
+      examWindowStart: '2026-11-03',
+      examWindowEnd: '2026-11-19',
+      confirmed: true,
+    },
+    components: COMPONENTS_BIOLOGI,
+    studyTips: TIPS_BIOLOGI,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12371',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Biologi 2 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Kursen bygger på underliggande kurs ' +
+      'biologi 1.',
+    tags: ['biologi', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-nak1b',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1b',
+    courseCode: 'NAKNAK01b',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: ' +
+        'Skriftligt prov gör du torsdag 24 september kl. 17.30-21.30. Laborationsprov gör du ' +
+        'på torsdag 8 oktober kl. 17.00. Kom i tid och vänta vid entrén, läraren hämtar upp ' +
+        'dig. Laborationen tar ca 3-4 timmar.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-10-08',
+      confirmed: true,
+    },
+    components: COMPONENTS_NATURKUNSKAP,
+    studyTips: TIPS_NATURKUNSKAP,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12516',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Naturkunskap 1b hos Göteborgs Stads Prövningsenhet. Du läser in kursen på ' +
+      'egen hand och examineras på Burgårdens gymnasium. Betyg i kursen kan inte ingå i ' +
+      'examen tillsammans med betyg i naturkunskap 1a1 eller 1a2.',
+    tags: ['naturkunskap', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-nak2',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 2',
+    courseCode: 'NAKNAK02',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till omgången med prövningsdatum 22 sep. 2026 stängde 25 aug. 2026. Nästa ' +
+        'omgång publiceras i Alvis kurskatalog. Prövningen har fler obligatoriska moment: ' +
+        'Skriftligt prov gör du tisdag 22 september kl. 17.30-21.30. Laborationsprov gör du ' +
+        'torsdag 8 oktober kl. 08.15-11.45.',
+      applicationEnd: '2026-08-25',
+      examWindowStart: '2026-09-22',
+      examWindowEnd: '2026-10-08',
+      confirmed: true,
+    },
+    components: COMPONENTS_NATURKUNSKAP,
+    studyTips: TIPS_NATURKUNSKAP,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12523',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Naturkunskap 2 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på ' +
+      'egen hand och examineras på Burgårdens gymnasium. Kursen bygger på underliggande kurs ' +
+      'naturkunskap 1b eller 1a2.',
+    tags: ['naturkunskap', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-sam1a1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1a1',
+    courseCode: 'SAMSAM01a1',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_SAMHALLSKUNSKAP,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12538',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Samhällskunskap 1a1 hos Göteborgs Stads Prövningsenhet. Du läser in kursen ' +
+      'på egen hand och examineras på Burgårdens gymnasium. Betyg i kursen kan inte ingå i ' +
+      'examen tillsammans med betyg i kursen samhällskunskap 1b.',
+    tags: ['samhällskunskap', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-sam1b',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1b',
+    courseCode: 'SAMSAM01b',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_SAMHALLSKUNSKAP,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12539',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Samhällskunskap 1b hos Göteborgs Stads Prövningsenhet. Du läser in kursen ' +
+      'på egen hand och examineras på Burgårdens gymnasium. Betyg i kursen kan inte ingå i ' +
+      'examen tillsammans med betyg i kursen samhällskunskap 1a1 eller 1a2.',
+    tags: ['samhällskunskap', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-sam2',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 2',
+    courseCode: 'SAMSAM02',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_SAMHALLSKUNSKAP,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12540',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Samhällskunskap 2 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på ' +
+      'egen hand och examineras på Burgårdens gymnasium. Kursen bygger på underliggande kurs ' +
+      'samhällskunskap 1b eller samhällskunskap 1a2.',
+    tags: ['samhällskunskap', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-sam3',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 3',
+    courseCode: 'SAMSAM03',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_SAMHALLSKUNSKAP,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12541',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Samhällskunskap 3 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på ' +
+      'egen hand och examineras på Burgårdens gymnasium. Kursen bygger på underliggande kurs ' +
+      'samhällskunskap 2.',
+    tags: ['samhällskunskap', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-hist1a1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Historia',
+    course: 'Historia 1a1',
+    courseCode: 'HISHIS01a1',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_HISTORIA,
+    studyTips: TIPS_HISTORIA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12392',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Historia 1a1 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Betyg i denna kurs kan inte ingå i examen ' +
+      'tillsammans med betyg i kursen historia 1b.',
+    tags: ['historia', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-hist1b',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Historia',
+    course: 'Historia 1b',
+    courseCode: 'HISHIS01b',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_HISTORIA,
+    studyTips: TIPS_HISTORIA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12394',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Historia 1b hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Betyg i kursen kan inte ingå i examen ' +
+      'tillsammans med betyg i kursen historia 1a1 eller 1a2.',
+    tags: ['historia', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-hist2a',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Historia',
+    course: 'Historia 2a',
+    courseCode: 'HISHIS02a',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_HISTORIA,
+    studyTips: TIPS_HISTORIA,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12395',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Historia 2a hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium. Kursen bygger på underliggande kurs ' +
+      'historia 1a2 eller historia 1b. Betyg i denna kurs kan inte ingå i examen tillsammans ' +
+      'med betyg i historia 2b.',
+    tags: ['historia', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-rel1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap 1',
+    courseCode: 'RELREL01',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_RELIGION,
+    studyTips: TIPS_RELIGION,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12534',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Religionskunskap 1 hos Göteborgs Stads Prövningsenhet. Du läser in kursen ' +
+      'på egen hand och examineras på Burgårdens gymnasium.',
+    tags: ['religionskunskap', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-psykologi1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Psykologi',
+    course: 'Psykologi 1',
+    courseCode: 'PSKPSY01',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_PSYKOLOGI,
+    studyTips: TIPS_PSYKOLOGI,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12532',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Psykologi 1 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium.',
+    tags: ['psykologi', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-psykologi2a',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Psykologi',
+    course: 'Psykologi 2a',
+    courseCode: 'PSKPSY02a',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_PSYKOLOGI,
+    studyTips: TIPS_PSYKOLOGI,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12533',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Psykologi 2a hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium.',
+    tags: ['psykologi', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-filosofi1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Filosofi',
+    course: 'Filosofi 1',
+    courseCode: 'FIOFIO01',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 24 sep. 2026, 17:30–21:30. Anmälan i Alvis stänger 27 aug. 2026 — ' +
+        'eller tidigare, om platserna tar slut.',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-24',
+      examWindowEnd: '2026-09-24',
+      confirmed: true,
+    },
+    components: COMPONENTS_FILOSOFI,
+    studyTips: TIPS_FILOSOFI,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12374',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Filosofi 1 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på egen ' +
+      'hand och examineras på Burgårdens gymnasium.',
+    tags: ['filosofi', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-foretagsekonomi1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi 1',
+    courseCode: 'FÖRFÖR01',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens konferens, ingång A-2, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 6 okt. 2026, 17:30–21:30. Anmälan i Alvis stänger 8 sep. 2026 — eller ' +
+        'tidigare, om platserna tar slut.',
+      applicationEnd: '2026-09-08',
+      examWindowStart: '2026-10-06',
+      examWindowEnd: '2026-10-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_FORETAGSEKONOMI,
+    studyTips: TIPS_FORETAGSEKONOMI,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12380',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Företagsekonomi 1 hos Göteborgs Stads Prövningsenhet. Du läser in kursen på ' +
+      'egen hand och examineras på Burgårdens gymnasium. Betyg i företagsekonomi 1 kan inte ' +
+      'ingå i examen tillsammans med betyg i redovisning 1. Kontakta SYV för närmare ' +
+      'information.',
+    tags: ['företagsekonomi', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
+  },
+  {
+    id: 'goteborg-idrott1',
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: 'Idrott och hälsa',
+    course: 'Idrott och hälsa 1',
+    courseCode: 'IDRIDR01',
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: 'Burgårdens gymnasium, receptionen, ingång A-1, Skånegatan 20, Göteborg',
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsdatum 1 okt. 2026, 16:00–18:00. Anmälan i Alvis stänger 3 sep. 2026 — eller ' +
+        'tidigare, om platserna tar slut. Prövningen har fler obligatoriska moment: ' +
+        'Obligatoriskt informationsmöte har du torsdag den 1 oktober kl. 16.00-18.00, dvs. ' +
+        'det prövningsdatum som du har anmält dig till. Läraren informerar då om datum för ' +
+        'fystester. Skriftligt prov gör du tisdag den 3 november kl. 17.30-21.30.',
+      applicationEnd: '2026-09-03',
+      examWindowStart: '2026-10-01',
+      examWindowEnd: '2026-11-03',
+      confirmed: true,
+    },
+    components: COMPONENTS_IDROTT,
+    studyTips: TIPS_IDROTT,
+    registration: alvisCourse(),
+    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/22802',
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten/sa-gar-en-provning-till',
+    description:
+      'Prövning i Idrott och hälsa 1 hos Göteborgs Stads Prövningsenhet. Du läser in kursen ' +
+      'på egen hand och examineras på Burgårdens gymnasium. Antalet platser i kursen är ' +
+      'begränsat och anmälan stänger när de är slut.',
+    tags: ['idrott och hälsa', 'goteborg', 'gy11'],
+    verifiedAt: GBG_SWEEP_VERIFIED,
   },
   {
     id: 'malmo-svenska3',
