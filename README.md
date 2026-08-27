@@ -217,6 +217,15 @@ Jönköping, Kalmar och Kronoberg) tar tyst bort tre län ur filtret. Landskapet
 får däremot gärna ligga kvar som `tag` — då hittar en sökning på "småland"
 fortfarande fram.
 
+Det stod så här redan innan sökningen kunde det. Predikatet bodde inne i
+Discover och läste sex fält, men aldrig `tags`, så en sökning på precis det
+taggen finns till för gav noll träffar. Nu ligger det i
+[`src/lib/examSearch.ts`](src/lib/examSearch.ts) med ett test som söker
+"småland" i den riktiga datan och kräver träffar i mer än ett län. Taggarna är
+fältet som bär det som inte har någon kolumn — landskapet under länet,
+läroplanen en kurs hör till (`gy11`/`gy25`) — och varje sådant är ett ord någon
+skriver i rutan.
+
 ## Profil och community
 
 Profilen svarar på en fråga innan alla andra: hur många av dina sparade
