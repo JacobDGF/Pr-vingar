@@ -188,6 +188,77 @@ const COMPONENTS_FLERA: ExamComponent[] = [
   },
 ];
 
+const TIPS_BIOLOGI = [
+  'Repetera cellen, genetiken och evolutionen – de bär de flesta uppgifterna.',
+  'Rita egna scheman över ekosystem och kretslopp i stället för att läsa om dem.',
+  'Öva på att skriva labbrapport: syfte, metod, resultat, slutsats.',
+  'Gamla nationella prov i biologi visar hur resonemangsfrågorna är formulerade.',
+];
+
+const COMPONENTS_BIOLOGI: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: '3–4 timmar',
+    description: 'Frågor om cellbiologi, genetik, evolution och ekologi enligt ämnesplanen.',
+  },
+  {
+    name: 'Laborationsprov',
+    duration: 'Varierar',
+    description: 'Praktiskt moment som genomförs vid ett eget tillfälle, ofta någon vecka senare.',
+  },
+];
+
+const TIPS_HISTORIA = [
+  'Bygg en egen tidslinje över epokerna – det gör källfrågorna lättare att placera.',
+  'Träna källkritik: vem skrev, när, för vem och varför?',
+  'Lär dig ett par tydliga exempel per epok som du kan använda i resonemang.',
+  'Öva på att jämföra orsak och konsekvens i stället för att bara räkna upp årtal.',
+];
+
+const COMPONENTS_HISTORIA: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: '3–4 timmar',
+    description: 'Faktafrågor och längre resonemangsuppgifter, ofta med källmaterial.',
+  },
+];
+
+const TIPS_RELIGION = [
+  'Lär dig världsreligionernas grunder: urkunder, riter och centrala begrepp.',
+  'Öva på att jämföra religioner i stället för att beskriva dem var för sig.',
+  'Repetera etiska modeller (pliktetik, konsekvensetik, dygdetik) med exempel.',
+  'Koppla teorin till aktuella samhällsfrågor – det är ofta så uppgifterna ställs.',
+];
+
+const TIPS_FILOSOFI = [
+  'Lär dig skilja på argumentets form och dess innehåll – logiken kommer igen överallt.',
+  'Repetera kunskapsteori, verklighetsuppfattning och de etiska modellerna.',
+  'Öva på att formulera en tes och bemöta en motinvändning i skrift.',
+  'Läs korta primärtexter i stället för sammanfattningar när du kan.',
+];
+
+const TIPS_GEOGRAFI = [
+  'Repetera kartkunskap och hur naturgeografiska processer formar landskapet.',
+  'Lär dig begreppen kring hållbar utveckling och kunna använda dem i resonemang.',
+  'Öva på att läsa och tolka statistik, diagram och kartunderlag.',
+  'Följ aktuella klimat- och resursfrågor för exempel du kan använda i svaren.',
+];
+
+const TIPS_FORETAGSEKONOMI = [
+  'Lär dig grunderna i bokföring, resultaträkning och balansräkning ordentligt.',
+  'Repetera marknadsföringens fyra P och kunna använda dem på ett verkligt företag.',
+  'Räkna igenom kalkyler (bidrag, påslag, nollpunkt) tills metoden sitter.',
+  'Ta ett företag du känner till och analysera det – teorin fastnar lättare så.',
+];
+
+const COMPONENTS_TEORI: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: '3–4 timmar',
+    description: 'Skriftlig examination på hela kursen enligt ämnesplanen och betygskriterierna.',
+  },
+];
+
 // Second research pass covering providers outside the initial 23 (nationwide sweep).
 const NATIONWIDE_VERIFIED = '2026-07-12';
 const STHLM_LAN_VERIFIED = '2026-08-09';
@@ -212,6 +283,9 @@ const FULL_SWEEP_VERIFIED = '2026-08-20';
 // Datasvep 2026-08-26 (#45): de listningar check:dates pekade ut som gångna,
 // lästa mot anordnarens egen sida i stället för mot etiketten i datan.
 const AUG_26_VERIFIED = '2026-08-26';
+// Kurskatalogsvep 2026-08-27: Prövningsenheten Göteborgs Alvis-katalog läst kurs
+// för kurs, plus Stockholms stads nya anmälningsordning för hösten 2026.
+const AUG_27_VERIFIED = '2026-08-27';
 
 /**
  * For providers who put the anmälan on their own page — but only while the
@@ -257,6 +331,125 @@ function sthlmAutumn2026(opensOn: string, opensLabel: string): NextPeriod {
       'kompletteringsdagen i början av december. Nästa möjlighet därefter är i början av 2027.',
     applicationStart: opensOn,
     confirmed: true,
+  };
+}
+
+const MONTHS_SV = [
+  'januari',
+  'februari',
+  'mars',
+  'april',
+  'maj',
+  'juni',
+  'juli',
+  'augusti',
+  'september',
+  'oktober',
+  'november',
+  'december',
+];
+
+/** '2026-09-29' → '29 september 2026', for the human half of a period label. */
+function svDate(iso: string): string {
+  const [year, month, day] = iso.split('-').map(Number);
+  return `${day} ${MONTHS_SV[month - 1]} ${year}`;
+}
+
+/**
+ * Prövningsenheten Göteborg, one course at a time.
+ *
+ * Göteborg is the only provider in the dataset that publishes a full catalogue:
+ * every course has its own row in Alvis carrying the exam date, the day anmälan
+ * closes, the room and the teacher who marks it. That makes per-course listings
+ * possible where most kommuner only allow a single "flera kurser" card — but it
+ * also means two dozen entries that share an address, a price and a set of
+ * terms. Written out by hand they would repeat all of it and drift apart on the
+ * third edit, so the shared half lives here and each course passes only what
+ * its own row in Alvis says.
+ */
+const GBG_VENUE = 'Burgårdens konferens, ingång A-2, Skånegatan 20, 412 51 Göteborg';
+
+const GBG_PRICE_NOTE =
+  'Avgiften betalas senast fyra veckor före prövningstillfället och återbetalas inte. ' +
+  'Avgiftsfritt kräver att du både har betyget F i kursen sedan tidigare och samtidigt ' +
+  'studerar andra kurser inom vuxenutbildningen — båda villkoren måste vara uppfyllda.';
+
+// Autumn's catalogue went up 15 June and has been bookable since 1 July; spring's
+// goes up 1 December. A course whose sista anmälningsdag has passed is therefore
+// not "no dates published", it is "wait for December" — and the card should say so.
+const GBG_APPLICATION_START = '2026-07-01';
+const GBG_SPRING_NOTE =
+  'Vårens prövningar publiceras 1 december 2026 och första ansökningsdag är 15 december.';
+
+function goteborgProvning(c: {
+  id: string;
+  subject: string;
+  course: string;
+  courseCode: string;
+  /** Alvis course id: `hittakurser/kurs/<kursId>` is the row these dates are read off. */
+  kursId: number;
+  /** The next round Alvis lists — exam date, the day anmälan closes, and its slot. */
+  examDate: string;
+  closesOn: string;
+  timeLabel: string;
+  /** Only when the round sits somewhere other than Burgårdens konferens. */
+  venue?: string;
+  components: ExamComponent[];
+  studyTips: string[];
+  tags: string[];
+  /** What this course's own page adds that the shared text doesn't cover. */
+  note?: string;
+}): Exam {
+  return {
+    id: c.id,
+    schoolName: 'Prövningsenheten Göteborg',
+    provider: 'Göteborgs Stad',
+    subject: c.subject,
+    course: c.course,
+    courseCode: c.courseCode,
+    level: 'Komvux',
+    city: 'Göteborg',
+    region: 'Västra Götaland',
+    address: c.venue ?? GBG_VENUE,
+    lat: 57.7003,
+    lng: 11.9867,
+    price: 500,
+    priceNote: GBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        `Anmälan stänger ${svDate(c.closesOn)}; prövningen genomförs ${svDate(c.examDate)}, ` +
+        `${c.timeLabel}. ${GBG_SPRING_NOTE}`,
+      applicationStart: GBG_APPLICATION_START,
+      applicationEnd: c.closesOn,
+      examWindowStart: c.examDate,
+      examWindowEnd: c.examDate,
+      confirmed: true,
+    },
+    components: c.components,
+    studyTips: c.studyTips,
+    // The link lands on the course's own row, not on the catalogue — the derived
+    // coursepicker flow would tell the user to go find it in a list they are
+    // already past.
+    registration: {
+      kind: 'coursepicker',
+      ctaLabel: 'Anmäl dig till prövningen',
+      landing: 'Länken går till kursens egen sida i Alvis, med prövningsdatum, lokal och lärare.',
+      steps: [
+        'Välj prövningstillfället och lägg det i kurskorgen',
+        'Logga in och skicka in anmälan',
+        'Betala 500 kr senast fyra veckor före prövningstillfället',
+      ],
+      direct: true,
+    },
+    registrationUrl: `https://provningsenheten.alvis.se/hittakurser/kurs/${c.kursId}`,
+    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
+    description:
+      `Prövning i ${c.course} hos Göteborgs Stads Prövningsenhet. ` +
+      (c.note ? `${c.note} ` : '') +
+      'Prövningsinstruktionen för kursen finns på kurssidan i Alvis — det är den enda ' +
+      'förberedelse skolan ger, någon handledning ingår inte.',
+    tags: c.tags,
+    verifiedAt: AUG_27_VERIFIED,
   };
 }
 
@@ -376,15 +569,29 @@ export const EXAMS: Exam[] = [
     lng: 18.0125,
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Förutsätter att din hemkommun har avtal med Hermods.',
-    nextPeriod: sthlmAutumn2026('2026-08-26', 'onsdag 26 augusti 2026'),
+    // Anmälan öppnade 26 augusti kl. 10 och var slut samma dag: "Bokningen är
+    // nu fulltecknad och vi hänvisar istället till reservlistan". Ett halvöppet
+    // fönster med bara en startdag såg fortfarande ut som "öppen för anmälan"
+    // dagen efter — vilket är precis det `full` finns till för att stoppa.
+    nextPeriod: {
+      ...sthlmAutumn2026('2026-08-26', 'onsdag 26 augusti 2026'),
+      label:
+        'Anmälan öppnade 26 augusti 2026 kl. 10.00 och är sedan dess fulltecknad — det som återstår är ' +
+        'reservlistan, som öppnade kl. 10.15 samma dag. Höstens prövningar genomförs vecka 42 eller 44; ' +
+        'vilken av dagarna du får står i kallelsen och går inte att byta. Nästa anmälan är i början av 2027.',
+      full: true,
+    },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://sites.google.com/a/edu.hermods.se/provning-stockholm',
-    infoUrl: 'https://hermods.se/komvux/provning/',
+    // Stockholms stad länkar numera till den här sidan, inte till den gamla
+    // provning-stockholm-sajten — och det är på bokningssidan reservlistan står.
+    registrationUrl: 'https://sites.google.com/edu.hermods.se/provning-stockholms-stad/bokning',
+    infoUrl: 'https://sites.google.com/edu.hermods.se/provning-stockholms-stad',
     description:
-      'Hermods erbjuder prövning i Matematik 2b på kontrakt åt anslutna kommuner, med skriftligt prov på plats i Liljeholmen.',
+      'Hermods erbjuder prövning i Matematik 2b på kontrakt åt anslutna kommuner, med skriftligt prov på plats i Liljeholmen. ' +
+      'Höstens båda prövningstillfällen bokades vid samma tillfälle enligt direktiv från Stockholms stad, och platserna tog slut samma dag.',
     tags: ['matematik', 'stockholm', 'hermods'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: AUG_27_VERIFIED,
   },
   {
     id: 'nti-ma2b',
@@ -678,128 +885,355 @@ export const EXAMS: Exam[] = [
     tags: ['matematik', 'flemingsberg', 'iris'],
     verifiedAt: FULL_SWEEP_VERIFIED,
   },
-  {
+  // Prövningsenheten Göteborg, kurs för kurs (läst i Alvis 2026-08-27). Fram
+  // till nu låg fyra kort här som alla sa "anmälan öppnar 1 juli 2026" — sant
+  // när de skrevs i juni, men i augusti är det datumet passerat och säger
+  // ingenting om vilken omgång som faktiskt går att boka. Katalogen har ett
+  // eget prövningsdatum och en egen sista anmälningsdag per kurs, så nu står
+  // de på korten i stället.
+  goteborgProvning({
+    id: 'goteborg-ma1b',
+    subject: 'Matematik',
+    course: 'Matematik 1b',
+    courseCode: 'MATMAT01b',
+    kursId: 12458,
+    examDate: '2026-09-29',
+    closesOn: '2026-09-01',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    tags: ['matematik', 'goteborg', 'gy11'],
+  }),
+  goteborgProvning({
+    id: 'goteborg-ma1c',
+    subject: 'Matematik',
+    course: 'Matematik 1c',
+    courseCode: 'MATMAT01c',
+    kursId: 12459,
+    examDate: '2026-09-29',
+    closesOn: '2026-09-01',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    tags: ['matematik', 'goteborg', 'gy11'],
+  }),
+  goteborgProvning({
     id: 'goteborg-ma2b',
-    schoolName: 'Prövningsenheten Göteborg',
-    provider: 'Göteborgs Stad',
     subject: 'Matematik',
     course: 'Matematik 2b',
     courseCode: 'MATMAT02b',
-    level: 'Komvux',
-    city: 'Göteborg',
-    region: 'Västra Götaland',
-    address: 'Brogatan 4, Göteborg',
-    lat: 57.7089,
-    lng: 11.9746,
-    price: 500,
-    priceNote:
-      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
-    nextPeriod: {
-      label:
-        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
-      applicationStart: '2026-07-01',
-      confirmed: true,
-    },
+    kursId: 12465,
+    examDate: '2026-09-29',
+    closesOn: '2026-09-01',
+    timeLabel: 'kl. 17:30–21:30',
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser',
-    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
-    description:
-      'Göteborgs Stads Prövningsenhet samordnar betygsprövning i gymnasiekurser för hela kommunen, bokningsbart löpande via Alvis.',
-    tags: ['matematik', 'goteborg'],
-    verifiedAt: VERIFIED,
-  },
-  {
+    tags: ['matematik', 'goteborg', 'gy11'],
+    note: 'Efter 29 september ges kursen en gång till i höst, 20 oktober, med sista anmälningsdag 22 september.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-ma3b',
+    subject: 'Matematik',
+    course: 'Matematik 3b',
+    courseCode: 'MATMAT03b',
+    kursId: 12467,
+    examDate: '2026-09-29',
+    closesOn: '2026-09-01',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    tags: ['matematik', 'goteborg', 'gy11'],
+    note: 'Höstens sista tillfälle är 19 oktober, med sista anmälningsdag 21 september.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-ma3c',
+    subject: 'Matematik',
+    course: 'Matematik 3c',
+    courseCode: 'MATMAT03c',
+    kursId: 12468,
+    examDate: '2026-09-29',
+    closesOn: '2026-09-01',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    tags: ['matematik', 'goteborg', 'gy11'],
+    note: 'Höstens sista tillfälle är 19 oktober, med sista anmälningsdag 21 september.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-ma4',
+    subject: 'Matematik',
+    course: 'Matematik 4',
+    courseCode: 'MATMAT04',
+    kursId: 12486,
+    examDate: '2026-09-29',
+    closesOn: '2026-09-01',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    tags: ['matematik', 'goteborg', 'gy11'],
+    note: 'Höstens sista tillfälle är 19 oktober, med sista anmälningsdag 21 september.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-eng5',
+    subject: 'Engelska',
+    course: 'Engelska 5',
+    courseCode: 'ENGENG05',
+    kursId: 12356,
+    examDate: '2026-10-13',
+    closesOn: '2026-09-15',
+    timeLabel: 'kl. 17:30–22:00',
+    components: COMPONENTS_ENGELSKA,
+    studyTips: TIPS_ENGELSKA,
+    tags: ['engelska', 'goteborg', 'gy11'],
+  }),
+  goteborgProvning({
     id: 'goteborg-eng6',
-    schoolName: 'Prövningsenheten Göteborg',
-    provider: 'Göteborgs Stad',
     subject: 'Engelska',
     course: 'Engelska 6',
     courseCode: 'ENGENG06',
-    level: 'Komvux',
-    city: 'Göteborg',
-    region: 'Västra Götaland',
-    address: 'Brogatan 4, Göteborg',
-    lat: 57.7089,
-    lng: 11.9746,
-    price: 500,
-    priceNote:
-      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
-    nextPeriod: {
-      label:
-        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
-      applicationStart: '2026-07-01',
-      confirmed: true,
-    },
+    kursId: 12372,
+    examDate: '2026-10-13',
+    closesOn: '2026-09-15',
+    timeLabel: 'kl. 17:30–22:00',
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
-    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12372',
-    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
-    description:
-      'Betygsprövning i Engelska 6 via Göteborgs Stads Prövningsenhet. Platsantal varierar och uppdateras löpande.',
-    tags: ['engelska', 'goteborg'],
-    verifiedAt: VERIFIED,
-  },
-  {
+    tags: ['engelska', 'goteborg', 'gy11'],
+  }),
+  goteborgProvning({
+    id: 'goteborg-sve1',
+    subject: 'Svenska',
+    course: 'Svenska 1',
+    courseCode: 'SVESVE01',
+    kursId: 12546,
+    examDate: '2026-10-06',
+    closesOn: '2026-09-08',
+    timeLabel: 'kl. 17:30–22:30',
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    tags: ['svenska', 'goteborg', 'gy11'],
+  }),
+  goteborgProvning({
+    id: 'goteborg-sve3',
+    subject: 'Svenska',
+    course: 'Svenska 3',
+    courseCode: 'SVESVE03',
+    kursId: 12548,
+    examDate: '2026-10-06',
+    closesOn: '2026-09-08',
+    timeLabel: 'kl. 17:30–22:30',
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    tags: ['svenska', 'goteborg', 'gy11'],
+  }),
+  goteborgProvning({
+    id: 'goteborg-sva3',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 3',
+    courseCode: 'SVASVA03',
+    kursId: 12544,
+    examDate: '2026-10-06',
+    closesOn: '2026-09-08',
+    timeLabel: 'kl. 17:30–22:30',
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    tags: ['svenska som andraspråk', 'goteborg', 'gy11'],
+  }),
+  goteborgProvning({
     id: 'goteborg-kemi1',
-    schoolName: 'Prövningsenheten Göteborg',
-    provider: 'Göteborgs Stad',
     subject: 'Kemi',
     course: 'Kemi 1',
     courseCode: 'KEMKEM01',
-    level: 'Komvux',
-    city: 'Göteborg',
-    region: 'Västra Götaland',
-    address: 'Brogatan 4, Göteborg',
-    lat: 57.7089,
-    lng: 11.9746,
-    price: 500,
-    priceNote:
-      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
-    nextPeriod: {
-      label:
-        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
-      applicationStart: '2026-07-01',
-      confirmed: true,
-    },
+    kursId: 12401,
+    examDate: '2026-09-29',
+    closesOn: '2026-09-01',
+    timeLabel: 'kl. 09:00–12:00',
+    venue:
+      'Burgårdens gymnasium, sal B216, ingång B-3 från gården vid Valhallagatan, Skånegatan 20, 412 51 Göteborg',
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
-    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12401',
-    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
-    description: 'Betygsprövning i Kemi 1 via Göteborgs Stads Prövningsenhet.',
-    tags: ['kemi', 'goteborg'],
-    verifiedAt: VERIFIED,
-  },
-  {
+    tags: ['kemi', 'goteborg', 'gy11'],
+    note: 'Kemiprövningarna skrivs på förmiddagen i B-huset, inte i Burgårdens konferens.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-kemi2',
+    subject: 'Kemi',
+    course: 'Kemi 2',
+    courseCode: 'KEMKEM02',
+    kursId: 12411,
+    examDate: '2026-10-06',
+    closesOn: '2026-09-08',
+    timeLabel: 'kl. 09:00–12:00',
+    venue:
+      'Burgårdens gymnasium, sal B216, ingång B-3 från gården vid Valhallagatan, Skånegatan 20, 412 51 Göteborg',
+    components: COMPONENTS_KEMI,
+    studyTips: TIPS_KEMI,
+    tags: ['kemi', 'goteborg', 'gy11'],
+    note: 'Kemiprövningarna skrivs på förmiddagen i B-huset, inte i Burgårdens konferens.',
+  }),
+  goteborgProvning({
     id: 'goteborg-fysik1a',
-    schoolName: 'Prövningsenheten Göteborg',
-    provider: 'Göteborgs Stad',
     subject: 'Fysik',
     course: 'Fysik 1a',
     courseCode: 'FYSFYS01a',
-    level: 'Komvux',
-    city: 'Göteborg',
-    region: 'Västra Götaland',
-    address: 'Brogatan 4, Göteborg',
-    lat: 57.7089,
-    lng: 11.9746,
-    price: 500,
-    priceNote:
-      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
-    nextPeriod: {
-      label:
-        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
-      applicationStart: '2026-07-01',
-      confirmed: true,
-    },
+    kursId: 12376,
+    examDate: '2026-10-08',
+    closesOn: '2026-09-10',
+    timeLabel: 'kl. 17:30–22:30',
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
-    registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12376',
-    infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
-    description: 'Betygsprövning i Fysik 1a via Göteborgs Stads Prövningsenhet.',
-    tags: ['fysik', 'goteborg'],
-    verifiedAt: VERIFIED,
-  },
+    tags: ['fysik', 'goteborg', 'gy11'],
+  }),
+  goteborgProvning({
+    id: 'goteborg-bio1',
+    subject: 'Biologi',
+    course: 'Biologi 1',
+    courseCode: 'BIOBIO01',
+    kursId: 12369,
+    examDate: '2026-10-06',
+    closesOn: '2026-09-08',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_BIOLOGI,
+    studyTips: TIPS_BIOLOGI,
+    tags: ['biologi', 'goteborg', 'gy11'],
+    note: 'Laborationsprovet ligger separat, torsdag 22 oktober kl. 08.15–11.45 i B-huset, ingång B-3 från gården vid Valhallagatan.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-bio2',
+    subject: 'Biologi',
+    course: 'Biologi 2',
+    courseCode: 'BIOBIO02',
+    kursId: 12371,
+    examDate: '2026-11-03',
+    closesOn: '2026-10-06',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_BIOLOGI,
+    studyTips: TIPS_BIOLOGI,
+    tags: ['biologi', 'goteborg', 'gy11'],
+  }),
+  goteborgProvning({
+    id: 'goteborg-naturkunskap1b',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1b',
+    courseCode: 'NAKNAK01b',
+    kursId: 12516,
+    examDate: '2026-09-24',
+    closesOn: '2026-08-27',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_NATURKUNSKAP,
+    studyTips: TIPS_NATURKUNSKAP,
+    tags: ['naturkunskap', 'goteborg', 'gy11'],
+    note: 'Detta är höstens sista tillfälle i kursen.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-sam1b',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1b',
+    courseCode: 'SAMSAM01b',
+    kursId: 12539,
+    examDate: '2026-09-24',
+    closesOn: '2026-08-27',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_SAMHALLSKUNSKAP,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    tags: ['samhällskunskap', 'goteborg', 'gy11'],
+    note: 'Detta är höstens sista tillfälle i kursen.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-sam2',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 2',
+    courseCode: 'SAMSAM02',
+    kursId: 12540,
+    examDate: '2026-09-24',
+    closesOn: '2026-08-27',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_SAMHALLSKUNSKAP,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    tags: ['samhällskunskap', 'goteborg', 'gy11'],
+    note: 'Detta är höstens sista tillfälle i kursen.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-psykologi1',
+    subject: 'Psykologi',
+    course: 'Psykologi 1',
+    courseCode: 'PSKPSY01',
+    kursId: 12532,
+    examDate: '2026-09-24',
+    closesOn: '2026-08-27',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_PSYKOLOGI,
+    studyTips: TIPS_PSYKOLOGI,
+    tags: ['psykologi', 'goteborg', 'gy11'],
+    note: 'Kursen är på 50 poäng och detta är höstens sista tillfälle.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-religion1',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap 1',
+    courseCode: 'RELREL01',
+    kursId: 12534,
+    examDate: '2026-09-24',
+    closesOn: '2026-08-27',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_TEORI,
+    studyTips: TIPS_RELIGION,
+    tags: ['religionskunskap', 'goteborg', 'gy11'],
+    note: 'Kursen är på 50 poäng och detta är höstens sista tillfälle.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-historia1b',
+    subject: 'Historia',
+    course: 'Historia 1b',
+    courseCode: 'HISHIS01b',
+    kursId: 12394,
+    examDate: '2026-09-24',
+    closesOn: '2026-08-27',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_HISTORIA,
+    studyTips: TIPS_HISTORIA,
+    tags: ['historia', 'goteborg', 'gy11'],
+    note: 'Detta är höstens sista tillfälle i kursen.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-filosofi1',
+    subject: 'Filosofi',
+    course: 'Filosofi 1',
+    courseCode: 'FIOFIO01',
+    kursId: 12374,
+    examDate: '2026-09-24',
+    closesOn: '2026-08-27',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_TEORI,
+    studyTips: TIPS_FILOSOFI,
+    tags: ['filosofi', 'goteborg', 'gy11'],
+    note: 'Kursen är på 50 poäng och detta är höstens sista tillfälle.',
+  }),
+  goteborgProvning({
+    id: 'goteborg-geografi1',
+    subject: 'Geografi',
+    course: 'Geografi 1',
+    courseCode: 'GEOGEO01',
+    kursId: 12391,
+    examDate: '2026-10-06',
+    closesOn: '2026-09-08',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_TEORI,
+    studyTips: TIPS_GEOGRAFI,
+    tags: ['geografi', 'goteborg', 'gy11'],
+  }),
+  goteborgProvning({
+    id: 'goteborg-foretagsekonomi1',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi 1',
+    courseCode: 'FÖRFÖR01',
+    kursId: 12380,
+    examDate: '2026-10-06',
+    closesOn: '2026-09-08',
+    timeLabel: 'kl. 17:30–21:30',
+    components: COMPONENTS_TEORI,
+    studyTips: TIPS_FORETAGSEKONOMI,
+    tags: ['företagsekonomi', 'goteborg', 'gy11'],
+  }),
   {
     id: 'malmo-svenska3',
     schoolName: 'Komvux Malmö',
@@ -1423,25 +1857,38 @@ export const EXAMS: Exam[] = [
     level: 'Komvux',
     city: 'Borås',
     region: 'Västra Götaland',
-    address: 'BORÅS (adress bekräftas vid anmälan)',
-    lat: 57.721,
-    lng: 12.9401,
+    address: 'Fabriksgatan 12, 503 38 Borås (lokal meddelas av prövningsförrättaren)',
+    lat: 57.7172,
+    lng: 12.9426,
     price: 500,
     priceNote:
-      '500 kr per prövning. Gratis om du har betyget F/IG i kursen sedan tidigare (betygskopia bifogas).',
+      '500 kr per prövning. Gratis om du har betyget F/IG i kursen sedan tidigare (betygskopia bifogas). ' +
+      'Betalning till bankgiro 991-1025, och kvittot bifogas anmälan.',
+    // Anmälan sker inte löpande, vilket kortet sa: Borås har ett fyra dagar
+    // långt fönster per termin, och datumen står på kommunens egen prövningssida
+    // — inte under "Viktiga datum" i Alvis, som bara listar kursansökan.
     nextPeriod: {
       label:
-        'Anmälan sker löpande via Alvis-portalen; se aktuella prövnings- och anmälningsdatum under "Viktiga datum" på boras.alvis.se',
-      confirmed: false,
+        'Anmälningsperioden för höstens prövningar är 24–27 augusti 2026. Språk och övriga ämnen prövas ' +
+        'tisdag 29 september, matematik och naturvetenskap torsdag 1 oktober. Vård och omsorg enligt GY25 ' +
+        'har eget fönster 14–17 september med prövning fredag 6 november.',
+      applicationStart: '2026-08-24',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://boras.alvis.se/provning/amnesomrade',
-    infoUrl: 'https://boras.alvis.se/provning/amnesomrade',
+    // Datumen ovan står på kommunens prövningssida, inte i Alvis — och det är
+    // dit den som vill kontrollera ett datum ska komma.
+    infoUrl:
+      'https://www.boras.se/utbildningochforskola/komvux/ansokanochantagning/provning.4.40b9a18a198c092ed9d4ab1.html',
     description:
-      'Vuxenutbildningen i Borås erbjuder prövning i ett stort urval kurser inom matematik, naturvetenskap, samhällsvetenskap, språk samt vård och omsorg. Anmälan görs i skolans e-tjänst Alvis och endast en kurs kan prövas per tillfälle.',
+      'Vuxenutbildningen i Borås erbjuder prövning i ett stort urval kurser inom matematik, naturvetenskap, samhällsvetenskap, språk samt vård och omsorg. Anmälan görs i skolans e-tjänst Alvis och endast en kurs kan prövas per tillfälle. Prövning i modersmål och moderna språk hänvisas till en gymnasieskola eller en annan kommun.',
     tags: ['komvux', 'boras', 'flera-amnen'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: AUG_27_VERIFIED,
   },
   {
     id: 'kunskapsforbundet-vast-vuxenutbildningen-vanersborg-flera-ku',
@@ -2445,9 +2892,9 @@ export const EXAMS: Exam[] = [
     level: 'Komvux',
     city: 'Norrköping',
     region: 'Östergötland',
-    address: 'Källvindsskolan, Norrköping (adress bekräftas vid anmälan)',
-    lat: 58.5877,
-    lng: 16.1924,
+    address: 'Källvindsskolan, Nygatan 38, 602 34 Norrköping',
+    lat: 58.5858,
+    lng: 16.177,
     price: 500,
     priceNote: '500 kr per prövning; folkbokförda i Norrköpings kommun prioriteras vid platsbrist',
     nextPeriod: {
@@ -2477,9 +2924,9 @@ export const EXAMS: Exam[] = [
     level: 'Komvux',
     city: 'Norrköping',
     region: 'Östergötland',
-    address: 'Källvindsskolan, Norrköping (adress bekräftas vid anmälan)',
-    lat: 58.5877,
-    lng: 16.1924,
+    address: 'Källvindsskolan, Nygatan 38, 602 34 Norrköping',
+    lat: 58.5858,
+    lng: 16.177,
     price: 500,
     priceNote: '500 kr per prövning; kostnadsfritt vid tidigare F/IG i kursen på Komvux Norrköping',
     nextPeriod: {
@@ -2615,25 +3062,47 @@ export const EXAMS: Exam[] = [
     lng: 16.5448,
     price: 500,
     priceNote: '500 kr per kurs, betalning via Swish; återbetalas endast vid styrkt sjukdom',
+    // "Prövningsperioden för 2026 är fullbokad" står numera under
+    // Prövningsperioder på kommunens sida. Anmälningsfönstret 17–31 augusti
+    // ligger kvar som fakta, men det är inte längre ett fönster någon kan gå
+    // in genom, och kortet ska säga det innan man klickar.
     nextPeriod: {
-      label: 'Prövningsperiod vecka 41–44, 2026',
+      label:
+        'Västerås stad har markerat hela 2026 års prövningsperiod som fullbokad. Anmälan var öppen ' +
+        '17–31 augusti inför prövningsperiod vecka 41–44; nästa period annonseras på kommunens prövningssida.',
       applicationStart: '2026-08-17',
       applicationEnd: '2026-08-31',
       examWindowStart: '2026-10-05',
       examWindowEnd: '2026-11-01',
       confirmed: true,
+      full: true,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    // "Kurskatalog Vuxenutbildningscentrum" on the kommun page — the Alvis
-    // prövningskatalog, which is where the anmälan is actually made.
-    registrationUrl: 'https://vasteras.alvis.se/provning/amnesomrade',
+    // Kommunens egen länk till "Kurskatalog Vuxenutbildningscentrum" pekar på
+    // vasteras.alvis.se/provning/amnesomrade, som svarar "Oväntat fel 404".
+    // Att skicka någon dit vore att låta appen ta ansvar för kommunens trasiga
+    // länk — kommunens prövningssida är det enda mål som lever, och det är
+    // också där fullbokat-beskedet står.
+    registration: {
+      kind: 'page',
+      ctaLabel: 'Läs kommunens prövningssida',
+      landing:
+        'Kommunens egen prövningssida, där det står att 2026 års period är fullbokad och där nästa period annonseras.',
+      steps: [
+        'Läs under "Prövningsperioder" om en ny period har öppnat',
+        'Anmäl dig via kurskatalogen och betala 500 kr per kurs med Swish',
+        'Bifoga kvittot i anmälan — sfi b och sfi c anmäls i stället i receptionen',
+      ],
+    },
+    registrationUrl:
+      'https://www.vasteras.se/barn-och-utbildning/vuxenutbildning/nivatest-och-provning-infor-vuxenutbildning.html',
     infoUrl:
       'https://www.vasteras.se/barn-och-utbildning/vuxenutbildning/nivatest-och-provning-infor-vuxenutbildning.html',
     description:
-      'Västerås stad samordnar prövning i sfi, grundläggande och gymnasiala kurser hos flera anordnare (bl.a. Edströmska); anmälan är öppen 17–31 augusti inför prövningsperiod vecka 41–44, 2026.',
+      'Västerås stad samordnar prövning i sfi, grundläggande och gymnasiala kurser hos flera anordnare — ABF (endast grundläggande), Agila institutet vux, Astar, Hermods, JENSEN, KUI, NTI och Vuxenutbildningscentrum (endast sfi d). Du kan anmäla dig till två ämnen per period.',
     tags: ['flera ämnen', 'gymnasial', 'västmanland'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: AUG_27_VERIFIED,
   },
   {
     id: 'komvux-orebro-campus-risbergska-orebro-flera-kurser-kontakta',
@@ -4456,6 +4925,413 @@ export const EXAMS: Exam[] = [
       'välja rätt kurs. Vuxnas lärande nås på vuxnaslarande@skola.sala.se.',
     tags: ['komvux', 'sala', 'västmanland'],
     verifiedAt: THIN_LAN_2_VERIFIED,
+  },
+  // Läst 2026-08-27, mot varje anordnares egen sida.
+  //
+  // Stockholms stad lade om hela anmälningsordningen till hösten 2026: fyra
+  // skolor för gymnasiala teoretiska kurser, en öppningsdag var under vecka
+  // 33–35, och sedan ingenting förrän i början av 2027. Astar och Cuben ligger
+  // utanför den ordningen — Astar med egna prövningsveckor, Cuben med
+  // grundläggande kurser och sfi — och det är dit den som missade sin skolas
+  // öppningsdag faktiskt kan gå.
+  {
+    id: 'astar-stockholm-flera-kurser',
+    schoolName: 'Astar Stockholm',
+    provider: 'Astar AB',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Stockholm (lokal meddelas i kallelsen)',
+    lat: 59.3326,
+    lng: 18.0649,
+    price: 500,
+    priceNote:
+      FREE_IF_PRIOR_F +
+      ' Betyget ska vara satt på komvux och betygsutdraget mejlas till admin.stockholm@astar.se senast fredagen under anmälningsveckan. ' +
+      NON_REFUNDABLE +
+      ' Betalas avgiften efter sista betalningsdag förlorar du platsen.',
+    nextPeriod: {
+      label:
+        'Höstens fjärde prövningstillfälle: anmälan öppnar 26 oktober 2026, stänger 1 november och prövningen genomförs 17 november. ' +
+        'Anmälan stängs tidigare om maxantalet nås. (Tillfälle 3 stängde 24 augusti.)',
+      applicationStart: '2026-10-26',
+      applicationEnd: '2026-11-01',
+      examWindowStart: '2026-11-17',
+      examWindowEnd: '2026-11-17',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    // Astar lägger upp två ansökningsformulär — ett för GY11, ett för GY25 —
+    // i rutan på sidan när anmälningsveckan börjar. Före dess pekar knapparna
+    // på startsidan, så det finns ingen djuplänk att verifiera.
+    registration: publishedOnPage('ansökningsformuläret (GY11 respektive GY25)', 'den 26 oktober'),
+    registrationUrl: 'https://astar.se/om-oss/provningar',
+    infoUrl: 'https://astar.se/om-oss/provningar',
+    description:
+      'Astar prövar alla kurser som ingår i skolans eget utbud — kurslistorna för GY11 och GY25 ' +
+      'ligger som PDF på prövningssidan. Högst en kurs per tillfälle och begränsat antal platser; ' +
+      'beslut om vilka ämnen som faktiskt genomförs fattas först när anmälan stängt. ' +
+      'Frågor besvaras på admin.stockholm@astar.se.',
+    tags: ['komvux', 'stockholm', 'flera ämnen', 'astar'],
+    verifiedAt: AUG_27_VERIFIED,
+  },
+  {
+    id: 'cuben-fridhemsplan-engelska-grund',
+    schoolName: 'Cuben Utbildning Fridhemsplan',
+    provider: 'Cuben Utbildning',
+    subject: 'Engelska',
+    course: 'Engelska grundläggande, delkurs 1–4',
+    courseCode: 'GRNENG2',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Drottningholmsvägen 37, 112 42 Stockholm',
+    lat: 59.3315,
+    lng: 18.0256,
+    price: 500,
+    priceNote:
+      FREE_IF_PRIOR_F +
+      ' Avgiften betalas till bankgiro 755-6368 med referensen "Prövning + födelsedatum + skola", och kvittot tas med till prövningen.',
+    nextPeriod: {
+      label:
+        'Höstens andra prövningstillfälle är 18 november 2026 kl. 13.00. Anmälan ska vara inne senast fyra veckor innan, ' +
+        'alltså 21 oktober. (Höstens första tillfälle, 16 september, har stängt.) Max 40 platser per skola.',
+      applicationEnd: '2026-10-21',
+      examWindowStart: '2026-11-18',
+      examWindowEnd: '2026-11-18',
+      confirmed: true,
+    },
+    components: COMPONENTS_ENGELSKA,
+    studyTips: TIPS_ENGELSKA,
+    // Ingen blankett och inget formulär: anmälan är ett mejl med namn,
+    // personnummer och kurs, och betalningen sker separat till bankgiro.
+    registration: { kind: 'email' },
+    registrationUrl: 'https://www.cubenutbildning.se/utbildning/provning-stockholm/',
+    infoUrl: 'https://www.cubenutbildning.se/utbildning/provning-stockholm/',
+    description:
+      'Cuben Utbildning prövar engelska på grundläggande nivå, delkurs 1–4, vid två tillfällen per termin. ' +
+      'Du behöver inget godkännande från kommunen för att anmäla dig — du väljer själv vilken av de kommuner ' +
+      'Cuben har avtal med du prövar genom. Anmälan mejlas till info@cubenutbildning.se.',
+    tags: ['engelska', 'grundläggande', 'stockholm', 'cuben'],
+    verifiedAt: AUG_27_VERIFIED,
+  },
+  {
+    id: 'cuben-fridhemsplan-sva-grund',
+    schoolName: 'Cuben Utbildning Fridhemsplan',
+    provider: 'Cuben Utbildning',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk grundläggande, delkurs 2–4',
+    courseCode: 'GRNSVA2',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Drottningholmsvägen 37, 112 42 Stockholm',
+    lat: 59.3315,
+    lng: 18.0256,
+    price: 500,
+    priceNote:
+      FREE_IF_PRIOR_F +
+      ' Avgiften betalas till bankgiro 755-6368 med referensen "Prövning + födelsedatum + skola", och kvittot tas med till prövningen.',
+    nextPeriod: {
+      label:
+        'Höstens andra prövningstillfälle är 18 november 2026 kl. 13.00. Anmälan ska vara inne senast fyra veckor innan, ' +
+        'alltså 21 oktober. (Höstens första tillfälle, 16 september, har stängt.) Max 40 platser per skola.',
+      applicationEnd: '2026-10-21',
+      examWindowStart: '2026-11-18',
+      examWindowEnd: '2026-11-18',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registration: { kind: 'email' },
+    registrationUrl: 'https://www.cubenutbildning.se/utbildning/provning-stockholm/',
+    infoUrl: 'https://www.cubenutbildning.se/utbildning/provning-stockholm/',
+    description:
+      'Cuben Utbildning prövar svenska som andraspråk på grundläggande nivå, delkurs 2–4, i sina egna lokaler ' +
+      'vid Fridhemsplan. Anmälan mejlas till info@cubenutbildning.se med namn, personnummer och vilken kurs ' +
+      'det gäller, senast fyra veckor före prövningsdagen.',
+    tags: ['svenska som andraspråk', 'grundläggande', 'stockholm', 'cuben'],
+    verifiedAt: AUG_27_VERIFIED,
+  },
+  {
+    id: 'cuben-hogdalen-sfi',
+    schoolName: 'Cuben Utbildning Högdalen',
+    provider: 'Cuben Utbildning',
+    subject: 'Svenska för invandrare',
+    course: 'Sfi kurs B, C och D',
+    courseCode: 'SFI kurs B / C / D',
+    level: 'Komvux',
+    city: 'Bandhagen',
+    region: 'Stockholm',
+    address: 'Skebokvarnsvägen 370, 125 40 Bandhagen',
+    lat: 59.2622,
+    lng: 18.0402,
+    price: 500,
+    priceNote:
+      FREE_IF_PRIOR_F +
+      ' Avgiften betalas till bankgiro 755-6368 med referensen "Prövning + födelsedatum + skola".',
+    nextPeriod: {
+      label:
+        'Höstens andra prövningstillfälle är 18 november 2026 kl. 13.00, med anmälan senast fyra veckor innan — ' +
+        '21 oktober. (Höstens första tillfälle, 16 september, har stängt.) Max 40 platser per skola.',
+      applicationEnd: '2026-10-21',
+      examWindowStart: '2026-11-18',
+      examWindowEnd: '2026-11-18',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registration: { kind: 'email' },
+    registrationUrl: 'https://www.cubenutbildning.se/utbildning/provning-stockholm/',
+    infoUrl: 'https://www.cubenutbildning.se/utbildning/provning-stockholm/',
+    description:
+      'Prövning i sfi kurs B, C och D hos Cuben i Högdalen. Skriv i mejlet vilken kurs det gäller — ' +
+      'anmälan går till info@cubenutbildning.se och ska vara inne senast fyra veckor före prövningsdagen. ' +
+      'Ta med kvittot på betalningen till provtillfället.',
+    tags: ['sfi', 'grundläggande', 'högdalen', 'stockholm', 'cuben'],
+    verifiedAt: AUG_27_VERIFIED,
+  },
+  // Norrköping delar upp höstens prövningar i tre ansökningsfönster med olika
+  // ämnen i varje. Fönstret som är öppet nu (vecka 35–38) är det som bär
+  // matematik och naturvetenskap; historia, samhällskunskap och språk låg i
+  // det förra och kommer tillbaka i vecka 47–48.
+  {
+    id: 'kallvindsskolan-norrkoping-fysik-niva-1',
+    schoolName: 'Källvindsskolan (Komvux Norrköping)',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Fysik',
+    course: 'Fysik nivå 1',
+    courseCode: 'Kontakta skolan för nivåkod',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Nygatan 38, 602 34 Norrköping',
+    lat: 58.5858,
+    lng: 16.177,
+    price: 500,
+    priceNote:
+      '500 kr per prövning. Kostnadsfritt för dig som under föregående år läst kursen på Komvux Norrköping och fått F. ' +
+      NON_REFUNDABLE,
+    nextPeriod: {
+      label:
+        'Ansökan vecka 35–38 (24 augusti–20 september 2026). Första provdatum är torsdag vecka 43, ' +
+        'den 22 oktober kl. 14–17 på Källvindsskolan; sista betygsdatum är vecka 51.',
+      applicationStart: '2026-08-24',
+      applicationEnd: '2026-09-20',
+      examWindowStart: '2026-10-22',
+      examWindowEnd: '2026-12-20',
+      confirmed: true,
+    },
+    components: COMPONENTS_FYSIK,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://norrkoping.alvis.se/login',
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Komvux Norrköping prövar fysik nivå 1 och 2 på plats på Källvindsskolan i ansökningsfönstret vecka 35–38. ' +
+      'Platserna är begränsade och folkbokförda i Norrköpings kommun prioriteras. Du kan bara pröva en kurs per tillfälle.',
+    tags: ['fysik', 'gymnasial', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: AUG_27_VERIFIED,
+  },
+  {
+    id: 'kallvindsskolan-norrkoping-naturkunskap-niva-1',
+    schoolName: 'Källvindsskolan (Komvux Norrköping)',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap nivå 1',
+    courseCode: 'Kontakta skolan för nivåkod',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Nygatan 38, 602 34 Norrköping',
+    lat: 58.5858,
+    lng: 16.177,
+    price: 500,
+    priceNote:
+      '500 kr per prövning. Kostnadsfritt för dig som under föregående år läst kursen på Komvux Norrköping och fått F. ' +
+      NON_REFUNDABLE,
+    nextPeriod: {
+      label:
+        'Ansökan vecka 35–38 (24 augusti–20 september 2026). Första provdatum är torsdag vecka 43, ' +
+        'den 22 oktober kl. 14–17 på Källvindsskolan; sista betygsdatum är vecka 51.',
+      applicationStart: '2026-08-24',
+      applicationEnd: '2026-09-20',
+      examWindowStart: '2026-10-22',
+      examWindowEnd: '2026-12-20',
+      confirmed: true,
+    },
+    components: COMPONENTS_NATURKUNSKAP,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/login',
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Naturkunskap nivå 1 och 2 prövas på Källvindsskolan i höstens andra ansökningsfönster. ' +
+      'Samma kurs kan bara prövas en gång per halvår, och prövningen ska vara klar senast 14 dagar efter provdatumet.',
+    tags: ['naturkunskap', 'gymnasial', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: AUG_27_VERIFIED,
+  },
+  {
+    id: 'kallvindsskolan-norrkoping-svenska-niva-2',
+    schoolName: 'Källvindsskolan (Komvux Norrköping)',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Svenska',
+    course: 'Svenska nivå 2',
+    courseCode: 'Kontakta skolan för nivåkod',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Nygatan 38, 602 34 Norrköping',
+    lat: 58.5858,
+    lng: 16.177,
+    price: 500,
+    priceNote:
+      '500 kr per prövning. Kostnadsfritt för dig som under föregående år läst kursen på Komvux Norrköping och fått F. ' +
+      NON_REFUNDABLE,
+    nextPeriod: {
+      label:
+        'Ansökan vecka 35–38 (24 augusti–20 september 2026). Första provdatum är torsdag vecka 43, ' +
+        'den 22 oktober kl. 14–17 på Källvindsskolan; sista betygsdatum är vecka 51. ' +
+        'Svenska nivå 1 och 3 ligger i nästa fönster, vecka 47–48.',
+      applicationStart: '2026-08-24',
+      applicationEnd: '2026-09-20',
+      examWindowStart: '2026-10-22',
+      examWindowEnd: '2026-12-20',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://norrkoping.alvis.se/login',
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Svenska nivå 2 (motsvarar Svenska 2) prövas på Källvindsskolan i fönstret vecka 35–38. ' +
+      'Norrköping prövar också på distans via Talenti, som täcker samtliga ämnesnivåer i utbudet — ' +
+      'men även där kan salsprov ingå på plats i Norrköping.',
+    tags: ['svenska', 'gymnasial', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: AUG_27_VERIFIED,
+  },
+  // Borås anmälningsfönster är fyra dagar långt, en gång per termin, och de två
+  // prövningsdagarna delar ämnena mellan sig: språk och övriga den 29 september,
+  // matematik och naturvetenskap den 1 oktober.
+  {
+    id: 'komvux-boras-matematik-1b',
+    schoolName: 'Vuxenutbildningen Borås Stad',
+    provider: 'Borås Stad',
+    subject: 'Matematik',
+    course: 'Matematik 1b',
+    courseCode: 'MATMAT01b',
+    level: 'Komvux',
+    city: 'Borås',
+    region: 'Västra Götaland',
+    address: 'Fabriksgatan 12, 503 38 Borås (lokal meddelas av prövningsförrättaren)',
+    lat: 57.7172,
+    lng: 12.9426,
+    price: 500,
+    priceNote:
+      'Avgiftsfritt om du har F eller IG i kursen sedan tidigare — bifoga betygskopia om betyget inte kommer från Komvux i Borås. ' +
+      'Annars 500 kr till bankgiro 991-1025, och kvittot bifogas anmälan. ' +
+      NON_REFUNDABLE,
+    nextPeriod: {
+      label:
+        'Anmälningsperioden är 24–27 augusti 2026 och prövningen i matematik och naturvetenskap genomförs torsdag 1 oktober. ' +
+        'Antalet platser är begränsat och kan ta slut innan perioden är slut.',
+      applicationStart: '2026-08-24',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-10-01',
+      examWindowEnd: '2026-10-01',
+      confirmed: true,
+    },
+    components: COMPONENTS_MATEMATIK,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://boras.alvis.se/provning/kurs/matematik%20',
+    infoUrl:
+      'https://www.boras.se/utbildningochforskola/komvux/ansokanochantagning/provning.4.40b9a18a198c092ed9d4ab1.html',
+    description:
+      'Komvux i Borås prövar alla kurser skolan själv erbjuder. Anmälan görs i Alvis och ska vara komplett — ' +
+      'med kvitto och eventuell betygskopia — senast sista anmälningsdag. En vecka efter att anmälan stängt ' +
+      'mejlar prövningsförrättaren instruktionerna.',
+    tags: ['matematik', 'boras', 'västra götaland', 'gy11'],
+    verifiedAt: AUG_27_VERIFIED,
+  },
+  {
+    id: 'komvux-boras-kemi-1',
+    schoolName: 'Vuxenutbildningen Borås Stad',
+    provider: 'Borås Stad',
+    subject: 'Kemi',
+    course: 'Kemi 1',
+    courseCode: 'KEMKEM01',
+    level: 'Komvux',
+    city: 'Borås',
+    region: 'Västra Götaland',
+    address: 'Fabriksgatan 12, 503 38 Borås (lokal meddelas av prövningsförrättaren)',
+    lat: 57.7172,
+    lng: 12.9426,
+    price: 500,
+    priceNote:
+      'Avgiftsfritt om du har F eller IG i kursen sedan tidigare — bifoga betygskopia om betyget inte kommer från Komvux i Borås. ' +
+      'Annars 500 kr till bankgiro 991-1025, och kvittot bifogas anmälan. ' +
+      NON_REFUNDABLE,
+    nextPeriod: {
+      label:
+        'Anmälningsperioden är 24–27 augusti 2026 och prövningen i matematik och naturvetenskap genomförs torsdag 1 oktober. ' +
+        'I kemi ingår också ett laborativt moment.',
+      applicationStart: '2026-08-24',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-10-01',
+      examWindowEnd: '2026-10-01',
+      confirmed: true,
+    },
+    components: COMPONENTS_KEMI,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://boras.alvis.se/provning/kurs/naturvetenskap',
+    infoUrl:
+      'https://www.boras.se/utbildningochforskola/komvux/ansokanochantagning/provning.4.40b9a18a198c092ed9d4ab1.html',
+    description:
+      'Prövning i Kemi 1 hos Komvux i Borås. I naturkunskap, biologi, fysik och kemi ingår en laborativ del ' +
+      'utöver det skriftliga provet, och hela prövningen ska vara avslutad senast 14 dagar efter provdatumet.',
+    tags: ['kemi', 'boras', 'västra götaland', 'gy11'],
+    verifiedAt: AUG_27_VERIFIED,
+  },
+  {
+    id: 'komvux-boras-engelska-5',
+    schoolName: 'Vuxenutbildningen Borås Stad',
+    provider: 'Borås Stad',
+    subject: 'Engelska',
+    course: 'Engelska 5',
+    courseCode: 'ENGENG05',
+    level: 'Komvux',
+    city: 'Borås',
+    region: 'Västra Götaland',
+    address: 'Fabriksgatan 12, 503 38 Borås (lokal meddelas av prövningsförrättaren)',
+    lat: 57.7172,
+    lng: 12.9426,
+    price: 500,
+    priceNote:
+      'Avgiftsfritt om du har F eller IG i kursen sedan tidigare — bifoga betygskopia om betyget inte kommer från Komvux i Borås. ' +
+      'Annars 500 kr till bankgiro 991-1025, och kvittot bifogas anmälan. ' +
+      NON_REFUNDABLE,
+    nextPeriod: {
+      label:
+        'Anmälningsperioden är 24–27 augusti 2026 och prövningen i språk och övriga ämnen genomförs tisdag 29 september.',
+      applicationStart: '2026-08-24',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-09-29',
+      confirmed: true,
+    },
+    components: COMPONENTS_ENGELSKA,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://boras.alvis.se/provning/kurs/spr%C3%A5k',
+    infoUrl:
+      'https://www.boras.se/utbildningochforskola/komvux/ansokanochantagning/provning.4.40b9a18a198c092ed9d4ab1.html',
+    description:
+      'Prövning i Engelska 5 hos Komvux i Borås, på höstens språkdag. Prövningen innehåller både skriftliga ' +
+      'och muntliga moment, och muntliga prov kan läggas vid en annan tid än provdagen — det beskedet kommer ' +
+      'från prövningsförrättaren. Borås prövar inte modersmål eller moderna språk.',
+    tags: ['engelska', 'boras', 'västra götaland', 'gy11'],
+    verifiedAt: AUG_27_VERIFIED,
   },
 ];
 

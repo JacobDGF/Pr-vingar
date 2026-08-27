@@ -26,6 +26,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.121.0",
     "@tailwindcss/vite": "^4.2.2",
     "date-fns": "^4.1.0",
     "leaflet": "^1.9.4",

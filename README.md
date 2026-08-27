@@ -226,6 +226,46 @@ fältet som bär det som inte har någon kolumn — landskapet under länet,
 läroplanen en kurs hör till (`gy11`/`gy25`) — och varje sådant är ett ord någon
 skriver i rutan.
 
+## AI-prövning
+
+Fliken tar en fråga i löpande text — "jag bor i Göteborg och vill höja mitt
+betyg i Matte 2b innan december" — och svarar med prövningarna som matchar. Det
+är samma kort som i Upptäck, med samma statusfärg och samma detaljvy: svaret är
+en väg _in_ i datan, inte en andra, mjukare kopia av den som kan säga något
+annat.
+
+Två halvor, och den undre bär alltid.
+
+- [`src/lib/aiSearch.ts`](src/lib/aiSearch.ts) läser frågan mot datans egen
+  vokabulär — städerna, ämnena, kurserna och taggarna som faktiskt står i
+  `exams.ts` — plus månadsnamn för en deadline ("innan december" → sista
+  december). Den kan ingenting datan inte kan: att "Matte 2b" hittar
+  "Matematik 2b" beror på en normalisering, inte på en ortlista. Den behöver
+  varken nyckel, nät eller förtroende, och den är svaret när något av det
+  saknas.
+- [`src/lib/aiClient.ts`](src/lib/aiClient.ts) skickar de tolv högst rankade
+  listningarna som JSON till Anthropics Messages API (`claude-sonnet-4-6`,
+  `max_tokens: 1000`) och ber om en skriven sammanfattning. Varje rad bär
+  anordnarens egen `kalla_url`, och ett fält datan saknar går över som `null` —
+  systemprompten säger att ett `null` ska sägas rakt ut, aldrig fyllas i. Ett
+  påhittat datum är det enda fel den här appen inte har råd med, för någon
+  planerar en termin efter det.
+
+Misslyckas anropet — fel nyckel, rate limit, inget nät — visas den lokala
+sökningen med en mening om varför. Det är ingen felsida: listan under är ett
+riktigt svar på frågan.
+
+### Nyckeln ligger hos användaren
+
+Appen har ingen server. En API-nyckel i bygget vore en nyckel publicerad till
+alla som öppnar sidan, så det finns ingen i repot och ingen i `dist/`. Fliken
+fungerar utan nyckel — den lokala sökningen är standardläget — och den som vill
+ha det skrivna svaret klistrar in sin egen. Den sparas under en egen post i
+`localStorage`, medvetet utanför zustand-storen, eftersom profilfliken
+exporterar den storen som en JSON-fil användaren kan dela vidare. SDK:n
+hämtas med `import()` först när det finns en nyckel, så de 174 kB landar aldrig
+hos någon som inte bett om dem.
+
 ## Profil och community
 
 Profilen svarar på en fråga innan alla andra: hur många av dina sparade
@@ -271,7 +311,7 @@ Därför två utvägar, båda helt lokala:
 
 ## När appen går sönder
 
-Fyra av fem flikar hämtas med `import()` första gången de öppnas, och varje
+Fem av sex flikar hämtas med `import()` första gången de öppnas, och varje
 deploy byter namn på de filerna — `rsync --delete` i deployen tar bort förra
 byggets chunkar i samma ögonblick som det nya landar. En användare som hade
 appen öppen över en deploy och sedan trycker på en flik hen inte besökt ännu ber

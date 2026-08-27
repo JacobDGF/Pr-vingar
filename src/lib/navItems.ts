@@ -1,8 +1,8 @@
-import { Compass, BookMarked, Users, History, User } from 'lucide-react';
+import { Compass, Sparkles, BookMarked, Users, History, User } from 'lucide-react';
 import { TabId } from '../types';
 
 /**
- * The five tabs, one colour each.
+ * The six tabs, one colour each — and one deliberately without.
  *
  * Every tab used to be the same brand teal, so the sidebar was five identical
  * rows and the only thing distinguishing them was a word you had to read. A
@@ -43,6 +43,15 @@ export interface NavTone {
 export const NAV_ITEMS: {
   id: TabId;
   label: string;
+  /**
+   * What the phone's bottom bar shows, when the full label doesn't fit.
+   *
+   * Six cells across a 360px screen leaves about 58px each, and "Nyligen
+   * visade" needs twice that — it wrapped to two lines and pushed the bar's
+   * height around as tabs changed. The sidebar, which has the room, keeps the
+   * full label either way.
+   */
+  short?: string;
   /** One line, shown under the label in the sidebar. */
   hint: string;
   icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
@@ -60,6 +69,28 @@ export const NAV_ITEMS: {
       ink: 'text-brand-500',
       hover: 'hover:bg-brand-50',
       solid: 'bg-brand-500',
+    },
+  },
+  {
+    id: 'ai',
+    label: 'AI-prövning',
+    hint: 'Fråga med egna ord',
+    short: 'AI',
+    icon: Sparkles,
+    // The sixth tab is the one that can't have a hue. Every free colour left
+    // sits next to one already spoken for — an indigo lands on violet's toes,
+    // an orange on amber's — and two tabs a reader has to stop and tell apart
+    // costs more than the colour buys. So this one is ink: the app's own black,
+    // the same one on every primary button, and the only monochrome tab in the
+    // bar. It reads as "ask the app" rather than as a sixth destination
+    // competing with the five, which is exactly what it is.
+    tone: {
+      gradient: 'bg-ink',
+      glow: 'shadow-[0_8px_20px_-4px] shadow-ink/45',
+      tint: 'bg-sand',
+      ink: 'text-ink',
+      hover: 'hover:bg-sand',
+      solid: 'bg-ink',
     },
   },
   {
@@ -93,6 +124,7 @@ export const NAV_ITEMS: {
   {
     id: 'history',
     label: 'Nyligen visade',
+    short: 'Nyligen',
     hint: 'Det du tittat på',
     icon: History,
     tone: {
