@@ -7,7 +7,7 @@ import { getRegistrationFlow } from '../lib/registrationFlow';
  * a bad row — a duplicate id, a date range that runs backwards, a listing that
  * claims a confirmed period without saying when — ships as a wrong answer to
  * somebody deciding whether they can still book a prövning this term. These
- * guard the shapes a reviewer can't eyeball across ~90 hand-written entries.
+ * guard the shapes a reviewer can't eyeball across ~160 hand-written entries.
  */
 
 /** Rough bounding box for Sweden, generous at the edges. */
@@ -61,7 +61,7 @@ describe('EXAMS dataset', () => {
    * this catches: the ids differ, so the id guard above is happy, and what
    * ships is one school shown twice — once with the dates it publishes and
    * once saying it publishes none. The dataset grows by hand, one provider at
-   * a time, and nobody re-reads 100 entries before adding the 101st.
+   * a time, and nobody re-reads 160 entries before adding the 161st.
    */
   it('lists each school-and-course once', () => {
     const seen = new Map<string, string[]>();

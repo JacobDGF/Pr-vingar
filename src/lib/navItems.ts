@@ -1,8 +1,8 @@
-import { Compass, BookMarked, Users, History, User } from 'lucide-react';
+import { Compass, BookMarked, Users, History, User, Sparkles } from 'lucide-react';
 import { TabId } from '../types';
 
 /**
- * The five tabs, one colour each.
+ * The six tabs, one colour each.
  *
  * Every tab used to be the same brand teal, so the sidebar was five identical
  * rows and the only thing distinguishing them was a word you had to read. A
@@ -11,9 +11,9 @@ import { TabId } from '../types';
  * and just hit the pink one.
  *
  * The colours aren't decoration picked at random — each one argues for its
- * tab. Cyan is the map and the horizon; amber is the bookmark, the things you
- * put aside for yourself; magenta is people; violet is the past; emerald is
- * you, and growing.
+ * tab. Cyan is the map and the horizon; ink is the app itself, answering;
+ * amber is the bookmark, the things you put aside for yourself; magenta is
+ * people; violet is the past; emerald is you, and growing.
  *
  * One deliberate limit: none of these is the app's *status* language. Red means
  * fullbokat and forest green means bookable, and those two live on the
@@ -43,6 +43,12 @@ export interface NavTone {
 export const NAV_ITEMS: {
   id: TabId;
   label: string;
+  /**
+   * What the bottom bar calls it, when the full label is too long for a sixth
+   * of a phone. Only "Nyligen visade" needs one: at six tabs it wrapped to two
+   * lines and made the bar taller than the five labels beside it.
+   */
+  shortLabel?: string;
   /** One line, shown under the label in the sidebar. */
   hint: string;
   icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
@@ -60,6 +66,26 @@ export const NAV_ITEMS: {
       ink: 'text-brand-500',
       hover: 'hover:bg-brand-50',
       solid: 'bg-brand-500',
+    },
+  },
+  {
+    id: 'ask',
+    label: 'AI-prövning',
+    hint: 'Fråga med egna ord',
+    icon: Sparkles,
+    // Ink, not a sixth hue. The five colours are already spoken for, and the
+    // three left unused are the status language — orange, red and green mean
+    // "stänger snart", "fullbokat" and "öppen", and a nav item wearing one of
+    // them would look like a booking. Ink is the one value that is unmistakably
+    // none of the five and none of the three, and it happens to say the right
+    // thing: this is the app answering, not a category of listings.
+    tone: {
+      gradient: 'bg-ink',
+      glow: 'shadow-[0_8px_20px_-4px] shadow-ink/45',
+      tint: 'bg-sand',
+      ink: 'text-ink',
+      hover: 'hover:bg-sand',
+      solid: 'bg-ink',
     },
   },
   {
@@ -93,6 +119,7 @@ export const NAV_ITEMS: {
   {
     id: 'history',
     label: 'Nyligen visade',
+    shortLabel: 'Nyligen',
     hint: 'Det du tittat på',
     icon: History,
     tone: {

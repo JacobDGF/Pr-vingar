@@ -134,7 +134,7 @@ npm run check:links          # rapporterar döda länkar
 npm run check:links -- --all # visar även omdirigeringar
 ```
 
-Skriptet ingår medvetet inte i `npm test` — det beror på att ~90 externa
+Skriptet ingår medvetet inte i `npm test` — det beror på att ~160 externa
 webbplatser svarar.
 
 En 503 betyder två helt olika saker, och sweepen skiljer dem åt i två steg.
@@ -226,6 +226,55 @@ fältet som bär det som inte har någon kolumn — landskapet under länet,
 läroplanen en kurs hör till (`gy11`/`gy25`) — och varje sådant är ett ord någon
 skriver i rutan.
 
+## AI-prövning
+
+Sökrutan svarar på "vad finns", fliken AI-prövning på "vad ska _jag_ göra". Det
+är olika frågor, och bara den ena går att skriva in i ett filter. Meningen
+_"jag bor i Göteborg och vill höja mitt betyg i Matte 2b innan december"_
+innehåller en stad, en kurs och en deadline — och sökrutan kan inte använda
+någon av dem. Matchad mot skolnamn och taggar ger den noll träffar.
+
+[`src/lib/askProvningar.ts`](src/lib/askProvningar.ts) är översättningen. Den
+läser ut de tre sakerna ur meningen, och allt den kan om städer och kurser
+hämtar den ur datan vid anropet — en listning som läggs till i morgon går att
+fråga om i morgon. Det enda handskrivna är alias-tabellen: orden folk skriver
+som ingen anordnare stavar så ("matte", "sva", "fek").
+
+Svaret är en mening och sedan listningarna den handlar om. Inte en text med
+datum inskrivna i sig: meningen orienterar, korten _är_ svaret, och det är
+samma kort som i resten av appen — samma färg, samma deadline, samma länk ut.
+Ingenting i fliken kan visa ett datum som inte finns i datan, eftersom
+ingenting i fliken skriver datum. Testet _"never speaks a date that is not on a
+listing it returned"_ i
+[`src/lib/askProvningar.test.ts`](src/lib/askProvningar.test.ts) håller den
+gränsen, och det var det testet som fångade att svaret räknade ned till sista
+anmälningsdag även på en omgång anordnaren redan kallat fullbokad.
+
+När sökningen måste vidgas för att hitta något — ut ur staden, förbi deadlinen
+— står det i svaret, och staden lämnar samtidigt meningen. "7 prövningar i Kemi
+1 i Malmö" följt av "ingen anordnare i Malmö har den öppen" är appen som säger
+emot sig själv i samma stycke, och det är första halvan läsaren tror på.
+
+### Varför Claude-anropet går via en endpoint
+
+[`src/lib/aiAnswer.ts`](src/lib/aiAnswer.ts) bygger ett riktigt Messages
+API-anrop (`claude-sonnet-4-6`, `max_tokens: 1000`, listningarna som kontext och
+en systemprompt som förbjuder gissade datum och avgifter) och POST:ar det till
+vad `VITE_AI_ENDPOINT` pekar på. Den endpointen håller nyckeln.
+
+Appen är en statisk sajt på GitHub Pages. Den har ingen server, och allt i
+bundlen är publikt — `view-source`-publikt. En Anthropic-nyckel här, antingen
+inskriven i ett fält eller inbakad vid bygget, är en nyckel publicerad på
+internet, och den skrapas och görs av med samma dygn. Det finns ingen variant av
+"anropa Messages API från webbläsaren" som inte gör det; SDK:ns egen nödutgång
+heter `dangerouslyAllowBrowser`.
+
+Därför är det lokala svaret **förstahandsvalet, inte reservlösningen**: utan
+konfigurerad endpoint skickas ingenting någonstans, och fliken fungerar med
+nätet av. Modellen är ett lager ovanpå — den skriver om meningen, aldrig
+listningarna. Ett gissat datum kan därför inte nå användaren, för de datum hen
+handlar på kommer ur `nextPeriod` oavsett vem som skrev prosan runt dem.
+
 ## Profil och community
 
 Profilen svarar på en fråga innan alla andra: hur många av dina sparade
@@ -271,7 +320,7 @@ Därför två utvägar, båda helt lokala:
 
 ## När appen går sönder
 
-Fyra av fem flikar hämtas med `import()` första gången de öppnas, och varje
+Fem av sex flikar hämtas med `import()` första gången de öppnas, och varje
 deploy byter namn på de filerna — `rsync --delete` i deployen tar bort förra
 byggets chunkar i samma ögonblick som det nya landar. En användare som hade
 appen öppen över en deploy och sedan trycker på en flik hen inte besökt ännu ber

@@ -19,7 +19,7 @@ export function BottomNav() {
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-md border-t border-line z-40 safe-bottom">
       <div className="max-w-lg mx-auto flex px-1 pt-1.5">
-        {NAV_ITEMS.map(({ id, label, icon: Icon, tone }) => {
+        {NAV_ITEMS.map(({ id, label, shortLabel, icon: Icon, tone }) => {
           const isActive = activeTab === id;
           const badge = badgeFor(id);
           return (
@@ -30,10 +30,10 @@ export function BottomNav() {
               className="flex-1 flex flex-col items-center py-1 px-0.5 active:scale-95 transition-transform"
             >
               {/* Resting icons keep their own colour rather than going grey.
-                  Five grey icons make the bar read as one object; five colours
-                  make it read as five places, which is what it is. */}
+                  Six grey icons make the bar read as one object; six colours
+                  make it read as six places, which is what it is. */}
               <div
-                className={`relative px-4 py-1.5 rounded-xl transition-all duration-200 ${
+                className={`relative px-3 py-1.5 rounded-xl transition-all duration-200 ${
                   isActive ? `${tone.gradient} ${tone.glow}` : ''
                 }`}
               >
@@ -53,11 +53,11 @@ export function BottomNav() {
                 )}
               </div>
               <span
-                className={`text-[10.5px] mt-1 font-bold tracking-tight transition-colors duration-200 ${
+                className={`text-[10px] mt-1 font-bold tracking-tight leading-tight text-center transition-colors duration-200 ${
                   isActive ? tone.ink : 'text-ink-faint'
                 }`}
               >
-                {label}
+                {shortLabel ?? label}
               </span>
             </button>
           );
