@@ -172,6 +172,34 @@ const COMPONENTS_VARD: ExamComponent[] = [
   },
 ];
 
+const TIPS_BIOLOGI = [
+  'Rita egna begreppskartor över cellen, genetiken och ekosystemens kretslopp.',
+  'Öva på evolutionens mekanismer och hur naturligt urval förklaras med exempel.',
+  'Prövningarna har ofta en laborativ del — läs på hur en labbrapport ska se ut.',
+  'Gamla nationella prov i biologi från Skolverket ger en bra bild av frågeformatet.',
+];
+
+const TIPS_SVA = [
+  'Läs svenska nyhetstexter dagligen och skriv ned nya ord och uttryck i en lista.',
+  'Träna referatteknik: källhänvisningar och referatmarkeringar återkommer i varje delprov.',
+  'Förbered språkjämförelsen i god tid — likheter och skillnader mot ditt förstaspråk.',
+  'Öva den muntliga delen genom att spela in dig själv och lyssna igenom.',
+];
+
+const TIPS_PROGRAMMERING = [
+  'Skriv kod varje dag i det språk skolan anger — läsning räcker inte i programmering.',
+  'Repetera grunderna: variabler, villkor, loopar, funktioner och felsökning.',
+  'Öva på att förklara din kod i ord, det efterfrågas ofta i bedömningen.',
+  'Bygg ett litet eget projekt och dokumentera hur du löste problemen på vägen.',
+];
+
+const TIPS_RELIGION = [
+  'Gör en tabell över världsreligionernas kännetecken, urkunder och riktningar.',
+  'Repetera de normativa etiska modellerna och öva på att tillämpa dem på ett fall.',
+  'Träna på att analysera argument i etiska frågor ur flera perspektiv.',
+  'Läs på om relationen mellan religion och vetenskap i den aktuella samhällsdebatten.',
+];
+
 const TIPS_FLERA = [
   'Kontakta skolan tidigt för att få exakt kurskod och provupplägg för din kurs.',
   'Fråga om gamla tentor eller övningsmaterial för just den kurs du ska pröva.',
@@ -212,6 +240,10 @@ const FULL_SWEEP_VERIFIED = '2026-08-20';
 // Datasvep 2026-08-26 (#45): de listningar check:dates pekade ut som gångna,
 // lästa mot anordnarens egen sida i stället för mot etiketten i datan.
 const AUG_26_VERIFIED = '2026-08-26';
+// Malmö- och Linköpingssvep 2026-08-29: de två anordnare i prioritetsordningen
+// som publicerar hela sitt utbud och skrivschema i förväg, lästa kurs för kurs
+// mot skolans egen sida i stället för som ett kort per skola.
+const AUG_29_VERIFIED = '2026-08-29';
 
 /**
  * For providers who put the anmälan on their own page — but only while the
@@ -256,6 +288,58 @@ function sthlmAutumn2026(opensOn: string, opensLabel: string): NextPeriod {
       'Prövningen genomförs under hösten 2026, planerad så att betyget hinner fram till sista ' +
       'kompletteringsdagen i början av december. Nästa möjlighet därefter är i början av 2027.',
     applicationStart: opensOn,
+    confirmed: true,
+  };
+}
+
+/**
+ * Komvux Malmös period 4 2026.
+ *
+ * Malmö is one of the few providers that publishes the whole skrivschema
+ * months ahead — not just "prövningsperiod 26 oktober – 25 november", but which
+ * afternoon each course is written on and when check-in opens. That detail is
+ * the reason the listings are per course rather than one card for the school:
+ * you may sit at most one kursprov per day, so two courses on the same
+ * afternoon is an anmälan Malmö will not process, and the only way to see the
+ * clash is to know both dates before you pay.
+ *
+ * The window stays the provider's own prövningsperiod. The skrivdag belongs in
+ * the label, where it describes this course, rather than narrowing a period the
+ * provider states more widely.
+ *
+ * @param skrivdag the course's own writing day(s), e.g. 'torsdag 29 oktober'
+ */
+function malmoPeriod4(skrivdag: string): NextPeriod {
+  return {
+    label:
+      'Period 4 2026: anmälan 7–18 september, prövningsperiod 26 oktober – 25 november. ' +
+      `Skrivpass ${skrivdag}. Betygsdatum 25 november. (Period 3 stängde 7 augusti.)`,
+    applicationStart: '2026-09-07',
+    applicationEnd: '2026-09-18',
+    examWindowStart: '2026-10-26',
+    examWindowEnd: '2026-11-25',
+    confirmed: true,
+  };
+}
+
+/**
+ * Linvux prövningsperiod 3 2026.
+ *
+ * Linvux dates the anmälan to the day and the writing to the week ("Vecka
+ * 40-41. Vissa prövningar kan påbörjas tidigare/senare"), so the window is
+ * those two weeks read as dates, with the provider's own caveat kept in the
+ * label rather than dropped for a tidier card.
+ */
+function linvuxPeriod3(): NextPeriod {
+  return {
+    label:
+      'Prövningsperiod 3 2026: anmälan öppnade 10 augusti klockan 8 och stänger 4 september. ' +
+      'Proven skrivs vecka 40–41, det vill säga 28 september – 11 oktober; vissa prövningar ' +
+      'kan påbörjas tidigare eller senare. Du kan bli antagen till högst tre kurser per period.',
+    applicationStart: '2026-08-10',
+    applicationEnd: '2026-09-04',
+    examWindowStart: '2026-09-28',
+    examWindowEnd: '2026-10-11',
     confirmed: true,
   };
 }
@@ -4456,6 +4540,2086 @@ export const EXAMS: Exam[] = [
       'välja rätt kurs. Vuxnas lärande nås på vuxnaslarande@skola.sala.se.',
     tags: ['komvux', 'sala', 'västmanland'],
     verifiedAt: THIN_LAN_2_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-engelska-5',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Engelska',
+    course: 'Engelska 5',
+    courseCode: 'ENGENG05',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Incheckning klockan 12.45–13.25, provstart klockan 13.30.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Engelska 5 hos Komvux Malmö, period 4 2026. Skrivpassen ligger måndag 26 ' +
+      'oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. Kolla ' +
+      'skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov per ' +
+      'dag.',
+    tags: ['engelska', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-engelska-7',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Engelska',
+    course: 'Engelska 7',
+    courseCode: 'ENGENG07',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Incheckning klockan 12.45–13.25, provstart klockan 13.30.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Engelska 7 hos Komvux Malmö, period 4 2026. Skrivpassen ligger måndag 26 ' +
+      'oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. Kolla ' +
+      'skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov per ' +
+      'dag.',
+    tags: ['engelska', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-biologi-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Biologi',
+    course: 'Biologi 1',
+    courseCode: 'BIOBIO01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Biologi 1 hos Komvux Malmö, period 4 2026. Skrivpasset ligger måndag 26 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['biologi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-fysik-1a',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Fysik',
+    course: 'Fysik 1a',
+    courseCode: 'FYSFYS01a',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Fysik 1a hos Komvux Malmö, period 4 2026. Skrivpasset ligger måndag 26 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['fysik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-kemi-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Kemi',
+    course: 'Kemi 2',
+    courseCode: 'KEMKEM02',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Kemi 2 hos Komvux Malmö, period 4 2026. Skrivpasset ligger måndag 26 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['kemi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-naturkunskap-1b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1b',
+    courseCode: 'NAKNAK01b',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Naturkunskap 1b hos Komvux Malmö, period 4 2026. Skrivpasset ligger måndag ' +
+      '26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du ' +
+      'får skriva högst ett kursprov per dag.',
+    tags: ['naturkunskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-fysik-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Fysik',
+    course: 'Fysik 2',
+    courseCode: 'FYSFYS02',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Fysik 2 hos Komvux Malmö, period 4 2026. Skrivpasset ligger tisdag 27 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['fysik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-programmering-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Programmering',
+    course: 'Programmering 1',
+    courseCode: 'PRRPRR01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Programmering 1 hos Komvux Malmö, period 4 2026. Skrivpasset ligger tisdag ' +
+      '27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du ' +
+      'får skriva högst ett kursprov per dag.',
+    tags: ['programmering', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-psykologi-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Psykologi',
+    course: 'Psykologi 1',
+    courseCode: 'PSKPSY01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Psykologi 1 hos Komvux Malmö, period 4 2026. Skrivpasset ligger tisdag 27 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['psykologi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-samhallskunskap-1b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1b',
+    courseCode: 'SAMSAM01b',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Samhällskunskap 1b hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'tisdag 27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar ' +
+      '— du får skriva högst ett kursprov per dag.',
+    tags: ['samhällskunskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska',
+    course: 'Svenska 1',
+    courseCode: 'SVESVE01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska 1 hos Komvux Malmö, period 4 2026. Skrivpassen ligger tisdag 27 ' +
+      'oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. Kolla ' +
+      'skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov per ' +
+      'dag.',
+    tags: ['svenska', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska',
+    course: 'Svenska 2',
+    courseCode: 'SVESVE02',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska 2 hos Komvux Malmö, period 4 2026. Skrivpassen ligger tisdag 27 ' +
+      'oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. Kolla ' +
+      'skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov per ' +
+      'dag.',
+    tags: ['svenska', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-som-andrasprak-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 1',
+    courseCode: 'SVASVA01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska som andraspråk 1 hos Komvux Malmö, period 4 2026. Skrivpassen ' +
+      'ligger tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan ' +
+      '44. Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ett ' +
+      'kursprov per dag.',
+    tags: ['sva', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-som-andrasprak-3',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 3',
+    courseCode: 'SVASVA03',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '5 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '5 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska som andraspråk 3 hos Komvux Malmö, period 4 2026. Skrivpassen ' +
+      'ligger tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan ' +
+      '44. Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ett ' +
+      'kursprov per dag.',
+    tags: ['sva', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-biologi-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Biologi',
+    course: 'Biologi 2',
+    courseCode: 'BIOBIO02',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Biologi 2 hos Komvux Malmö, period 4 2026. Skrivpasset ligger onsdag 28 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['biologi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-kemi-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Kemi',
+    course: 'Kemi 1',
+    courseCode: 'KEMKEM01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Kemi 1 hos Komvux Malmö, period 4 2026. Skrivpasset ligger onsdag 28 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['kemi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-naturkunskap-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 2',
+    courseCode: 'NAKNAK02',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Naturkunskap 2 hos Komvux Malmö, period 4 2026. Skrivpasset ligger onsdag ' +
+      '28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du ' +
+      'får skriva högst ett kursprov per dag.',
+    tags: ['naturkunskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-1b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik 1b',
+    courseCode: 'MATMAT01b',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik 1b hos Komvux Malmö, period 4 2026. Skrivpasset ligger torsdag 29 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-1c',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik 1c',
+    courseCode: 'MATMAT01c',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik 1c hos Komvux Malmö, period 4 2026. Skrivpasset ligger torsdag 29 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-2b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik 2b',
+    courseCode: 'MATMAT02b',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik 2b hos Komvux Malmö, period 4 2026. Skrivpasset ligger torsdag 29 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-2c',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik 2c',
+    courseCode: 'MATMAT02c',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik 2c hos Komvux Malmö, period 4 2026. Skrivpasset ligger torsdag 29 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-3b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik 3b',
+    courseCode: 'MATMAT03b',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik 3b hos Komvux Malmö, period 4 2026. Skrivpasset ligger torsdag 29 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-3c',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik 3c',
+    courseCode: 'MATMAT03c',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik 3c hos Komvux Malmö, period 4 2026. Skrivpasset ligger torsdag 29 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-4',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik 4',
+    courseCode: 'MATMAT04',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4,5 timme',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik 4 hos Komvux Malmö, period 4 2026. Skrivpasset ligger torsdag 29 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-5',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik 5',
+    courseCode: 'MATMAT05',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4,5 timme',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik 5 hos Komvux Malmö, period 4 2026. Skrivpasset ligger torsdag 29 ' +
+      'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
+      'skriva högst ett kursprov per dag.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-som-andrasprak-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 2',
+    courseCode: 'SVASVA02',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
+      'samband med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('fredag 30 oktober'),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00.',
+      },
+    ],
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska som andraspråk 2 hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger fredag 30 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag.',
+    tags: ['sva', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-engelska-5',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Engelska',
+    course: 'Engelska 5',
+    courseCode: 'ENGENG05',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – skriftlig produktion och interaktion',
+        duration: 'Varierar',
+        description:
+          'Skriftlig produktion i formella sammanhang: instruera, sammanfatta, värdera, ' +
+          'motivera och argumentera.',
+      },
+      {
+        name: 'Del 2 – hör- och läsförståelse',
+        duration: 'Varierar',
+        description: 'Förståelse av ord och fraser i muntliga och skriftliga framställningar.',
+      },
+      {
+        name: 'Del 3 – realia',
+        duration: 'Hemuppgift',
+        description: 'Skriftlig hemuppgift som ligger till grund för den muntliga delen.',
+      },
+      {
+        name: 'Del 4 – muntlig produktion och interaktion',
+        duration: 'Varierar',
+        description: 'Genomförs sist, och bara om övriga delar är godkända.',
+      },
+      {
+        name: 'Del 5 – litteraturläsning',
+        duration: 'Varierar',
+        description: 'En roman ur skolans lista diskuteras och analyseras muntligt.',
+      },
+    ],
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Engelska 5 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['engelska', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-engelska-7',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Engelska',
+    course: 'Engelska 7',
+    courseCode: 'ENGENG07',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – skriftlig produktion och interaktion',
+        duration: 'Varierar',
+        description:
+          'Skriftlig produktion i formella sammanhang: instruera, sammanfatta, värdera, ' +
+          'motivera och argumentera.',
+      },
+      {
+        name: 'Del 2 – hör- och läsförståelse',
+        duration: 'Varierar',
+        description: 'Förståelse av ord och fraser i muntliga och skriftliga framställningar.',
+      },
+      {
+        name: 'Del 3 – realia',
+        duration: 'Hemuppgift',
+        description: 'Skriftlig hemuppgift som ligger till grund för den muntliga delen.',
+      },
+      {
+        name: 'Del 4 – muntlig produktion och interaktion',
+        duration: 'Varierar',
+        description: 'Genomförs sist, och bara om övriga delar är godkända.',
+      },
+    ],
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Engelska 7 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['engelska', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-svenska-1',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Svenska',
+    course: 'Svenska 1',
+    courseCode: 'SVESVE01',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – läsförståelse',
+        duration: 'Varierar',
+        description: 'Nationella provets delprov B.',
+      },
+      {
+        name: 'Del 2 – argumenterande text',
+        duration: 'Varierar',
+        description: 'Nationella provets delprov C.',
+      },
+      {
+        name: 'Del 3 – muntligt anförande',
+        duration: 'Varierar',
+        description:
+          'Informerande anförande om språklig variation, med gruppsamtal. Manus och ' +
+          'källkritiska reflektioner skickas in tre arbetsdagar innan.',
+      },
+      {
+        name: 'Del 4 – litteraturanalys',
+        duration: 'Varierar',
+        description:
+          'Skriftlig analys av en tilldelad novell, jämförd med romanen som står i ' +
+          'anvisningarna.',
+      },
+    ],
+    studyTips: TIPS_SVENSKA,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Svenska 1 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['svenska', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-svenska-2',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Svenska',
+    course: 'Svenska 2',
+    courseCode: 'SVESVE02',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – litteraturhistoria och satslära',
+        duration: '3 timmar',
+        description:
+          'Antiken, medeltiden, renässansen och upplysningen samt satslösning och satsscheman.',
+      },
+      {
+        name: 'Del 2 – utredande uppsats',
+        duration: '3 timmar',
+        description:
+          'Om språksituationen i Norden, med minst två källor ur texthäftet och korrekt ' +
+          'referatteknik.',
+      },
+      {
+        name: 'Del 3 – argumenterande text',
+        duration: 'Varierar',
+        description: 'Om språksituationen i Sverige, med hänvisning till minst en utdelad artikel.',
+      },
+      {
+        name: 'Del 4 – muntlig romananalys',
+        duration: 'Varierar',
+        description:
+          'Litteraturhistorisk analys av en roman från skolans romanlista, följt av seminarium.',
+      },
+    ],
+    studyTips: TIPS_SVENSKA,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Svenska 2 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['svenska', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-svenska-3',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Svenska',
+    course: 'Svenska 3',
+    courseCode: 'SVESVE03',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – uppsatsskrivning',
+        duration: 'Varierar',
+        description:
+          'Nationella provets delprov A: ett utredande PM utifrån texthäftet, som delas ut en ' +
+          'vecka innan.',
+      },
+      {
+        name: 'Del 2 – argumenterande tal',
+        duration: 'Varierar',
+        description: 'Nationella provets delprov B.',
+      },
+      {
+        name: 'Del 3 – skriftligt prov',
+        duration: 'Varierar',
+        description: 'Språkhistoria och språkförändring.',
+      },
+      {
+        name: 'Del 4 – litteraturseminarium',
+        duration: 'Varierar',
+        description: 'Komparativ analys av Kallocain och andra texter om övervakningssamhället.',
+      },
+      {
+        name: 'Del 5 – skriftlig talanalys',
+        duration: 'Varierar',
+        description: 'Retorisk analys av ett på förhand bestämt högtidstal.',
+      },
+    ],
+    studyTips: TIPS_SVENSKA,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Svenska 3 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['svenska', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-svenska-som-andrasprak-1',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 1',
+    courseCode: 'SVASVA01',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – läsförståelse',
+        duration: 'Varierar',
+        description: 'Texthäfte med tillhörande frågor.',
+      },
+      {
+        name: 'Del 2 – uppsatsskrivning',
+        duration: 'Varierar',
+        description: 'Argumenterande uppsats med minst en av texthäftets texter som källa.',
+      },
+      {
+        name: 'Del 3 – novellanalys',
+        duration: 'Varierar',
+        description: 'Skriftlig analys enligt vanliga analyspunkter.',
+      },
+      {
+        name: 'Del 4 – språkjämförelse',
+        duration: 'Varierar',
+        description:
+          'Muntligt anförande om likheter och skillnader mellan svenska och ditt förstaspråk, ' +
+          'följt av gruppsamtal.',
+      },
+    ],
+    studyTips: TIPS_SVA,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Svenska som andraspråk 1 hos Linvux, prövningsperiod 3 2026. Du behöver ' +
+      'inte bo i Linköpings kommun för att pröva här, och du kan bli antagen till högst tre ' +
+      'kurser per period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['sva', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-svenska-som-andrasprak-2',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 2',
+    courseCode: 'SVASVA02',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – läsförståelse',
+        duration: 'Varierar',
+        description: 'Texthäfte med tillhörande frågor.',
+      },
+      {
+        name: 'Del 2 – utredande uppsats',
+        duration: 'Varierar',
+        description: 'Minst två av texthäftets texter som källor, med korrekt referatteknik.',
+      },
+      {
+        name: 'Del 3 – argumenterande tal',
+        duration: 'Varierar',
+        description: 'Om språkinlärning eller språklig variation.',
+      },
+      {
+        name: 'Del 4 – skriftligt prov',
+        duration: 'Varierar',
+        description: 'Språksituationen i Sverige.',
+      },
+      {
+        name: 'Del 5 – muntlig romanredovisning',
+        duration: 'Varierar',
+        description: 'Redovisning av en roman ur skolans lista, med digitalt presentationsstöd.',
+      },
+    ],
+    studyTips: TIPS_SVA,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Svenska som andraspråk 2 hos Linvux, prövningsperiod 3 2026. Du behöver ' +
+      'inte bo i Linköpings kommun för att pröva här, och du kan bli antagen till högst tre ' +
+      'kurser per period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['sva', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-biologi-1',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Biologi',
+    course: 'Biologi 1',
+    courseCode: 'BIOBIO01',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – skriftligt prov',
+        duration: '4 timmar',
+        description: 'Omfattar både det teoretiska och det laborativa innehållet i kursen.',
+      },
+      {
+        name: 'Del 2 – laborativ del',
+        duration: 'Varierar',
+        description:
+          'Praktisk laboration med skriftlig laborationsrapport som lämnas in för bedömning.',
+      },
+    ],
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Biologi 1 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['biologi', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-biologi-2',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Biologi',
+    course: 'Biologi 2',
+    courseCode: 'BIOBIO02',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – skriftligt prov',
+        duration: '4 timmar',
+        description: 'Omfattar både det teoretiska och det laborativa innehållet i kursen.',
+      },
+      {
+        name: 'Del 2 – laborativ del',
+        duration: 'Varierar',
+        description:
+          'Praktisk laboration med skriftlig laborationsrapport som lämnas in för bedömning.',
+      },
+    ],
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Biologi 2 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['biologi', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-fysik-1a',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Fysik',
+    course: 'Fysik 1a',
+    courseCode: 'FYSFYS01a',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – skriftligt prov',
+        duration: '4 timmar',
+        description: 'Provtillfällena ligger med ungefär en veckas mellanrum.',
+      },
+      {
+        name: 'Del 2 – laborationer',
+        duration: 'Varierar',
+        description:
+          'Två laborationer med fullständiga rapporter. Genomförs bara om del 1 är godkänd.',
+      },
+    ],
+    studyTips: TIPS_FYSIK,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Fysik 1a hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['fysik', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-fysik-2',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Fysik',
+    course: 'Fysik 2',
+    courseCode: 'FYSFYS02',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – skriftligt prov',
+        duration: '4 timmar',
+        description: 'Provtillfällena ligger med ungefär en veckas mellanrum.',
+      },
+      {
+        name: 'Del 2 – laborationer',
+        duration: 'Varierar',
+        description:
+          'Två laborationer med fullständiga rapporter. Genomförs bara om del 1 är godkänd.',
+      },
+    ],
+    studyTips: TIPS_FYSIK,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Fysik 2 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i Linköpings ' +
+      'kommun för att pröva här, och du kan bli antagen till högst tre kurser per period. ' +
+      'Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['fysik', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-kemi-1',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Kemi',
+    course: 'Kemi 1',
+    courseCode: 'KEMKEM01',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – skriftligt prov',
+        duration: '3 timmar',
+        description:
+          'Periodiskt system och nödvändiga formler delas ut. Miniräknare får användas, men ' +
+          'inte lexikon, mobil eller egen formelsamling.',
+      },
+      {
+        name: 'Del 2 – laborativ del',
+        duration: 'Varierar',
+        description: 'Praktisk laboration med laborationsrapport.',
+      },
+      {
+        name: 'Del 3 – muntligt prov',
+        duration: 'Efter överenskommelse',
+        description: 'Tillkommer vid gränsfall och oklarheter.',
+      },
+    ],
+    studyTips: TIPS_KEMI,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Kemi 1 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i Linköpings ' +
+      'kommun för att pröva här, och du kan bli antagen till högst tre kurser per period. ' +
+      'Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['kemi', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-kemi-2',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Kemi',
+    course: 'Kemi 2',
+    courseCode: 'KEMKEM02',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – skriftligt prov',
+        duration: '3 timmar',
+        description:
+          'Periodiskt system och nödvändiga formler delas ut. Miniräknare får användas, men ' +
+          'inte lexikon, mobil eller egen formelsamling.',
+      },
+      {
+        name: 'Del 2 – laborativ del',
+        duration: 'Varierar',
+        description: 'Praktisk laboration med laborationsrapport.',
+      },
+      {
+        name: 'Del 3 – muntligt prov',
+        duration: 'Efter överenskommelse',
+        description: 'Tillkommer vid gränsfall och oklarheter.',
+      },
+    ],
+    studyTips: TIPS_KEMI,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Kemi 2 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i Linköpings ' +
+      'kommun för att pröva här, och du kan bli antagen till högst tre kurser per period. ' +
+      'Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['kemi', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-naturkunskap-1b',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1b',
+    courseCode: 'NAKNAK01b',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – skriftligt prov',
+        duration: '4 timmar',
+        description: 'Det centrala innehållet för Naturkunskap 1a1 testas.',
+      },
+      {
+        name: 'Del 2 – skriftligt prov',
+        duration: '4 timmar',
+        description: 'Det centrala innehållet för Naturkunskap 1a2 testas.',
+      },
+      {
+        name: 'Del 3 – laborativ del',
+        duration: 'Varierar',
+        description: 'Laboration med skriftlig laborationsrapport.',
+      },
+    ],
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Naturkunskap 1b hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['naturkunskap', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-naturkunskap-2',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 2',
+    courseCode: 'NAKNAK02',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 och 2 – skriftliga prov',
+        duration: '4 timmar per prov',
+        description: 'Periodiskt system delas ut vid provet.',
+      },
+      {
+        name: 'Del 3 – laborativ del',
+        duration: 'Varierar',
+        description:
+          'Genomförs när de skriftliga proven är godkända, och redovisas med en inlämnad ' +
+          'laborationsrapport.',
+      },
+    ],
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Naturkunskap 2 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['naturkunskap', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-psykologi-1',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Psykologi',
+    course: 'Psykologi 1',
+    courseCode: 'PSKPSY01',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Psykologins historiska framväxt, kognitionspsykologi, biologisk psykologi, ' +
+          'socialpsykologi samt psykisk hälsa och ohälsa.',
+      },
+    ],
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Psykologi 1 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['psykologi', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-religionskunskap-1',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap 1',
+    courseCode: 'RELREL01',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Världsreligioner och livsåskådningar, etik samt relationen mellan religion och ' +
+          'vetenskap.',
+      },
+    ],
+    studyTips: TIPS_RELIGION,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Religionskunskap 1 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['religionskunskap', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-samhallskunskap-1a1',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1a1',
+    courseCode: 'SAMSAM01a1',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – statskunskap',
+        duration: '4 timmar',
+        description: 'Demokrati, diktatur, mänskliga rättigheter och Sveriges statsskick.',
+      },
+      {
+        name: 'Del 2 – ekonomi',
+        duration: '2 timmar',
+        description: 'Konsumentens rättigheter och skyldigheter, privat- och samhällsekonomi.',
+      },
+      {
+        name: 'Del 3 – inlämningsuppgift',
+        duration: 'Varierar',
+        description: 'Analys av en samhällsfråga med källkritik. Kräver godkänt på del 1 och 2.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Samhällskunskap 1a1 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo ' +
+      'i Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser ' +
+      'per period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['samhällskunskap', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-samhallskunskap-1b',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1b',
+    courseCode: 'SAMSAM01b',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Del 1 – statskunskap',
+        duration: '4 timmar',
+        description:
+          'Demokrati, diktatur, mänskliga rättigheter, Sveriges statsskick samt ideologier ' +
+          'och riksdagspartier.',
+      },
+      {
+        name: 'Del 2 – ekonomi',
+        duration: '3 timmar',
+        description: 'Privatekonomi, sparformer, konsumenträtt, välfärd och samhällsekonomi.',
+      },
+      {
+        name: 'Del 3 – inlämningsuppgift',
+        duration: 'Varierar',
+        description: 'Analys av en samhällsfråga med källkritik. Kräver godkänt på del 1 och 2.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Samhällskunskap 1b hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['samhällskunskap', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-matematik-1c',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Matematik',
+    course: 'Matematik 1c',
+    courseCode: 'MATMAT01c',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description: 'Prövningen består av ett skriftligt prov.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Matematik 1c hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['matematik', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-matematik-2c',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Matematik',
+    course: 'Matematik 2c',
+    courseCode: 'MATMAT02c',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description: 'Ta med grafritande räknare.',
+      },
+      {
+        name: 'Muntlig examination',
+        duration: 'Vid behov',
+        description: 'Tillkommer om det skriftliga provet behöver följas upp.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Matematik 2c hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['matematik', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
+  },
+  {
+    id: 'linvux-linkoping-matematik-5',
+    schoolName: 'Linvux (Linköpings vuxenutbildning)',
+    provider: 'Linköpings kommun',
+    subject: 'Matematik',
+    course: 'Matematik 5',
+    courseCode: 'MATMAT05',
+    level: 'Komvux',
+    city: 'Linköping',
+    region: 'Östergötland',
+    address: 'Kunskapsgallerian, Sankt Larsgatan 46, Linköping',
+    lat: 58.4108,
+    lng: 15.6214,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
+      'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
+    nextPeriod: linvuxPeriod3(),
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description: 'Ta med grafritande räknare.',
+      },
+      {
+        name: 'Muntlig examination',
+        duration: 'Vid behov',
+        description: 'Tillkommer om det skriftliga provet behöver följas upp.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://docs.google.com/forms/d/e/1FAIpQLSfda-AcrB_X1CQkm87v60SmosDyMSZ7REcNwEca3yqAqpeX6Q/viewform',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
+    description:
+      'Prövning i Matematik 5 hos Linvux, prövningsperiod 3 2026. Du behöver inte bo i ' +
+      'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
+      'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
+    tags: ['matematik', 'linköping', 'östergötland', 'gy11'],
+    verifiedAt: AUG_29_VERIFIED,
   },
 ];
 

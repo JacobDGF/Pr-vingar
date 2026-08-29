@@ -255,6 +255,37 @@ som är samma ark oavsett om du lägger till eller ändrar. Betygsraderna räkna
 in i snittpoängen på profilen, så ett betyg på fel rad var tidigare ett fel svar
 på appens enda riktiga fråga — utan annan väg tillbaka än att radera allt.
 
+## Jämför sida vid sida
+
+Att spara är lätt, och de flesta sparar samma kurs hos tre eller fyra skolor —
+det är vad sökningen ger. Att välja mellan dem var det appen aldrig hjälpte
+till med: avgiften, deadlinen och vägen in i anmälan ligger ett tryck ned på
+varje listning, så en jämförelse av tre betydde nio siffror i huvudet medan man
+bläddrade mellan tre ark.
+
+"Jämför" i Mina prövningar ställer de sparade i var sin kolumn.
+[`src/lib/compareExams.ts`](src/lib/compareExams.ts) bygger raderna — läge,
+avgift, vad avgiften inte gäller, anmälan öppnar, sista anmälan,
+prövningsperiod, vad som möter dig efter länken, var, och kurskoden — och
+märker varje rad med om kolumnerna faktiskt säger olika saker.
+
+Det är hela poängen med vyn. Fyra kurser hos Komvux Malmö är nio rader djup och
+sju av dem säger "500 kr" och "Komvux Malmö, Malmö" fyra gånger. Att skriva ut
+dem med samma tyngd som de två rader som skiljer omgångarna åt är att lämna
+hela letandet till läsaren, varje gång. Här gör appen det en gång och skriver
+ut svaret ovanför tabellen: _"2 av 9 rader skiljer dem åt. Resten är dämpade."_
+
+Ingen cell är en knapp. Vyn besvarar en enda fråga — vilken av de här vill jag
+ha — och svaret är en listning, så kolumnrubriken är det enda som går att
+trycka på och den öppnar listningen, där anmälningsknappen redan bor. Ett
+"Anmäl dig" i varje kolumn vore fem primärknappar på en skärm vars syfte är att
+välja en.
+
+Alla kolumner är lika breda. En anordnare som skriver ett stycke om sin avgift
+skulle annars dra ut sin egen kolumn till dubbla bredden, och en rad man inte
+kan läsa tvärs över är ingen jämförelse. Tabellen är bredare än en telefon med
+flit och rullar i sin egen ruta, aldrig sidan.
+
 ## Datum, kalender och dina data
 
 Appen påminner ingen om något när den är stängd, och den har ingen server.

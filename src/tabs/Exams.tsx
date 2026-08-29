@@ -1,7 +1,15 @@
 import { useState, useMemo } from 'react';
-import { LayoutGrid, CalendarDays, Compass, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  LayoutGrid,
+  CalendarDays,
+  Columns3,
+  Compass,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
+import { CompareTable } from '../components/CompareTable';
 import { Exam, SavedExam } from '../types';
 import { compareByPeriod } from '../lib/examStatus';
 
@@ -195,7 +203,7 @@ function Calendar({ events }: { events: CalEvent[] }) {
 
 export function Exams() {
   const { savedExams, exams, setActiveTab } = useStore();
-  const [view, setView] = useState<'list' | 'cal'>('list');
+  const [view, setView] = useState<'list' | 'compare' | 'cal'>('list');
 
   const saved = useMemo(
     () =>
@@ -228,6 +236,7 @@ export function Exams() {
           {(
             [
               ['list', 'Sparade prövningar', LayoutGrid],
+              ['compare', 'Jämför', Columns3],
               ['cal', 'Kalender', CalendarDays],
             ] as const
           ).map(([id, label, Icon]) => (
@@ -259,6 +268,8 @@ export function Exams() {
           </div>
         ) : view === 'cal' ? (
           <Calendar events={events} />
+        ) : view === 'compare' ? (
+          <CompareTable exams={savedList} />
         ) : (
           <div className="flex flex-col gap-5">
             <div className="flex gap-3.5 flex-wrap">
