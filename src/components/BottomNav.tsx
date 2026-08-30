@@ -30,10 +30,15 @@ export function BottomNav() {
               className="flex-1 flex flex-col items-center py-1 px-0.5 active:scale-95 transition-transform"
             >
               {/* Resting icons keep their own colour rather than going grey.
-                  Five grey icons make the bar read as one object; five colours
-                  make it read as five places, which is what it is. */}
+                  Six grey icons make the bar read as one object; six colours
+                  make it read as six places, which is what it is.
+
+                  The tile is padded narrower than it looks like it wants to be:
+                  at six tabs a 320px phone gives each button 53px, and a wider
+                  tile would push the row into a horizontal scroll — six
+                  destinations you can't see at once are worse than five. */}
               <div
-                className={`relative px-4 py-1.5 rounded-xl transition-all duration-200 ${
+                className={`relative px-3 py-1.5 rounded-xl transition-all duration-200 ${
                   isActive ? `${tone.gradient} ${tone.glow}` : ''
                 }`}
               >
@@ -53,7 +58,7 @@ export function BottomNav() {
                 )}
               </div>
               <span
-                className={`text-[10.5px] mt-1 font-bold tracking-tight transition-colors duration-200 ${
+                className={`text-[10px] mt-1 font-bold tracking-tight text-center leading-tight transition-colors duration-200 ${
                   isActive ? tone.ink : 'text-ink-faint'
                 }`}
               >

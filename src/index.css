@@ -61,6 +61,12 @@
   --color-amber-accent: #b8860b;
   --color-amber-accent-50: #fbf2e1;
 
+  /* Lapis — AI-prövning. Sjätte flikfärgen, och den sista lediga tonen som
+     inte kan förväxlas med de fem andra: brand är cyan, violetten ljusare och
+     rödare, och statusfärgerna (rött/grönt) får aldrig bo i flikraden. */
+  --color-lapis-ink: #2b59c3;
+  --color-lapis-tint: #e7edfb;
+
   --font-display: 'Source Serif 4', 'Iowan Old Style', ui-serif, serif;
   /* UI-typsnittet. Systemstacken är osynlig i god mening — den ser ut som
      operativsystemet, inte som en produkt. Plus Jakarta Sans är tät och

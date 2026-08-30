@@ -13,17 +13,19 @@ import { NAV_ITEMS } from './lib/navItems';
 import { Discover } from './tabs/Discover';
 import { TabId } from './types';
 
-// Only Discover (the default tab) loads eagerly. The other four are code-split
+// Only Discover (the default tab) loads eagerly. The other five are code-split
 // and fetched the first time a user switches to them, since most sessions never
-// visit all five tabs in one sitting.
+// visit every tab in one sitting.
+const AiProvning = lazy(() => import('./tabs/AiProvning').then((m) => ({ default: m.AiProvning })));
 const Exams = lazy(() => import('./tabs/Exams').then((m) => ({ default: m.Exams })));
 const Community = lazy(() => import('./tabs/Community').then((m) => ({ default: m.Community })));
 const History = lazy(() => import('./tabs/History').then((m) => ({ default: m.History })));
 const Profile = lazy(() => import('./tabs/Profile').then((m) => ({ default: m.Profile })));
 
-const TAB_ORDER: TabId[] = ['discover', 'exams', 'community', 'history', 'profile'];
+const TAB_ORDER: TabId[] = ['discover', 'ai', 'exams', 'community', 'history', 'profile'];
 const TAB_COMPONENTS: Record<TabId, ComponentType> = {
   discover: Discover,
+  ai: AiProvning,
   exams: Exams,
   community: Community,
   history: History,
@@ -46,8 +48,8 @@ function TabPanel({ tab, active }: { tab: TabId; active: boolean }) {
   const Component = TAB_COMPONENTS[tab];
   return (
     <div className={`h-full ${active ? 'block' : 'hidden'}`}>
-      {/* One boundary per tab, inside the panel and outside Suspense: four of
-          the five tabs arrive over the network, and a chunk that 404s after a
+      {/* One boundary per tab, inside the panel and outside Suspense: five of
+          the six tabs arrive over the network, and a chunk that 404s after a
           deploy would otherwise take the whole app — nav included — down with
           it. Keyed by tab so a crash in one is not inherited by the next. */}
       <ErrorBoundary key={tab} label={TAB_LABELS[tab]}>

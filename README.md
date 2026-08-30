@@ -286,6 +286,48 @@ skulle annars dra ut sin egen kolumn till dubbla bredden, och en rad man inte
 kan läsa tvärs över är ingen jämförelse. Tabellen är bredare än en telefon med
 flit och rullar i sin egen ruta, aldrig sidan.
 
+## AI-prövning
+
+Sökrutan i Upptäck tar ett ord. Det folk kommer med är en mening — _"jag bor i
+Göteborg och vill höja mitt betyg i Matte 2b innan december"_ — och den bär
+fyra villkor: kursen, orten, en deadline, och det underförstådda att omgången
+ska gå att söka till. Att mata in dem betyder fyra kontroller, i tre olika
+paneler, för någon som först måste lista ut att kontrollerna finns.
+
+Fliken tar meningen i stället. [`src/lib/askProvningar.ts`](src/lib/askProvningar.ts)
+läser den mot datasetets egen vokabulär — varje stad, län, ämne, kurs och
+kurskod som faktiskt finns i `EXAMS`, plus de vardagsformer folk skriver
+(`matte`, `sva`, `gbg`) — och kan därför aldrig föreslå en kurs ingen prövar.
+`innan <månad>` blir en gräns som räknas från i dag, inte från kalenderåret, så
+"innan mars" i augusti betyder nästa mars och inte en som redan varit.
+
+Två saker gör den ärlig i stället för magisk:
+
+- **Läsningen skrivs ut.** Svaret börjar med _"Jag läste frågan som Matematik 2b
+  i Göteborg före december"_. En missförstådd fråga är då en rad man ser, i
+  stället för ett självsäkert stycke man tror på.
+- **Den säger när den vidgat sökningen.** Om inget som fortfarande går att söka
+  hinner före gränsen visas hela träfflistan — men med den meningen utskriven.
+  En tyst vidgning är hur ett fel svar blir betrott.
+
+### Modellen formulerar, datan svarar
+
+Anropet till Anthropics Messages API (`claude-sonnet-4-6`, `max_tokens: 1000`)
+ligger i [`src/lib/aiProvning.ts`](src/lib/aiProvning.ts). Modellen får frågan
+och de tolv aktuella listningarna som JSON, och en systemprompt som säger åt
+den att aldrig gissa datum eller avgifter utan hänvisa till `kalla_url`.
+Korten under svaret kommer alltid ur `answerAsk` — en mening kan bli fel, men
+ett kort länkar till den anmälan det namnger.
+
+Sajten är statisk och har ingen server, så den kan inte hålla en API-nyckel: allt
+som ligger i bygget är offentligt, och en Anthropic-nyckel i ett offentligt bygge
+är någon annans faktura. Anropet går därför till den endpoint `VITE_AI_ENDPOINT`
+pekar ut — en proxy som den som driftar sajten kör, och som lägger på nyckeln och
+vidarebefordrar till `https://api.anthropic.com/v1/messages`. Variabeln är osatt i
+det publicerade bygget, och då svarar fliken ur datan ensam. Det är samma väg som
+tas när anropet misslyckas: datasvaret ligger redan på skärmen, och modellen byter
+bara ut stycket ovanför korten.
+
 ## Datum, kalender och dina data
 
 Appen påminner ingen om något när den är stängd, och den har ingen server.
@@ -302,7 +344,7 @@ Därför två utvägar, båda helt lokala:
 
 ## När appen går sönder
 
-Fyra av fem flikar hämtas med `import()` första gången de öppnas, och varje
+Fem av sex flikar hämtas med `import()` första gången de öppnas, och varje
 deploy byter namn på de filerna — `rsync --delete` i deployen tar bort förra
 byggets chunkar i samma ögonblick som det nya landar. En användare som hade
 appen öppen över en deploy och sedan trycker på en flik hen inte besökt ännu ber

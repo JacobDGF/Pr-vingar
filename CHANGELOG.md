@@ -4,6 +4,47 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-08-30
+
+**Data: +211 prövningar.** Hela Prövningsenheten Göteborgs kurskatalog, läst
+kurs för kurs ur anordnarens egen kurslista i Alvis. Datasetet går från 163 till
+374 listningar.
+
+| Kommun   | Listningar | Källa                                                        |
+| -------- | ---------- | ------------------------------------------------------------ |
+| Göteborg | 4 → 215    | Prövningsenhetens kurslista och kurssidor, höstterminen 2026 |
+
+Göteborg stod på fyra kort trots att den är tvåa i prioritetsordningen, och
+skälet var att de fyra var skrivna som "en anordnare, fyra ämnen". Anordnaren
+publicerar i själva verket varje kurs som en egen post med eget provdatum, egen
+sista anmälningsdag och egen lokal — 215 av dem — vilket är precis den upplösning
+appen är byggd för.
+
+- **Provdatumet är dagsexakt per kurs**, inte en period: varje listning bär det
+  prövningstillfälle vars anmälan fortfarande är öppen, med veckodag och
+  klockslag som anordnaren skriver dem. 185 kurser är öppna för anmälan; de 30
+  där höstens sista anmälningsdag har passerat ligger kvar som gångna omgångar,
+  eftersom de säger vad kommunen prövar och när vårens datum publiceras
+  (1 december, första ansökningsdag 15 december).
+- **Lokalen är tre**, inte en: Burgårdens gymnasium, Studium Styrmansgatan och
+  Lindholmens tekniska gymnasium, med koordinater geokodade per adress. De fyra
+  gamla korten låg på en adress anordnaren inte prövar på.
+- **Kurskoden kommer ur kursplanslänken**, inte ur anmälningskoden — det är
+  skillnaden mellan `MATMAT00S` och Alvis egna `MATMAT00S_LA`, och mellan
+  `MATMAT01b` och listningens versaler.
+- De fyra befintliga korten uppdaterades i stället för att dubbleras, med sina
+  id kvar, så en sparad prövning i någons webbläsare fortfarande hittar hem.
+  Avgiften (500 kr per kurs och prövningstillfälle, betald senast fyra veckor
+  före provet) och villkoret för avgiftsfrihet står nu som Göteborg skriver dem.
+
+**Produkt: fliken AI-prövning.** Skriv meningen — "jag bor i Göteborg och vill
+höja mitt betyg i Matte 2b innan december" — och få prövningarna som passar, i
+samma kort som resten av appen. Läsningen skrivs ut ovanför svaret, och fliken
+säger ifrån när den fått vidga sökningen. Modellen (`claude-sonnet-4-6`)
+formulerar stycket när sajten har en `VITE_AI_ENDPOINT` konfigurerad; korten
+kommer alltid ur datan. Se [README](README.md#ai-prövning) för varför nyckeln
+inte kan bo i ett statiskt bygge.
+
 ## 2026-08-29
 
 **Data: +48 prövningar.** Komvux Malmö (26) och Linvux i Linköping (22), lästa
