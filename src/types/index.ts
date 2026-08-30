@@ -160,4 +160,4 @@ export interface CompletedExam {
   grade?: string;
 }
 
-export type TabId = 'discover' | 'exams' | 'community' | 'history' | 'profile';
+export type TabId = 'discover' | 'ai' | 'exams' | 'community' | 'history' | 'profile';

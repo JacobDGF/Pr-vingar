@@ -1,8 +1,8 @@
-import { Compass, BookMarked, Users, History, User } from 'lucide-react';
+import { Compass, Sparkles, BookMarked, Users, History, User } from 'lucide-react';
 import { TabId } from '../types';
 
 /**
- * The five tabs, one colour each.
+ * The six tabs, one colour each.
  *
  * Every tab used to be the same brand teal, so the sidebar was five identical
  * rows and the only thing distinguishing them was a word you had to read. A
@@ -11,9 +11,9 @@ import { TabId } from '../types';
  * and just hit the pink one.
  *
  * The colours aren't decoration picked at random — each one argues for its
- * tab. Cyan is the map and the horizon; amber is the bookmark, the things you
- * put aside for yourself; magenta is people; violet is the past; emerald is
- * you, and growing.
+ * tab. Cyan is the map and the horizon; lapis is the question you ask in your
+ * own words; amber is the bookmark, the things you put aside for yourself;
+ * magenta is people; violet is the past; emerald is you, and growing.
  *
  * One deliberate limit: none of these is the app's *status* language. Red means
  * fullbokat and forest green means bookable, and those two live on the
@@ -60,6 +60,20 @@ export const NAV_ITEMS: {
       ink: 'text-brand-500',
       hover: 'hover:bg-brand-50',
       solid: 'bg-brand-500',
+    },
+  },
+  {
+    id: 'ai',
+    label: 'AI-prövning',
+    hint: 'Fråga med egna ord',
+    icon: Sparkles,
+    tone: {
+      gradient: 'bg-lapis-ink',
+      glow: 'shadow-[0_8px_20px_-4px] shadow-lapis-ink/55',
+      tint: 'bg-lapis-tint',
+      ink: 'text-lapis-ink',
+      hover: 'hover:bg-lapis-tint',
+      solid: 'bg-lapis-ink',
     },
   },
   {
