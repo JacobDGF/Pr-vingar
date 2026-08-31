@@ -328,6 +328,43 @@ det publicerade bygget, och då svarar fliken ur datan ensam. Det är samma väg
 tas när anropet misslyckas: datasvaret ligger redan på skärmen, och modellen byter
 bara ut stycket ovanför korten.
 
+## Bevaka ett ämne och en ort
+
+Att spara en listning hjälper först när man redan hittat rätt. Det folk faktiskt
+kommer tillbaka för är smalare och håller längre än en listning: _"Matematik i
+Stockholm"_. Omgångarna under den öppnar, stänger och byts mot nästa termins —
+kortet du sparade i september är ett grått kort i november, medan ärendet är
+kvar.
+
+En bevakning är därför ett ämne och en kommun, inget mer. Knappen i Upptäck dyker
+upp först när ett av dem är valt (att bevaka "alla prövningar i hela Sverige" är
+appens förstasida, inte en rad), och den frågar ingenting: ämnet och orten på
+skärmen _är_ bevakningen, så en dialog vore att be användaren skriva tillbaka det
+hen precis tryckt på.
+
+Raderna ligger överst i Mina prövningar, och varje rad bär en enda mening ur
+[`src/lib/watches.ts`](src/lib/watches.ts): _"3 nya sedan sist · sista anmälan om
+6 dagar"_. Deadlinen vinner över antalet, eftersom deadlinen är den enda halvan
+som går ut, och en rad som stänger inom en vecka byter till samma orange som
+resten av appen använder för "skynda dig". Att öppna en rad sätter filtren och
+markerar den som läst — det finns exakt en sak att göra med en bevakning, och det
+är att gå och titta.
+
+`seenExamIds` är vad som gör "nytt" sant. Det är de listningar bevakningen redan
+har visat _den här användaren_, så allt utanför den mängden är nytt för hen — inte
+nytt i datan, vilket är ett annat och mindre användbart faktum.
+
+Ordet "notis" är det appen inte kan hålla: sajten är statisk, har ingen server
+och kan inte väcka någons telefon. Så bevakningen säger vad som hänt i det
+ögonblick du öppnar appen, och den riktiga påminnelsen är fortfarande
+kalenderfilen nedan. Att skicka en push vi inte kan skicka vore precis det
+löftesbrott resten av datan är byggd för att undvika.
+
+Orten flyttade samtidigt från Upptäcks egen `useState` in i storen som
+`filterCity`. En bevakning är ett ämne _och_ en kommun, och att öppna en måste
+kunna sätta båda — ett filter bara en flik når är ett filter resten av appen inte
+kan hedra.
+
 ## Datum, kalender och dina data
 
 Appen påminner ingen om något när den är stängd, och den har ingen server.
