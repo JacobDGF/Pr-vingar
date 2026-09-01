@@ -4,6 +4,56 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-08-31
+
+**Data: +132 prövningar.** NTI-skolans publicerade prövningsutbud för
+Stockholmsregionen, läst kurs för kurs ur anordnarens egen kurslista. Datasetet
+går från 374 till 506 listningar.
+
+| Kommun    | Listningar | Källa                                                                 |
+| --------- | ---------- | --------------------------------------------------------------------- |
+| Stockholm | 11 → 143   | NTI-skolans Gy11-prövningsutbud och deras sida för Stockholmsregionen |
+
+Stockholm står först i prioritetsordningen och hade elva kort, varav tre var
+"en anordnare, ett ämne". Stockholms stad låter fyra anordnare pröva de
+gymnasiala teoretiska kurserna — Jensen, Komvux Södermalm, NTI och Hermods — och
+NTI är den av dem som publicerar hela sitt utbud med kurskod, kurs för kurs.
+
+- **Anmälan är stängd, och det är hela poängen med raden.** Staden har gått över
+  till ett ansökningstillfälle per halvår och skola, utspridda över vecka 33–35.
+  NTI:s fönster var öppet 17–20 augusti; den som antagits tilldelas en
+  prövningsperiod mellan 14 september och 30 oktober, och nästa ansökan gäller
+  våren 2027. Datan sa tidigare bara "ansökan öppnar 17 augusti", vilket slutade
+  vara sant elva dagar senare — de tre gamla korten är uppdaterade i stället för
+  dubblerade, med sina id kvar, så en sparad prövning fortfarande hittar hem.
+- **Provlokalen är namngiven**, inte "bekräftas vid anmälan": slutprovet skrivs
+  i NTI:s egen lokal på Hammarby Fabriksväg 65 i Hammarby Sjöstad, och
+  inlämningsuppgifterna görs på distans. Delproven står som anordnaren beskriver
+  dem — 1–5 betygsgrundande inlämningar, ett slutprov på plats med fast tid, och
+  en obligatorisk muntlig examination över videolänk med fysisk legitimation.
+- **Kraven följer med kursen.** De elva kurser där anordnaren skriver ut ett
+  villkor (obligatorisk laboration i Fysik 3, vuxen-HLR respektive barn-HLR för
+  Hälso- och sjukvård 1 och 2, validerad APL för omvårdnads- och
+  omsorgskurserna) bär det i sin beskrivning i stället för att se ut som vilken
+  kurs som helst.
+- **Hermods Stockholmslänk är rättad** till den sida staden själv länkar till;
+  den gamla var anordnarens hubb för hela länet, inte Stockholms stads egen.
+- Kvar att lägga in: de 48 kurser i NTI:s utbud vars ämne inte finns i datan än
+  (CAD, Nätverksteknik, Webbutveckling, de estetiska kurserna, Komvuxarbete med
+  flera). Varje sådan skulle lägga till ett eget ämnesfilter med en enda kurs
+  under sig, och det är ett grupperingsbeslut, inte en rad. Komvux Södermalm och
+  Jensen svarar 503 på allt som inte är en riktig webbläsare, så deras utbud
+  gick inte att läsa den här omgången.
+
+**Produkt: bevaka ett ämne och en ort.** Välj ämne och ort i Upptäck och tryck
+på den enda knapp som dyker upp — bevakningen ligger sedan överst i Mina
+prövningar och säger en mening: _"3 nya sedan sist · sista anmälan om 6 dagar"_.
+Deadlinen vinner över antalet, en rad som stänger inom en vecka blir orange, och
+"nytt" betyder nytt för dig, inte nytt i datan. Sajten är statisk och kan inte
+väcka någons telefon, så bevakningen berättar när du öppnar appen och den riktiga
+påminnelsen är fortfarande .ics-exporten. Se
+[README](README.md#bevaka-ett-ämne-och-en-ort).
+
 ## 2026-08-30
 
 **Data: +211 prövningar.** Hela Prövningsenheten Göteborgs kurskatalog, läst

@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CompletedExam, Exam, SavedExam, ViewedExam, Post, User, TabId } from '../types';
+import { CompletedExam, Exam, SavedExam, ViewedExam, Post, User, TabId, Watch } from '../types';
 import { EXAMS } from '../data/exams';
 import { INITIAL_POSTS } from '../data/community';
 import { isOwnPhoto } from '../lib/avatar';
 import { StatusKey } from '../lib/examStatusColor';
+import { makeWatch, matchesWatch, watchKey } from '../lib/watches';
 
 interface AppState {
   // Navigation
@@ -18,6 +19,22 @@ interface AppState {
   unsaveExam: (examId: string) => void;
   updateExamStatus: (examId: string, status: SavedExam['status']) => void;
   isExamSaved: (examId: string) => boolean;
+
+  /**
+   * Watched ämne + kommun pairs.
+   *
+   * A saved listing answers "which round do I want"; a watch answers the
+   * question underneath it, which outlives any single round: "when can I pröva
+   * this subject, here". The store keeps them because they are the user's own
+   * words about their errand, and the only place they can be kept is this
+   * browser — the site is static and has nowhere to push a notification from.
+   */
+  watches: Watch[];
+  addWatch: (subject: string, city: string) => void;
+  removeWatch: (id: string) => void;
+  isWatched: (subject: string, city: string) => boolean;
+  /** Records that the user has now been shown everything under this watch. */
+  markWatchSeen: (id: string) => void;
 
   // View history
   viewedExams: ViewedExam[];
@@ -33,6 +50,15 @@ interface AppState {
   setFilterSubject: (s: string) => void;
   filterRegion: string;
   setFilterRegion: (r: string) => void;
+  /**
+   * One kommun, or '' for the whole country.
+   *
+   * Lived in Discover as local state until watches arrived. A watch is an ämne
+   * *and* a kommun, and opening one has to be able to set both — a filter only
+   * one tab can reach is a filter the rest of the app can't honour.
+   */
+  filterCity: string;
+  setFilterCity: (c: string) => void;
   filterSortBy: 'date' | 'name' | 'distance';
   setFilterSortBy: (s: 'date' | 'name' | 'distance') => void;
   /** Only listings whose link lands on the booking itself, not a page about it. */
@@ -141,6 +167,32 @@ export const useStore = create<AppState>()(
 
       isExamSaved: (examId) => get().savedExams.some((e) => e.examId === examId),
 
+      watches: [],
+
+      addWatch: (subject, city) =>
+        set((s) =>
+          s.watches.some((w) => w.id === watchKey(subject, city))
+            ? s
+            : { watches: [...s.watches, makeWatch(subject, city)] },
+        ),
+
+      removeWatch: (id) => set((s) => ({ watches: s.watches.filter((w) => w.id !== id) })),
+
+      isWatched: (subject, city) => get().watches.some((w) => w.id === watchKey(subject, city)),
+
+      markWatchSeen: (id) =>
+        set((s) => ({
+          watches: s.watches.map((w) =>
+            w.id === id
+              ? {
+                  ...w,
+                  seenExamIds: s.exams.filter((e) => matchesWatch(e, w)).map((e) => e.id),
+                  seenAt: new Date().toISOString(),
+                }
+              : w,
+          ),
+        })),
+
       viewedExams: [],
       clearHistory: () => set({ viewedExams: [] }),
       removeViewed: (examId) =>
@@ -152,6 +204,8 @@ export const useStore = create<AppState>()(
       setFilterSubject: (s) => set({ filterSubject: s }),
       filterRegion: '',
       setFilterRegion: (r) => set({ filterRegion: r }),
+      filterCity: '',
+      setFilterCity: (c) => set({ filterCity: c }),
       filterSortBy: 'date',
       setFilterSortBy: (s) => set({ filterSortBy: s }),
       filterDirectOnly: false,
@@ -329,6 +383,7 @@ export const useStore = create<AppState>()(
       version: 1,
       partialize: (s) => ({
         savedExams: s.savedExams,
+        watches: s.watches,
         viewedExams: s.viewedExams,
         currentUser: s.currentUser,
         posts: s.posts,

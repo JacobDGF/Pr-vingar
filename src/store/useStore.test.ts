@@ -334,3 +334,55 @@ describe('updateCompletedExam / removeCompletedExam', () => {
     expect(useStore.getState().currentUser.completedExams).toEqual(log);
   });
 });
+
+describe('watches', () => {
+  it('adds a watch keyed on the ämne and kommun pair', () => {
+    useStore.getState().addWatch('Matematik', 'Stockholm');
+    expect(useStore.getState().isWatched('Matematik', 'Stockholm')).toBe(true);
+    expect(useStore.getState().watches).toEqual([
+      expect.objectContaining({ subject: 'Matematik', city: 'Stockholm', seenExamIds: [] }),
+    ]);
+  });
+
+  it('does not add the same pair twice', () => {
+    useStore.getState().addWatch('Matematik', 'Stockholm');
+    useStore.getState().addWatch('Matematik', 'Stockholm');
+    expect(useStore.getState().watches).toHaveLength(1);
+  });
+
+  it('treats a different ämne or kommun as a different watch', () => {
+    useStore.getState().addWatch('Matematik', 'Stockholm');
+    useStore.getState().addWatch('Matematik', 'Malmö');
+    useStore.getState().addWatch('Kemi', 'Stockholm');
+    expect(useStore.getState().watches).toHaveLength(3);
+    expect(useStore.getState().isWatched('Kemi', 'Malmö')).toBe(false);
+  });
+
+  it('removeWatch drops exactly the one asked for', () => {
+    useStore.getState().addWatch('Matematik', 'Stockholm');
+    useStore.getState().addWatch('Kemi', 'Stockholm');
+    useStore.getState().removeWatch('Matematik|Stockholm');
+    expect(useStore.getState().watches.map((w) => w.id)).toEqual(['Kemi|Stockholm']);
+  });
+
+  /**
+   * The news line rests on this: after the user has looked, everything matching
+   * is marked shown, so the next listing to appear is the only one that reads
+   * as new.
+   */
+  it('markWatchSeen records every matching listing as already shown', () => {
+    useStore.getState().addWatch('Matematik', 'Stockholm');
+    useStore.getState().markWatchSeen('Matematik|Stockholm');
+    const [watch] = useStore.getState().watches;
+    const matching = useStore
+      .getState()
+      .exams.filter((e) => e.subject === 'Matematik' && e.city === 'Stockholm');
+    expect(matching.length).toBeGreaterThan(0);
+    expect(watch.seenExamIds.sort()).toEqual(matching.map((e) => e.id).sort());
+  });
+
+  it('markWatchSeen on a watch that is gone is a no-op', () => {
+    useStore.getState().markWatchSeen('Matematik|Stockholm');
+    expect(useStore.getState().watches).toEqual([]);
+  });
+});

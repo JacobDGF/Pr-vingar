@@ -12,6 +12,7 @@ import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
 import { StatusFilterBar } from '../components/StatusFilterBar';
+import { WatchButton } from '../components/WatchButton';
 import { haversineDistanceKm } from '../lib/distance';
 import { matchesQuery } from '../lib/examSearch';
 import { isOpenForRegistration, compareByPeriod } from '../lib/examStatus';
@@ -59,6 +60,8 @@ export function Discover() {
     setSearchQuery,
     filterSubject,
     filterRegion,
+    filterCity,
+    setFilterCity,
     filterSortBy,
     setFilterSortBy,
     filterDirectOnly,
@@ -75,7 +78,6 @@ export function Discover() {
     setShowingFaq,
   } = useStore();
   const [showFilter, setShowFilter] = useState(false);
-  const [city, setCity] = useState('Hela Sverige');
   const tick = useMinuteTick();
 
   const near = filterSortBy === 'distance' && !!userLocation;
@@ -85,7 +87,7 @@ export function Discover() {
     filterDirectOnly ||
     filterOpenOnly ||
     filterStatus ||
-    city !== 'Hela Sverige'
+    filterCity
   );
 
   const clearFilters = () => {
@@ -95,7 +97,7 @@ export function Discover() {
     setFilterOpenOnly(false);
     setFilterStatus('');
     setSearchQuery('');
-    setCity('Hela Sverige');
+    setFilterCity('');
   };
 
   const filtered = useMemo(() => {
@@ -103,7 +105,7 @@ export function Discover() {
       const matchesSearch = matchesQuery(e, searchQuery);
       const matchesSubject = !filterSubject || e.subject === filterSubject;
       const matchesRegion = !filterRegion || e.region === filterRegion;
-      const matchesCity = city === 'Hela Sverige' || e.city === city;
+      const matchesCity = !filterCity || e.city === filterCity;
       const matchesDirect = !filterDirectOnly || getRegistrationFlow(e).direct;
       const matchesOpen = !filterOpenOnly || isOpenForRegistration(e);
       const matchesStatus = !filterStatus || getStatusKey(e) === filterStatus;
@@ -136,7 +138,7 @@ export function Discover() {
     searchQuery,
     filterSubject,
     filterRegion,
-    city,
+    filterCity,
     filterSortBy,
     filterDirectOnly,
     filterOpenOnly,
@@ -213,6 +215,10 @@ export function Discover() {
           </span>
         </div>
 
+        {/* Only once the search means something. A watch is an ämne and a
+            kommun, so until one of them is chosen there is nothing to keep. */}
+        <WatchButton subject={filterSubject} city={filterCity} />
+
         {/* Map — straight under the search field, so the first thing you see
             after typing is where the hits actually are. */}
         <div className="bg-surface border-[1.5px] border-line rounded-[32px] overflow-hidden">
@@ -223,7 +229,7 @@ export function Discover() {
               </span>
               <div>
                 <p className="font-display font-semibold text-[19px] text-ink">
-                  {city === 'Hela Sverige' ? 'Hela Sverige' : city}
+                  {filterCity || 'Hela Sverige'}
                 </p>
                 <p className="text-[13px] text-ink-soft tnum">
                   {cityCount} {cityCount === 1 ? 'ort' : 'orter'} · {openNow} går att boka nu
@@ -280,10 +286,10 @@ export function Discover() {
               {CITY_CHIPS.map((c) => (
                 <button
                   key={c}
-                  onClick={() => setCity(c)}
-                  aria-pressed={city === c}
+                  onClick={() => setFilterCity(c === 'Hela Sverige' ? '' : c)}
+                  aria-pressed={(filterCity || 'Hela Sverige') === c}
                   className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
-                    city === c
+                    (filterCity || 'Hela Sverige') === c
                       ? 'bg-brand-500 text-white'
                       : 'bg-cream text-ink-soft border-[1.5px] border-line hover:border-ink'
                   }`}

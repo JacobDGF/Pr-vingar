@@ -161,3 +161,30 @@ export interface CompletedExam {
 }
 
 export type TabId = 'discover' | 'ai' | 'exams' | 'community' | 'history' | 'profile';
+
+/**
+ * A saved ämne + kommun, watched for what turns up in it.
+ *
+ * Saving a *listing* only helps once you have found the right one. The thing
+ * people actually come back for is narrower and more durable than a listing:
+ * "Matematik 3c i Stockholm". Rounds under it open, close and are replaced by
+ * the next term's, and the listing you saved in September is a dead card by
+ * November — the errand is still live, the row that carried it is not.
+ *
+ * `seenExamIds` is what makes the row able to say something new. It is the set
+ * of matching listings the user had already been shown, so anything outside it
+ * is genuinely new to *them* — not new to the dataset, which is a different and
+ * less useful fact.
+ */
+export interface Watch {
+  /** `${subject}|${city}`, so the same pair can't be watched twice. */
+  id: string;
+  /** '' means every ämne — a watch on a whole kommun. */
+  subject: string;
+  /** '' means the whole country — a watch on an ämne wherever it is prövad. */
+  city: string;
+  createdAt: string;
+  seenExamIds: string[];
+  /** ISO timestamp of the last time the user read this watch's news. */
+  seenAt: string;
+}

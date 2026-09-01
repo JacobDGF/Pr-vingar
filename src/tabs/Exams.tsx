@@ -10,6 +10,7 @@ import {
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { CompareTable } from '../components/CompareTable';
+import { WatchList } from '../components/WatchList';
 import { Exam, SavedExam } from '../types';
 import { compareByPeriod } from '../lib/examStatus';
 
@@ -253,6 +254,11 @@ export function Exams() {
             </button>
           ))}
         </div>
+
+        {/* Above the saved rounds, because a watch outlives them: a round you
+            saved in September is a dead card in November, while "Matematik i
+            Stockholm" is still the errand. */}
+        {view === 'list' && <WatchList />}
 
         {savedList.length === 0 ? (
           <div className="bg-surface border-[1.5px] border-dashed border-line rounded-[26px] p-9 text-center">
