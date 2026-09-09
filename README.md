@@ -286,6 +286,35 @@ skulle annars dra ut sin egen kolumn till dubbla bredden, och en rad man inte
 kan läsa tvärs över är ingen jämförelse. Tabellen är bredare än en telefon med
 flit och rullar i sin egen ruta, aldrig sidan.
 
+## Samma kurs hos andra anordnare
+
+Jämförelsen ovan förutsätter att man redan hittat alternativen och sparat dem.
+Det gör inte den som just öppnat sin första listning och möts av ett grått
+"Anmälan stängde 12 aug." — då är nästa fråga _var då i stället_, och den frågan
+hade appen inget svar på, trots att datan haft det länge: Matematik 1c prövas av
+fyra anordnare i fyra kommuner, och Engelska 6 av elva.
+
+Längst ned i varje listning, under datumen, står därför de andra listningarna på
+samma kurs. [`src/lib/otherProviders.ts`](src/lib/otherProviders.ts) tar fram
+dem, och två saker avgör vad raderna är värda:
+
+- **Matchningen går på `courseCode`, inte på kursens namn.** Koden är kursens
+  nationella identitet; namnet är vad anordnaren råkade skriva i sin katalog
+  ("Matematik 3b" och "Matematik 3b/3c" är samma `MATMAT03b`). När den andra
+  listningens namn skiljer sig skrivs det ut på raden, så en delad kod aldrig
+  tyst påstår att två rader är ord för ord samma sak. Listningar utan riktig
+  kurskod (`Varierar`, de som står för en hel katalog) får ingen sektion alls —
+  de går inte att ställa mot något.
+- **Allt som fortfarande går att boka står före allt annat**, och inom varje
+  hälft det som stänger först. Ordningen _är_ funktionen: första raden är svaret
+  på "var kan jag fortfarande göra det här". Meningen ovanför listan säger hur
+  många av dem som är öppna — och när svaret är noll står det rakt ut, i stället
+  för en glad mening om sorteringsordningen.
+
+Raderna är rader, inte en tabell. Kolumnerna som skulle motivera en tabell finns
+redan i Jämför, och den vyn förtjänar sin bredd genom att bara hålla listningar
+användaren själv valt. Här är den användbara delen ordningen.
+
 ## AI-prövning
 
 Sökrutan i Upptäck tar ett ord. Det folk kommer med är en mening — _"jag bor i
