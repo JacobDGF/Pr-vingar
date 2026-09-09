@@ -37,10 +37,10 @@ export function isFullyBooked(exam: Exam): boolean {
  * last Tuesday is worth nothing at all — the only useful move is to look for
  * the next one. Without this the card just shows a bold date that happens to be
  * in the past, which reads as an upcoming deadline at a glance. */
-export function hasApplicationClosed(exam: Exam): boolean {
+export function hasApplicationClosed(exam: Exam, now = Date.now()): boolean {
   const { nextPeriod: p } = exam;
   if (!p.confirmed || !p.applicationEnd) return false;
-  return Date.now() > endOfDay(p.applicationEnd);
+  return now > endOfDay(p.applicationEnd);
 }
 
 /**

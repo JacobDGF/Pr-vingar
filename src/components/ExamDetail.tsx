@@ -19,9 +19,10 @@ import {
   Clock,
   ListChecks,
 } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
+import { OtherProviders } from './OtherProviders';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { hasPeriodPassed, daysUntil } from '../lib/examStatus';
 import { getExamStatus } from '../lib/examStatusColor';
@@ -113,6 +114,14 @@ export function ExamDetail() {
   // Before the early return: hooks can't run conditionally, and the sheet is
   // only mounted while an exam is showing anyway.
   useEscapeKey(useCallback(() => setShowingExamDetail(null), [setShowingExamDetail]));
+
+  // The sheet can now swap listings without closing — "samma kurs hos andra
+  // anordnare" is near the bottom, and following a row left the new listing
+  // scrolled to wherever the old one had been read to.
+  const scroller = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    scroller.current?.scrollTo({ top: 0 });
+  }, [showingExamDetail]);
 
   if (!exam) return null;
 
@@ -211,7 +220,7 @@ export function ExamDetail() {
         </div>
 
         {/* Scroll content */}
-        <div className="overflow-y-auto flex-1">
+        <div ref={scroller} className="overflow-y-auto flex-1">
           <div className="p-4 lg:p-6 space-y-4">
             {/* HERO */}
             <div className={`relative overflow-hidden rounded-3xl p-6 lg:p-8 ${hero}`}>
@@ -498,6 +507,12 @@ export function ExamDetail() {
                 </ul>
               )}
             </div>
+
+            {/* Where else the same course is prövad. Under the dates rather
+                than above them: this listing is what the sheet is about, and
+                the alternatives only matter once you know what this one costs
+                and when it closes. */}
+            <OtherProviders exam={exam} />
 
             {/* Hitta hit */}
             <div className="bg-surface rounded-3xl border border-line overflow-hidden">

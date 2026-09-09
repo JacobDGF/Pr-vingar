@@ -127,9 +127,18 @@ function vocabulary(exams: Exam[], pick: (e: Exam) => string): string[] {
   return [...new Set(exams.map(pick))].sort((a, b) => b.length - a.length);
 }
 
-/** Still worth acting on: the deadline hasn't passed and the round isn't full. */
-function stillActionable(exam: Exam): boolean {
-  return !hasApplicationClosed(exam) && !isFullyBooked(exam);
+/**
+ * Still worth acting on: the deadline hasn't passed and the round isn't full.
+ *
+ * `today` is the same date the rest of the reader works from, not the wall
+ * clock. The two halves of the answer used to disagree: "innan oktober" was
+ * measured against the caller's date while "kan fortfarande sökas" quietly read
+ * `Date.now()`, so the same question gave different answers on different days
+ * with the same arguments — and the tests that pin a date drifted out of truth
+ * as the real calendar moved past it.
+ */
+function stillActionable(exam: Exam, today: Date): boolean {
+  return !hasApplicationClosed(exam, today.getTime()) && !isFullyBooked(exam);
 }
 
 function fallsBefore(exam: Exam, cutoff: string): boolean {
@@ -189,7 +198,7 @@ export function answerAsk(question: string, exams: Exam[], today = new Date()): 
   });
 
   const strict = named.filter(
-    (e) => stillActionable(e) && (!ask.before || fallsBefore(e, ask.before)),
+    (e) => stillActionable(e, today) && (!ask.before || fallsBefore(e, ask.before)),
   );
   const matches = (strict.length ? strict : named).slice().sort(compareByPeriod);
   return { ask, matches, widened: strict.length === 0 && named.length > 0 };

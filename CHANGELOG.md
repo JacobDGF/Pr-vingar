@@ -4,6 +4,63 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-09
+
+**Data: +80 prövningar.** JENSEN komvux publicerade GY11-kursutbud för
+prövningar, läst kurs för kurs ur den kurslista anordnaren själv länkar från sin
+prövningssida. Datasetet går från 506 till 586 listningar.
+
+| Kommun    | Listningar | Källa                                                               |
+| --------- | ---------- | ------------------------------------------------------------------- |
+| Stockholm | 143 → 223  | JENSEN komvux prövningssida och deras kursutbud för prövningar 2026 |
+
+Stockholm står först i prioritetsordningen, och det som saknades var inte en ny
+anordnare utan två gamla: JENSEN och Komvux Södermalm svarade 503 på allt som
+inte var en riktig webbläsare, så de hade tre respektive två kort i datan medan
+NTI hade 143. JENSEN svarade den här gången.
+
+- **Tre kort blir 83.** Anordnaren listar 214 kurser i sitt GY11-utbud, utan
+  kurskoder. 85 av dem bär redan en kod i datan som är kontrollerad mot en
+  publicerad källa, och 83 av de 85 ligger nu inne — koden är kursens
+  nationella identitet, och att härleda de övriga ur kursnamnet vore att gissa.
+  (De två som inte kom med är Psykiatri 1 och 2, se nedan.) De tre befintliga
+  korten (Matematik 2b, Fysik 1a, Kemi 1) uppdaterades i stället för att
+  dubbleras, med sina id kvar, så en sparad prövning fortfarande hittar hem.
+- **Omgången stängde av ett datum, inte av ett fullt formulär.** Datan sa
+  tidigare "anmälan öppnade 11 augusti" plus `full: true`, satt när JENSENs
+  Typeform svarade fullbokat. Anordnaren skriver nu själv ut båda dagarna —
+  ansökan var öppen 11 och 12 augusti — och ett publicerat slutdatum är ett
+  ärligare skäl än en avläsning av ett formulär. Prövningsperioden är höstens
+  kvarvarande, 12–23 oktober; vårterminens datum publiceras på samma sida under
+  hösten.
+- **Anmälningslänken pekar på sidan som kommer att bära formuläret.** Typeformen
+  är inte längre länkad från anordnarens egen sida, så listningarna använder
+  `publishedOnPage` och säger när formuläret dyker upp i stället för att skicka
+  någon till ett dött formulär.
+- **Provlokalen är fem, och det står i provmomenten.** JENSEN skriver
+  "alla slutprov sker obligatoriskt på plats i JENSENs lokaler (inga undantag)"
+  — Liljeholmen, Medborgarplatsen, Kista, Skärholmen eller Fridhemsplan. Den
+  som bokar i tron att allt går på distans upptäcker annars saken efter betald
+  faktura.
+- Kvar att lägga in: de 129 kurser i JENSENs utbud vars kurskod inte går att
+  bekräfta mot datan än (grundläggande delkurser, moderna språk 1–7, de flesta
+  handels- och nätverkskurserna), samt Psykiatri 1 och 2, som bär två olika
+  koder på olika håll i datasetet (`PSYPSK01` respektive `PSYPSY01`) — ingen av
+  dem går att stå för förrän de kontrollerats mot Skolverket. Komvux Södermalm
+  svarar fortfarande 503.
+- **Rättat:** `answerAsk` mätte "innan oktober" mot anroparens datum men
+  "kan fortfarande sökas" mot väggklockan, så samma fråga med samma argument gav
+  olika svar olika dagar — och testet som spikar ett datum ruttnade i takt med
+  kalendern. `hasApplicationClosed` tar nu emot tidpunkten.
+
+**Produkt: samma kurs hos andra anordnare.** Längst ned i varje listning står de
+andra listningarna på samma kurskod, med det som fortfarande går att boka först
+och det som stänger snarast överst i den hälften. Matchningen går på kurskoden,
+inte på kursnamnet, och den andra listningens eget kursnamn skrivs ut när det
+skiljer sig. Meningen ovanför listan säger hur många som är öppna — och när
+svaret är noll står det rakt ut. Se
+[README](README.md#samma-kurs-hos-andra-anordnare).
+
 ## 2026-08-31
 
 **Data: +132 prövningar.** NTI-skolans publicerade prövningsutbud för
