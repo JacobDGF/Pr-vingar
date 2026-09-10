@@ -27,6 +27,7 @@ import { hasPeriodPassed, daysUntil } from '../lib/examStatus';
 import { getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getExamAction } from '../lib/examAction';
+import { courseCounterpart } from '../lib/courseSystems';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 
@@ -134,6 +135,18 @@ export function ExamDetail() {
       : exam.course.length > 22
         ? 'text-3xl sm:text-4xl lg:text-5xl'
         : 'text-4xl sm:text-5xl lg:text-6xl';
+
+  // The same prövning is published under two names since Gy25, and picking the
+  // wrong one is an anmälan the provider rejects — Örebro says it plainly:
+  // "har du läst kursen innan juli 2025 ska du söka prövningen i det gamla
+  // systemet". One sentence here is the difference between choosing and
+  // guessing; a listing whose course only exists in one system says nothing.
+  const counterpart = courseCounterpart(exam.courseCode);
+  const counterpartNote = counterpart
+    ? counterpart.system === 'gy25'
+      ? `Ämnesnivå enligt Gy25. Läste du kursen före juli 2025 är det ${counterpart.other.name} (${counterpart.other.code}) du ska pröva i stället.`
+      : `Kurs enligt Gy11, för dig som läste den före juli 2025. Annars heter samma innehåll ${counterpart.other.name} (${counterpart.other.code}).`
+    : null;
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -245,6 +258,11 @@ export function ExamDetail() {
                   <p className="font-display italic text-brand-100 text-lg lg:text-xl mt-2">
                     {exam.schoolName} · {exam.city}, {exam.region}
                   </p>
+                  {counterpartNote && (
+                    <p className="text-brand-100/90 text-[13px] leading-snug mt-3 max-w-prose">
+                      {counterpartNote}
+                    </p>
+                  )}
                 </div>
 
                 {/* Three numbers, the ones people compare listings on */}

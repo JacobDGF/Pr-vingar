@@ -4,6 +4,58 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-10
+
+**Data: +82 prövningar.** Hela Komvux Örebros prövningstabell för hösten 2026,
+läst rad för rad ur kommunens egen tabell. Datasetet går från 506 till 588
+listningar.
+
+| Kommun   | Listningar | Källa                                                              |
+| -------- | ---------- | ------------------------------------------------------------------ |
+| Örebro   | 1 → 83     | Komvux Örebros prövningstabell hösten 2026 (grund, gymnasial, sfi) |
+| Västerås | 1 → 1      | Västerås stads egen prövningssida (omgången är fullbokad)          |
+
+Prioritetsordningen säger Uppsala och Västerås före Örebro, och båda lästes om
+först. Uppsala publicerar ingen kurslista: NTI-skolan sköter kommunens
+teoretiska prövningar, höstens ansökan stängde 14 augusti, och det enda kortet
+säger redan exakt det. Västerås publicerar en kurskatalog men ingen tabell — och
+har hunnit skriva ut att årets omgång är fullbokad. Örebro är den första kommun
+efter dem som lägger hela sitt utbud i en tabell med kurskod, regi och period.
+
+- **Anmälan är öppen nu**, 14–27 september, med antagningsbesked 1 oktober och
+  sista svarsdag 6 oktober. Prövningarna görs 26 oktober–13 november.
+- **Två anordnare, två upplägg.** Kolumnen "Regi" avgör vad kortet lovar:
+  Komvux egna prövningar (Matematik 2a–2c) har ett utsatt skriftligt prov 6
+  november på Campus Risbergska, Talentis löper över tre veckor där läraren
+  sätter dagen — minst en inlämningsuppgift, ett salsprov på plats och en
+  muntlig uppgift, enligt anordnarens eget prövningsinformationsblad.
+- **Gy11 och Gy25 är två kort, som datan kräver.** Örebro publicerar dem på
+  samma rad men som två anmälningar: har du läst kursen före juli 2025 söker du
+  den gamla kursen, annars ämnesnivån. 76 gymnasiala listningar, 4
+  grundskolekurser (vars provdatum kommunen inte publicerat än) och 3
+  sfi-kurser.
+- **Adressen är utskriven**: Campus Risbergska ligger på Hagagatan 53, inte på
+  "adress bekräftas vid anmälan" mitt i stan, och nålen är flyttad dit.
+  Samhällskunskap 1b:s Gy25-kod står som `SAMH1B00X` — tabellen skriver
+  `SAMH1B0X`, vilket resten av datan och Skolverkets kodmönster säger är ett
+  skrivfel.
+- Kvar att göra: `check:dates` pekar ut åtta listningar vars omgång helt har
+  passerat (Växjö, Värnamo, Kunskapsförbundet Väst, Kristinehamn, Katrineholm,
+  Trollhättan, ABF Stockholm, Iris Upplands Väsby). De behöver läsas om mot
+  anordnarens sida, inte skrivas om på gissning.
+
+**Produkt: kursen har två namn.** En sökning på "Matematik 3b" hittar nu också
+de prövningar som publiceras som Matematik – fortsättning Nivå 1b, och tvärtom.
+Paren är lästa ur Örebros tabell — den enda källa i datan som skriver ut båda
+systemen på samma rad — aldrig gissade ur kurskoden, och en kurs som bara finns
+i ett system får ingen motsvarighet. Detaljvyn säger med anordnarens egen regel
+vilken av de två som är din. Se [README](README.md#kursen-har-två-namn).
+
+Dessutom: AI-prövning vägde deadlines mot systemklockan i stället för mot det
+`today` frågan lästes med, så en fråga om "innan oktober" kunde behålla en
+omgång deadline-läsaren redan räknat som stängd — två svar på samma fråga inom
+ett anrop, och ett test som började falla den dag kalendern sa emot det.
+
 ## 2026-08-31
 
 **Data: +132 prövningar.** NTI-skolans publicerade prövningsutbud för

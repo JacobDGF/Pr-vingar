@@ -226,6 +226,34 @@ fältet som bär det som inte har någon kolumn — landskapet under länet,
 läroplanen en kurs hör till (`gy11`/`gy25`) — och varje sådant är ett ord någon
 skriver i rutan.
 
+### Kursen har två namn
+
+Sedan Gy25 började tillämpas 1 juli 2025 publicerar anordnarna samma prövning
+under två namn och två koder. Datan håller dem isär, för det är två anmälningar
+med var sitt förberedelsedokument — men användaren känner bara till det ena
+namnet, det som stod på hens eget betyg. En sökning på "Matematik 3b" missade
+därför varje listning som heter Matematik – fortsättning Nivå 1b, alltså precis
+de prövningar som prövar hens kurs.
+
+[`src/lib/courseSystems.ts`](src/lib/courseSystems.ts) är paren, och sökningen
+läser dem: träffar frågan kursens andra namn eller andra kurskod är listningen
+en träff. Två saker håller det ärligt.
+
+- **Paren är lästa, inte härledda.** `MATMAT03b → MATO1B00X` går inte att gissa
+  fram ur koden. Paren kommer ur Komvux Örebros prövningstabell, som är den
+  källa i datan som skriver ut båda systemen på samma rad. Kurser som bara finns
+  i ett system — Fysik 1a, Fysik nivå 1b — står inte där, och då säger appen
+  ingenting om övergången.
+- **Namnen är datans egen stavning.** Ett test i
+  [`src/lib/courseSystems.test.ts`](src/lib/courseSystems.test.ts) jämför varje
+  par mot `EXAMS`, så en omdöpt kurs inte kan lämna sökningen med ett namn inget
+  kort bär.
+
+Detaljvyn säger vilken av de två som är din, med anordnarens egen regel: läste
+du kursen före juli 2025 är det Gy11-kursen du ska pröva, annars ämnesnivån. Det
+är en mening under rubriken, inte ett val att göra — appen vet redan vilken kod
+listningen har.
+
 ## Profil och community
 
 Profilen svarar på en fråga innan alla andra: hur många av dina sparade
