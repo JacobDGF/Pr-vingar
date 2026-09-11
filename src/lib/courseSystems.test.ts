@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { COURSE_PAIRS, courseCounterpart } from './courseSystems';
+import { COURSE_PAIRS, courseCounterpart, counterpartListing } from './courseSystems';
 import { EXAMS } from '../data/exams';
 
 describe('courseCounterpart', () => {
@@ -19,14 +19,24 @@ describe('courseCounterpart', () => {
   });
 
   /**
-   * Silence is the answer for a course only one system has. Fysik 1a and Fysik
-   * nivå 1b sit on separate rows in the source table, and pairing them here
-   * because the names look adjacent would tell somebody to sit the wrong prov.
+   * Silence is still the answer for a course no source has paired — an sfi-kurs
+   * has no Gy25 ämnesnivå to point at, and inventing one would send somebody to
+   * the wrong prov.
    */
   it('says nothing about a course no source has paired', () => {
-    expect(courseCounterpart('FYSFYS01a')).toBeUndefined();
-    expect(courseCounterpart('FYSK1B00X')).toBeUndefined();
     expect(courseCounterpart('SFIKUB92')).toBeUndefined();
+    expect(courseCounterpart('GRNMAT2')).toBeUndefined();
+  });
+
+  /**
+   * Fysik 1a and Fysik nivå 1b were the documented silence: Örebro lists them on
+   * separate rows, and the names don't look like a pair. Helsingborg's table
+   * puts them on one row, both at 150 poäng, and a pairing nobody could guess is
+   * exactly the kind only a source can settle.
+   */
+  it('pairs Fysik 1a with Fysik Nivå 1b, on Helsingborg’s authority', () => {
+    expect(courseCounterpart('FYSFYS01a')?.other.code).toBe('FYSK1B00X');
+    expect(courseCounterpart('FYSK1B00X')?.other.name).toBe('Fysik 1a');
   });
 
   it('pairs each code exactly once, and never with itself', () => {
@@ -54,5 +64,54 @@ describe('courseCounterpart', () => {
       }
     }
     expect(drifted).toEqual([]);
+  });
+});
+
+describe('counterpartListing', () => {
+  const exam = (schoolName: string, city: string, courseCode: string) => ({
+    id: `${schoolName}-${courseCode}`.toLowerCase(),
+    schoolName,
+    city,
+    courseCode,
+  });
+
+  it('finds the other curriculum’s listing at the same school', () => {
+    const gy11 = exam('Komvux Örebro (Talenti)', 'Örebro', 'MATMAT03b');
+    const gy25 = exam('Komvux Örebro (Talenti)', 'Örebro', 'MATO1B00X');
+    expect(counterpartListing(gy11, [gy11, gy25])).toBe(gy25);
+    expect(counterpartListing(gy25, [gy11, gy25])).toBe(gy11);
+  });
+
+  /**
+   * The twin has to be the same school in the same town. Another provider's
+   * listing of the same course is a different prövning — different dates, fee
+   * and forms — and offering it as "the other name for this one" would move the
+   * user to a booking they never chose.
+   */
+  it('never crosses to another school or another town', () => {
+    const here = exam('Komvux Helsingborg', 'Helsingborg', 'MATE2B00X');
+    const otherSchool = exam('Komvux Örebro (Talenti)', 'Örebro', 'MATMAT02b');
+    const otherTown = exam('Komvux Helsingborg', 'Malmö', 'MATMAT02b');
+    expect(counterpartListing(here, [here, otherSchool, otherTown])).toBeUndefined();
+  });
+
+  it('says nothing when the school only prövar one of the two', () => {
+    const alone = exam('Komvux Helsingborg', 'Helsingborg', 'MATE2B00X');
+    expect(counterpartListing(alone, [alone])).toBeUndefined();
+  });
+
+  it('says nothing for a course with no pair at all', () => {
+    const sfi = exam('Komvux Göteborg', 'Göteborg', 'SFIKUD93');
+    expect(counterpartListing(sfi, [sfi])).toBeUndefined();
+  });
+
+  /** Every twin the real dataset offers points back at the listing it came from. */
+  it('is symmetric across the dataset', () => {
+    const broken: string[] = [];
+    for (const e of EXAMS) {
+      const twin = counterpartListing(e, EXAMS);
+      if (twin && counterpartListing(twin, EXAMS)?.id !== e.id) broken.push(e.id);
+    }
+    expect(broken).toEqual([]);
   });
 });

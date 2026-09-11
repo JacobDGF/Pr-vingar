@@ -56,6 +56,11 @@ Fem regler styr datan, och de testas i
   (`SVEA1000X`, `SVEA3000X`), med ett eget förberedelsedokument per kod. Den som
   läser fel dokument förbereder sig på fel prov, så att slå ihop dem till ett
   kort med två koder vore att dölja just den skillnad som betyder något.
+  Motsatsen gäller när anordnaren bara tar emot en av dem: Helsingborg skriver
+  ut att "du söker till betygsprövningar i Gy25", och att Gy11 kräver ett mejl
+  efter anmälan och ett betyg du redan har. Då är Gy25-kortet stadens utbud, och
+  Gy11-vägen en mening i kortets beskrivning — ett andra kort skulle lova en
+  anmälan som inte finns.
 
 ### En färg per listning
 
@@ -240,19 +245,32 @@ läser dem: träffar frågan kursens andra namn eller andra kurskod är listning
 en träff. Två saker håller det ärligt.
 
 - **Paren är lästa, inte härledda.** `MATMAT03b → MATO1B00X` går inte att gissa
-  fram ur koden. Paren kommer ur Komvux Örebros prövningstabell, som är den
-  källa i datan som skriver ut båda systemen på samma rad. Kurser som bara finns
-  i ett system — Fysik 1a, Fysik nivå 1b — står inte där, och då säger appen
-  ingenting om övergången.
+  fram ur koden. Paren kommer ur de två tabeller i datans källor som skriver ut
+  båda systemen på samma rad: Komvux Örebros prövningstabell och Helsingborgs
+  stads jämförelselista, den senare för nästan hela gymnasieutbudet. Kurser som
+  ingen källa har parat ihop står inte där, och då säger appen ingenting om
+  övergången — men tystnaden gäller bara tills en källa talar. Fysik 1a och
+  Fysik nivå 1b var exemplet på ett par vi inte vågade gissa; Helsingborg lägger
+  dem på samma rad, och då hör de ihop.
 - **Namnen är datans egen stavning.** Ett test i
   [`src/lib/courseSystems.test.ts`](src/lib/courseSystems.test.ts) jämför varje
   par mot `EXAMS`, så en omdöpt kurs inte kan lämna sökningen med ett namn inget
   kort bär.
+- **Tryckfel i en källa följs inte.** Helsingborgs tabell trycker `PSYL1000X` på
+  både Psykologi nivå 1 och nivå 2, och stavar `HALAHL0` och `SPCSSPE01`. Där
+  datan redan bär den riktiga koden från en annan anordnare vinner den — en kod
+  med en bokstav fel leder till fel förberedelsematerial.
 
 Detaljvyn säger vilken av de två som är din, med anordnarens egen regel: läste
-du kursen före juli 2025 är det Gy11-kursen du ska pröva, annars ämnesnivån. Det
-är en mening under rubriken, inte ett val att göra — appen vet redan vilken kod
-listningen har.
+du kursen före juli 2025 är det Gy11-kursen du ska pröva, annars ämnesnivån.
+Prövar skolan båda är meningen dessutom vägen dit: raden blir en knapp som
+öppnar tvillinglistningen, och nästa tryck bär tillbaka. Det som saknades var
+aldrig upplysningen utan steget — att veta att kursen heter något annat och
+ändå behöva stänga vyn, söka om på ett namn man just läst och hitta rätt skola
+igen. Knappen finns bara när tvillingen finns hos samma skola i samma ort
+([`counterpartListing`](src/lib/courseSystems.ts)); en annan skolas prövning är
+en annan prövning, med andra datum och en annan avgift. Utan tvilling står
+meningen kvar som text.
 
 ## Profil och community
 

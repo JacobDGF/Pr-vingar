@@ -4,6 +4,61 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-11 (Helsingborg, och de två läroplanerna)
+
+**Data: +101 prövningar.** Hela Komvux Helsingborgs prövningsutbud, läst ur
+kommunens egen betygsprövningssida och den kurslista sidan länkar till.
+Datasetet går från 588 till 689 listningar, och Helsingborg från 1 till 102.
+
+| Kommun      | Listningar | Källa                                                               |
+| ----------- | ---------- | ------------------------------------------------------------------- |
+| Helsingborg | 1 → 102    | helsingborg.se: betygsprövningssidan + jämförelselistan Gy11 ↔ Gy25 |
+
+- **Anmälan stänger i dag.** Gymnasieperiod 4 tar anmälan 7–11 september, med
+  betalningen samma dag, och prövningen görs 12 oktober–6 november med ett fast
+  provdatum. De grundläggande ämnena (engelska, matematik, svenska, sva) har
+  samma fönster som sin period 2. Kommunens tre tidigare perioder i år har
+  passerat och nästa års datum är inte publicerade, så det är den omgång korten
+  visar.
+- **Ett kort per ämnesnivå, inte två.** Helsingborg skriver ut att man söker i
+  Gy25 och att Gy11 kräver ett mejl efter anmälan — och bara går för den som
+  redan har ett betyg i kursen. Varje kort namnger därför sin Gy11-kurs och
+  vägen dit i beskrivningen i stället för att lova en anmälan som inte finns.
+  Stadens enda tidigare kort, Matematik 2b, är omskrivet till Matematik Nivå 2b
+  med sitt id kvar, så en sparad eller bevakad prövning inte tappas bort.
+- **Anmälan är fyra steg, inte tre.** Betalningen ligger utanför e-tjänsten:
+  500 kr till plusgiro 918192-6 senast sista anmälningsdag, och kvittot mejlat
+  till betygsprovning@helsingborg.se. Utan de stegen ser anmälan färdig ut när
+  den inte är det.
+- **Adressen säger vad källan säger.** Kommunen skriver "vissa prov görs på
+  plats" men inte var, så kortet bär vuxenutbildningens egen adress med
+  förbehållet utskrivet — inte en sal vi hade fått gissa fram.
+
+**Produkt: den andra läroplanen är ett tryck bort.** Detaljvyn har sagt att
+kursen också heter något annat sedan Gy25 kom. Nu tar den dig dit: prövar skolan
+båda varianterna blir meningen en knapp som öppnar tvillinglistningen, och nästa
+tryck bär tillbaka. Steget som saknades var aldrig upplysningen utan vägen —
+att stänga vyn, söka om på ett namn man just läst och hitta rätt skola igen.
+
+- **Paren blev nästan tre gånger fler**, 36 → 95, lästa ur Helsingborgs
+  jämförelsetabell — samma slags källa som Örebros, men för nästan hela
+  gymnasieutbudet i stället för kärnämnena. Det syns mest i sökningen: 212
+  listningar (mot 144) har nu en tvilling appen kan nå, och en sökning på
+  "Företagsekonomi 1" hittar även Företagsekonomi Nivå 1.
+- **En dokumenterad tystnad bröts.** Fysik 1a och Fysik nivå 1b stod var för
+  sig, för Örebro parar dem inte och koderna avslöjar ingenting. Helsingborg
+  lägger dem på samma rad, båda 150 poäng, och först då hör de ihop.
+- **Tabellens tryckfel följdes inte.** Den trycker `PSYL1000X` på både
+  Psykologi nivå 1 och nivå 2 och stavar `HALAHL0` och `SPCSSPE01`; där datan
+  redan bär rätt kod från en annan anordnare vinner den.
+- **Knappen finns bara när tvillingen gör det**, hos samma skola i samma ort.
+  En annan skolas prövning har andra datum och en annan avgift, och att bjuda in
+  till den vore att flytta någon till en anmälan hen inte valt. Utan tvilling
+  står meningen kvar som text.
+- **Verifierat i Chromium mot ett riktigt bygge**: Göteborgs Företagsekonomi 1 →
+  Företagsekonomi Nivå 1 → tillbaka, och Helsingborgs Retorik Nivå 1, som saknar
+  tvilling, visar meningen utan knapp.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

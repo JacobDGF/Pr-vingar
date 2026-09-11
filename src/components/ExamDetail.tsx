@@ -1,5 +1,6 @@
 import {
   ArrowLeft,
+  ArrowRight,
   MapPin,
   Calendar,
   BookOpen,
@@ -27,7 +28,7 @@ import { hasPeriodPassed, daysUntil } from '../lib/examStatus';
 import { getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getExamAction } from '../lib/examAction';
-import { courseCounterpart } from '../lib/courseSystems';
+import { courseCounterpart, counterpartListing } from '../lib/courseSystems';
 import { track } from '../lib/analytics';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
 import { useEscapeKey } from '../hooks/useEscapeKey';
@@ -142,11 +143,21 @@ export function ExamDetail() {
   // "har du läst kursen innan juli 2025 ska du söka prövningen i det gamla
   // systemet". One sentence here is the difference between choosing and
   // guessing; a listing whose course only exists in one system says nothing.
+  //
+  // När skolan prövar båda varianterna är meningen dessutom en väg dit:
+  // `twin` är den andra listningen, och då blir raden en knapp i stället för
+  // en upplysning. Utan tvillingen står den kvar som text — en knapp som leder
+  // till en sökning användaren själv får formulera är ingen väg.
   const counterpart = courseCounterpart(exam.courseCode);
+  const twin = counterpartListing(exam, exams);
   const counterpartNote = counterpart
-    ? counterpart.system === 'gy25'
-      ? `Ämnesnivå enligt Gy25. Läste du kursen före juli 2025 är det ${counterpart.other.name} (${counterpart.other.code}) du ska pröva i stället.`
-      : `Kurs enligt Gy11, för dig som läste den före juli 2025. Annars heter samma innehåll ${counterpart.other.name} (${counterpart.other.code}).`
+    ? twin
+      ? counterpart.system === 'gy25'
+        ? `Läste du kursen före juli 2025? Öppna ${counterpart.other.name} (${counterpart.other.code}) hos samma skola.`
+        : `Har du läst kursen efter juli 2025? Öppna ${counterpart.other.name} (${counterpart.other.code}) hos samma skola.`
+      : counterpart.system === 'gy25'
+        ? `Ämnesnivå enligt Gy25. Läste du kursen före juli 2025 är det ${counterpart.other.name} (${counterpart.other.code}) du ska pröva i stället.`
+        : `Kurs enligt Gy11, för dig som läste den före juli 2025. Annars heter samma innehåll ${counterpart.other.name} (${counterpart.other.code}).`
     : null;
 
   const distanceKm = userLocation
@@ -259,11 +270,26 @@ export function ExamDetail() {
                   <p className="font-display italic text-brand-100 text-lg lg:text-xl mt-2">
                     {exam.schoolName} · {exam.city}, {exam.region}
                   </p>
-                  {counterpartNote && (
-                    <p className="text-brand-100/90 text-[13px] leading-snug mt-3 max-w-prose">
-                      {counterpartNote}
-                    </p>
-                  )}
+                  {counterpartNote &&
+                    (twin ? (
+                      <button
+                        onClick={() => setShowingExamDetail(twin.id)}
+                        className="group mt-3 max-w-prose w-full text-left inline-flex items-start gap-2.5 rounded-[18px] bg-white/15 hover:bg-white/25 px-4 py-3 transition-colors"
+                      >
+                        <span className="text-white text-[13px] leading-snug font-semibold">
+                          {counterpartNote}
+                        </span>
+                        <ArrowRight
+                          size={16}
+                          strokeWidth={2.4}
+                          className="text-white flex-shrink-0 mt-0.5 transition-transform group-hover:translate-x-0.5"
+                        />
+                      </button>
+                    ) : (
+                      <p className="text-brand-100/90 text-[13px] leading-snug mt-3 max-w-prose">
+                        {counterpartNote}
+                      </p>
+                    ))}
                 </div>
 
                 {/* Three numbers, the ones people compare listings on */}

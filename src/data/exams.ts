@@ -200,6 +200,69 @@ const TIPS_RELIGION = [
   'Läs på om relationen mellan religion och vetenskap i den aktuella samhällsdebatten.',
 ];
 
+const TIPS_HISTORIA = [
+  'Bygg en tidslinje över epokerna – det är ryggraden frågorna hänger på.',
+  'Öva källkritik: vem skrev källan, när, för vem och varför?',
+  'Träna på att förklara orsak och följd i stället för att räkna upp årtal.',
+  'Läs på om historiebruk – hur historia används i dagens debatt återkommer ofta.',
+];
+
+const TIPS_GEOGRAFI = [
+  'Repetera kartkunskap och hur du läser tematiska kartor och diagram.',
+  'Lär dig de stora processerna: plattektonik, klimatzoner, befolkning och urbanisering.',
+  'Koppla teorin till aktuella exempel — hållbar utveckling återkommer i varje delprov.',
+  'Öva på att resonera kring sambanden mellan natur, människa och resurser.',
+];
+
+const TIPS_FILOSOFI = [
+  'Lär dig skilja de normativa etiska teorierna åt och tillämpa dem på ett fall.',
+  'Öva på att rekonstruera och värdera argument: premiss, slutsats, hållbarhet.',
+  'Repetera kunskapsteorins grundfrågor och de klassiska svaren på dem.',
+  'Träna på att skriva kort och precist – filosofiprov belönar tydlighet, inte längd.',
+];
+
+const TIPS_EKONOMI = [
+  'Repetera företagets grundbegrepp: intäkt, kostnad, resultat och likviditet.',
+  'Öva på kalkylerna – bidragskalkyl, självkostnad och nollpunkt återkommer.',
+  'Lär dig marknadsföringens modeller och använd dem på ett riktigt företag.',
+  'Koppla varje begrepp till ett konkret exempel; det är så frågorna är ställda.',
+];
+
+const TIPS_ARBETSLIV = [
+  'Repetera kursplanens begrepp – prövningen frågar efter dem med rätt ord.',
+  'Öva på att beskriva ett arbetsflöde steg för steg, från beställning till uppföljning.',
+  'Koppla teorin till en arbetsplats du känner till; konkreta exempel bedöms högre.',
+  'Träna på bemötande och kommunikation – de momenten prövas ofta muntligt.',
+];
+
+const TIPS_SKAPANDE = [
+  'Samla ett eget material du kan visa upp och förklara valen bakom.',
+  'Lär dig ämnets begrepp för form, komposition och berättande.',
+  'Öva på att motivera dina val i text – processen bedöms, inte bara resultatet.',
+  'Kontrollera vilka program och filformat som gäller innan du börjar producera.',
+];
+
+const TIPS_TEKNIK = [
+  'Repetera tekniska system: delarna, sambanden och hur systemet styrs.',
+  'Öva på att rita och läsa scheman och enkla konstruktionsritningar.',
+  'Räkna med enheter genomgående och kontrollera storleksordningen på svaren.',
+  'Koppla tekniken till samhälle och hållbarhet – det efterfrågas i bedömningen.',
+];
+
+const TIPS_LATIN = [
+  'Lär in formläran systematiskt: kasus, deklinationer och konjugationer.',
+  'Översätt korta texter dagligen och skriv ned varje ny glosa i sitt sammanhang.',
+  'Repetera romersk kultur och historia – texterna bedöms också som kulturhistoria.',
+  'Öva på att förklara latinska lånord i svenskan, en återkommande uppgift.',
+];
+
+const TIPS_SPRAK = [
+  'Lyssna och läs på språket varje dag, hellre kort och ofta än långt och sällan.',
+  'Träna hörförståelsen med autentiskt material: nyheter, poddar och serier.',
+  'Förbered den muntliga delen genom att spela in dig själv och lyssna igenom.',
+  'Skriv korta texter regelbundet och repetera verbens tempus systematiskt.',
+];
+
 const TIPS_FLERA = [
   'Kontakta skolan tidigt för att få exakt kurskod och provupplägg för din kurs.',
   'Fråga om gamla tentor eller övningsmaterial för just den kurs du ska pröva.',
@@ -493,6 +556,70 @@ const COMPONENTS_OREBRO_TALENTI_LAB: ExamComponent[] = [
   },
   COMPONENTS_OREBRO_TALENTI[1],
   COMPONENTS_OREBRO_TALENTI[2],
+];
+
+// Komvux Helsingborg, läst 2026-09-11: kommunens egen betygsprövningssida och
+// den kurslista den länkar till ("Se hela listan på kurser och ämne du kan göra
+// prövningar i här", en jämförelsetabell Gy11 ↔ Gy25).
+const SEP_11_VERIFIED = '2026-09-11';
+
+const HELSINGBORG_INFO_URL =
+  'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/';
+const HELSINGBORG_REGISTRATION_URL =
+  'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx';
+
+// Kommunen skriver inte ut var proven skrivs, bara att "vissa prov görs på
+// plats". Adressen är därför vuxenutbildningens egen, med förbehållet utskrivet
+// i stället för en sal vi inte har någon källa på.
+const HELSINGBORG_ADDRESS = 'Rönnowsgatan 10, Helsingborg (vissa prov görs på plats)';
+
+const HELSINGBORG_PRICE_NOTE =
+  'Kostnadsfritt om du redan har betyg F i kursen. Avgiften betalas senast sista anmälningsdag ' +
+  'och betalas inte tillbaka.';
+
+// Webbansökan är e-tjänsten, men betalningen ligger utanför den: Helsingborg tar
+// avgiften på plusgiro och vill ha kvittot mejlat innan anmälan är klar. Utan de
+// två sista stegen ser anmälan färdig ut när den inte är det.
+const HELSINGBORG_REGISTRATION: Exam['registration'] = {
+  kind: 'eservice',
+  landing: 'Länken går till Helsingborgs webbansökan för vuxenutbildning, där prövningarna ligger.',
+  steps: [
+    'Logga in och välj Prövning, sedan prövningsperiod och ämne',
+    'Bifoga dina tidigare betyg och slutför anmälan',
+    'Betala 500 kr till plusgiro 918192-6 senast sista anmälningsdag',
+    'Mejla kvittot till betygsprovning@helsingborg.se',
+  ],
+};
+
+const COMPONENTS_HELSINGBORG: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: 'Fast provdatum inom perioden',
+    description:
+      'Du får ett provdatum som inte går att ändra, och vissa prov görs på plats. Ta med legitimation.',
+  },
+  {
+    name: 'Muntligt prov',
+    duration: 'Bokas med läraren',
+    description: 'Tiden bokar du själv med läraren i lärplattformen Exlearn.',
+  },
+  {
+    name: 'Inlämningsuppgifter',
+    duration: 'Under prövningsperioden',
+    description:
+      'Kan ingå. Hela prövningen ska påbörjas och göras klart inom perioden — annars får du anmäla och betala på nytt.',
+  },
+];
+
+const COMPONENTS_HELSINGBORG_LAB: ExamComponent[] = [
+  COMPONENTS_HELSINGBORG[0],
+  {
+    name: 'Laboration',
+    duration: 'Fast tid',
+    description: 'Laborationer har fasta tider och görs på plats, precis som de skriftliga proven.',
+  },
+  COMPONENTS_HELSINGBORG[1],
+  COMPONENTS_HELSINGBORG[2],
 ];
 
 export const EXAMS: Exam[] = [
@@ -4268,39 +4395,51 @@ export const EXAMS: Exam[] = [
     tags: ['engelska', 'malmo'],
     verifiedAt: VERIFIED,
   },
+  // Idet är från den tid då Helsingborg bara hade ett kort, och det står kvar:
+  // någon kan ha sparat eller bevakat den här prövningen, och ett nytt id hade
+  // tyst tappat bort den. Kursen är däremot omskriven till den ämnesnivå
+  // kommunen faktiskt tar emot anmälan till — Gy11-kursen Matematik 2b prövas
+  // bara efter ett mejl, och bara av den som redan har ett betyg i den.
   {
     id: 'helsingborg-ma2b',
     schoolName: 'Komvux Helsingborg',
     provider: 'Helsingborgs stad',
     subject: 'Matematik',
-    course: 'Matematik 2b',
-    courseCode: 'MATMAT02b',
+    course: 'Matematik Nivå 2b',
+    courseCode: 'MATE2B00X',
     level: 'Komvux',
     city: 'Helsingborg',
     region: 'Skåne',
-    address: 'Rönnowsgatan 10, Helsingborg',
+    address: HELSINGBORG_ADDRESS,
     lat: 56.0465,
     lng: 12.6945,
     price: 500,
-    priceNote: FREE_IF_PRIOR_F,
+    priceNote: HELSINGBORG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan 7–11 september 2026 (avgiften ska vara betald senast 11/9), prövningsperiod 12 oktober – 6 november. Du kan göra högst två prövningar per period.',
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
       applicationStart: '2026-09-07',
       applicationEnd: '2026-09-11',
       examWindowStart: '2026-10-12',
       examWindowEnd: '2026-11-06',
       confirmed: true,
     },
-    components: COMPONENTS_MATEMATIK,
+    components: COMPONENTS_HELSINGBORG,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl:
-      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
-    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
     description:
-      'Komvux Helsingborg erbjuder betygsprövning i gymnasiekurser, bland annat matematik.',
-    tags: ['matematik', 'helsingborg'],
-    verifiedAt: AUG_18_VERIFIED,
+      'Betygsprövning i Matematik Nivå 2b (MATE2B00X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Matematik 2b (MATMAT02b) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
   },
   {
     id: 'lund-ma',
@@ -20047,6 +20186,4130 @@ export const EXAMS: Exam[] = [
       '26 oktober–13 november; ditt eget datum inom perioden bestäms av ansvarig lärare.',
     tags: ['svenska för invandrare', 'sfi', 'örebro'],
     verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'helsingborg-admi1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Administration',
+    course: 'Administration Nivå 1',
+    courseCode: 'ADMI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ARBETSLIV,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Administration Nivå 1 (ADMI1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Administration 1 (ADMADM01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['administration', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-admi2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Administration',
+    course: 'Administration Nivå 2',
+    courseCode: 'ADMI2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ARBETSLIV,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Administration Nivå 2 (ADMI2000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Administration 2 (ADMADM02) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['administration', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-arki1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Arkitektur',
+    course: 'Arkitektur Nivå 1',
+    courseCode: 'ARKI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SKAPANDE,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Arkitektur Nivå 1 (ARKI1000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Arkitektur – hus (ARKARK0) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['arkitektur', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-biog1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 1',
+    courseCode: 'BIOG1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Biologi Nivå 1 (BIOG1000X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Biologi 1 (BIOBIO01) mejlar du betygsprovning@helsingborg.se ' +
+      'efter att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['biologi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-biog2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 2',
+    courseCode: 'BIOG2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Biologi Nivå 2 (BIOG2000X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Biologi 2 (BIOBIO02) mejlar du betygsprovning@helsingborg.se ' +
+      'efter att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['biologi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-datr1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Dator- och kommunikationsteknik',
+    course: 'Dator- och kommunikationsteknik Nivå 1',
+    courseCode: 'DATR1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_TEKNIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Dator- och kommunikationsteknik Nivå 1 (DATR1000X) hos Komvux Helsingborg, ' +
+      'med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Kommunens lista parar ihop ämnesnivån med Gy11-kursen Datorteknik 1a ' +
+      'eller 1b, som du prövar genom att mejla betygsprovning@helsingborg.se efter anmälan — det ' +
+      'går bara om du redan har ett betyg i kursen.',
+    tags: ['dator- och kommunikationsteknik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-diga1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Digitalt skapande',
+    course: 'Digitalt skapande Nivå 1',
+    courseCode: 'DIGA1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SKAPANDE,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Digitalt skapande Nivå 1 (DIGA1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Digitalt skapande 1 (DIGDIG01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['digitalt skapande', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-diga2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Digitalt skapande',
+    course: 'Digitalt skapande Nivå 2',
+    courseCode: 'DIGA2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SKAPANDE,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Digitalt skapande Nivå 2 (DIGA2000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Digitalt skapande 2 (DIGDIG02) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['digitalt skapande', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-enge1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 1',
+    courseCode: 'ENGE1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Engelska Nivå 1 (ENGE1000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Engelska 5 (ENGENG05) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['engelska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-enge2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 2',
+    courseCode: 'ENGE2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Engelska Nivå 2 (ENGE2000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Engelska 6 (ENGENG06) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['engelska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-enge3000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 3',
+    courseCode: 'ENGE3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Engelska Nivå 3 (ENGE3000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Engelska 7 (ENGENG07) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['engelska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-entr1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Entreprenörskap',
+    course: 'Entreprenörskap Nivå 1',
+    courseCode: 'ENTR1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Entreprenörskap Nivå 1 (ENTR1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Entreprenörskap (ENTENR0) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['entreprenörskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-entp1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Entreprenörskap',
+    course: 'Entreprenörskap och företagande Nivå 1',
+    courseCode: 'ENTP1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Entreprenörskap och företagande Nivå 1 (ENTP1000X) hos Komvux Helsingborg, ' +
+      'med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Vill du i stället pröva Gy11-kursen Entreprenörskap och företagande ' +
+      '(FÖRENT0) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går bara om ' +
+      'du redan har ett betyg i kursen.',
+    tags: ['entreprenörskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-film1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Filmkunskap',
+    course: 'Filmkunskap Nivå 1',
+    courseCode: 'FILM1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SKAPANDE,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Filmkunskap Nivå 1 (FILM1000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Film- och TV-kunskap (KOSFIL0) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['filmkunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fils1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Filosofi',
+    course: 'Filosofi Nivå 1',
+    courseCode: 'FILS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FILOSOFI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Filosofi Nivå 1 (FILS1000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Filosofi 1 (FIOFIO01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['filosofi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fils2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Filosofi',
+    course: 'Filosofi Nivå 2',
+    courseCode: 'FILS2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FILOSOFI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Filosofi Nivå 2 (FILS2000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Filosofi 2 (FIOFIO02) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['filosofi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fysk1b00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1b',
+    courseCode: 'FYSK1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Fysik Nivå 1b (FYSK1B00X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Fysik 1a (FYSFYS01a) mejlar du betygsprovning@helsingborg.se ' +
+      'efter att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['fysik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fysk1a10x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1a1',
+    courseCode: 'FYSK1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Fysik Nivå 1a1 (FYSK1A10X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Fysik 1b1 (FYSFYS01b1) mejlar du betygsprovning@helsingborg.se ' +
+      'efter att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['fysik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fysk1a20x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1a2',
+    courseCode: 'FYSK1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Fysik Nivå 1a2 (FYSK1A20X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Fysik 1b2 (FYSFYS01b2) mejlar du betygsprovning@helsingborg.se ' +
+      'efter att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['fysik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fysk2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 2',
+    courseCode: 'FYSK2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Fysik Nivå 2 (FYSK2000X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Fysik 2 (FYSFYS02) mejlar du betygsprovning@helsingborg.se efter ' +
+      'att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['fysik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-foet1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi Nivå 1',
+    courseCode: 'FOET1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Företagsekonomi Nivå 1 (FOET1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Företagsekonomi 1 (FÖRFÖR01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['företagsekonomi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-foet2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi Nivå 2',
+    courseCode: 'FOET2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Företagsekonomi Nivå 2 (FOET2000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Företagsekonomi 2 (FÖRFÖR02) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['företagsekonomi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-geog1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Geografi',
+    course: 'Geografi Nivå 1',
+    courseCode: 'GEOG1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_GEOGRAFI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Geografi Nivå 1 (GEOG1000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Geografi 1 (GEOGEO01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['geografi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-geog2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Geografi',
+    course: 'Geografi Nivå 2',
+    courseCode: 'GEOG2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_GEOGRAFI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Geografi Nivå 2 (GEOG2000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Geografi 2 (GEOGEO02) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['geografi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hist1a10x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a1',
+    courseCode: 'HIST1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Historia Nivå 1a1 (HIST1A10X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Historia 1a1 (HISHIS01a1) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['historia', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hist1a20x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a2',
+    courseCode: 'HIST1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Historia Nivå 1a2 (HIST1A20X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Historia 1a2 (HISHIS01a2) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['historia', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hist1b00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1b',
+    courseCode: 'HIST1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Historia Nivå 1b (HIST1B00X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Historia 1b (HISHIS01b) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['historia', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hist2a00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 2a',
+    courseCode: 'HIST2A00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Historia Nivå 2a (HIST2A00X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Historia 2a (HISHIS02a) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['historia', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hist2b00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 2b',
+    courseCode: 'HIST2B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Historia Nivå 2b (HIST2B00X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Historia 2b – kultur (HISHIS02b) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['historia', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hals1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Vård och omsorg',
+    course: 'Hälsopedagogik Nivå 1',
+    courseCode: 'HALS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_VARD,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Hälsopedagogik Nivå 1 (HALS1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Hälsopedagogik (HALHAL0) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['vård och omsorg', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-inte1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Internationell ekonomi Nivå 1',
+    courseCode: 'INTE1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Internationell ekonomi Nivå 1 (INTE1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Internationell ekonomi (SAMINE0) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-intr1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Internationella relationer Nivå 1',
+    courseCode: 'INTR1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Internationella relationer Nivå 1 (INTR1000X) hos Komvux Helsingborg, med ' +
+      'Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Vill du i stället pröva Gy11-kursen Internationella relationer (SAMINR0) ' +
+      'mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan ' +
+      'har ett betyg i kursen.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-kemi1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 1',
+    courseCode: 'KEMI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_KEMI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Kemi Nivå 1 (KEMI1000X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Kemi 1 (KEMKEM01) mejlar du betygsprovning@helsingborg.se efter ' +
+      'att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['kemi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-kemi2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 2',
+    courseCode: 'KEMI2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_KEMI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Kemi Nivå 2 (KEMI2000X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Kemi 2 (KEMKEM02) mejlar du betygsprovning@helsingborg.se efter ' +
+      'att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['kemi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-lati1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Latin',
+    course: 'Latin – språk och kultur Nivå 1',
+    courseCode: 'LATI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_LATIN,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Latin – språk och kultur Nivå 1 (LATI1000X) hos Komvux Helsingborg, med ' +
+      'Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Vill du i stället pröva Gy11-kursen Latin - språk och kultur 1 (LATLAT01) ' +
+      'mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan ' +
+      'har ett betyg i kursen.',
+    tags: ['latin', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-leda1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Ledarskap och organisation',
+    course: 'Ledarskap och organisation Nivå 1',
+    courseCode: 'LEDA1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ARBETSLIV,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Ledarskap och organisation Nivå 1 (LEDA1000X) hos Komvux Helsingborg, med ' +
+      'Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Vill du i stället pröva Gy11-kursen Ledarskap och organisation (LEDLED0) ' +
+      'mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan ' +
+      'har ett betyg i kursen.',
+    tags: ['ledarskap och organisation', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-logs1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Logistik',
+    course: 'Logistik Nivå 1',
+    courseCode: 'LOGS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ARBETSLIV,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Logistik Nivå 1 (LOGS1000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Logistik 1 (INKLOG01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['logistik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mark1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Marknadsföring Nivå 1',
+    courseCode: 'MARK1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Marknadsföring Nivå 1 (MARK1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Marknadsföring (FÖRMAD0) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['företagsekonomi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate1a00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1a',
+    courseCode: 'MATE1A00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik Nivå 1a (MATE1A00X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Matematik 1a (MATMAT01a) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate1b00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1b',
+    courseCode: 'MATE1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik Nivå 1b (MATE1B00X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Matematik 1b (MATMAT01b) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate1c00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1c',
+    courseCode: 'MATE1C00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik Nivå 1c (MATE1C00X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Matematik 1c (MATMAT01c) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate2a00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2a',
+    courseCode: 'MATE2A00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik Nivå 2a (MATE2A00X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Matematik 2a (MATMAT02a) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate2c00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2c',
+    courseCode: 'MATE2C00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik Nivå 2c (MATE2C00X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Matematik 2c (MATMAT02c) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mato1b00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1b',
+    courseCode: 'MATO1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 1b (MATO1B00X) hos Komvux Helsingborg, med ' +
+      'Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Vill du i stället pröva Gy11-kursen Matematik 3b (MATMAT03b) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mato1c00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1c',
+    courseCode: 'MATO1C00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 1c (MATO1C00X) hos Komvux Helsingborg, med ' +
+      'Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Vill du i stället pröva Gy11-kursen Matematik 3c (MATMAT03c) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mato2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 2',
+    courseCode: 'MATO2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 2 (MATO2000X) hos Komvux Helsingborg, med ' +
+      'Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Vill du i stället pröva Gy11-kursen Matematik 4 (MATMAT04) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-matf1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fördjupning Nivå 1',
+    courseCode: 'MATF1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik – fördjupning Nivå 1 (MATF1000X) hos Komvux Helsingborg, med ' +
+      'Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Vill du i stället pröva Gy11-kursen Matematik 5 (MATMAT05) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-masb1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik specialisering B Nivå 1',
+    courseCode: 'MASB1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik specialisering B Nivå 1 (MASB1000X) hos Komvux Helsingborg, med ' +
+      'Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Kommunens lista parar ihop ämnesnivån med Gy11-kursen Matematik ' +
+      'specialisering, som du prövar genom att mejla betygsprovning@helsingborg.se efter anmälan — ' +
+      'det går bara om du redan har ett betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-masc1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik specialisering C Nivå 1',
+    courseCode: 'MASC1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Matematik specialisering C Nivå 1 (MASC1000X) hos Komvux Helsingborg, med ' +
+      'Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Kommunens lista parar ihop ämnesnivån med Gy11-kursen Matematik ' +
+      'specialisering, som du prövar genom att mejla betygsprovning@helsingborg.se efter anmälan — ' +
+      'det går bara om du redan har ett betyg i kursen.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-medp1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Medieproduktion',
+    course: 'Medieproduktion Nivå 1',
+    courseCode: 'MEDP1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SKAPANDE,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Medieproduktion Nivå 1 (MEDP1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Medieproduktion 1 (MEPMEI01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['medieproduktion', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-natu1a10x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a1',
+    courseCode: 'NATU1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1a1 (NATU1A10X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Naturkunskap 1a1 (NAKNAK01a1) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['naturkunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-natu1a20x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a2',
+    courseCode: 'NATU1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1a2 (NATU1A20X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Naturkunskap 1a2 (NAKNAK01a2) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['naturkunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-natu1b00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1b',
+    courseCode: 'NATU1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1b (NATU1B00X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Naturkunskap 1b (NAKNAK01b) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['naturkunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-natu2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 2',
+    courseCode: 'NATU2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Naturkunskap Nivå 2 (NATU2000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Naturkunskap 2 (NAKNAK02) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['naturkunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-prog1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Programmering',
+    course: 'Programmering Nivå 1',
+    courseCode: 'PROG1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Programmering Nivå 1 (PROG1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Programmering 1 (PRRPRR01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['programmering', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-prog2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Programmering',
+    course: 'Programmering Nivå 2',
+    courseCode: 'PROG2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Programmering Nivå 2 (PROG2000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Programmering 2 (PRRPRR02) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['programmering', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-psyk1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Vård och omsorg',
+    course: 'Psykiatri Nivå 1',
+    courseCode: 'PSYK1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_VARD,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Psykiatri Nivå 1 (PSYK1000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Psykiatri 1 (PSYPSY01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['vård och omsorg', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-psyl1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 1',
+    courseCode: 'PSYL1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Psykologi Nivå 1 (PSYL1000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Psykologi 1 (PSKPSY01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['psykologi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-psyl2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 2',
+    courseCode: 'PSYL2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Psykologi Nivå 2 (PSYL2000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Psykologi 2a (PSKPSY02a) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['psykologi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-redo1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Redovisning Nivå 1',
+    courseCode: 'REDO1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Redovisning Nivå 1 (REDO1000X) hos Komvux Helsingborg, med Arena Utbildning ' +
+      'som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 ' +
+      'september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Redovisning 1 (FÖRRED01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['företagsekonomi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-reli1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 1',
+    courseCode: 'RELI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_RELIGION,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Religionskunskap Nivå 1 (RELI1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Religionskunskap 1 (RELREL01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['religionskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-reli2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 2',
+    courseCode: 'RELI2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_RELIGION,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Religionskunskap Nivå 2 (RELI2000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Religionskunskap 2 (RELREL02) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['religionskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-reto1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Retorik Nivå 1',
+    courseCode: 'RETO1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Retorik Nivå 1 (RETO1000X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Retorik (SVERET0) mejlar du betygsprovning@helsingborg.se efter ' +
+      'att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['svenska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-samh1a10x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a1',
+    courseCode: 'SAMH1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1a1 (SAMH1A10X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Samhällskunskap 1a1 (SAMSAM01a1) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-samh1a20x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a2',
+    courseCode: 'SAMH1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1a2 (SAMH1A20X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Samhällskunskap 1a2 (SAMSAM01a2) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-samh1b00x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1b',
+    courseCode: 'SAMH1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1b (SAMH1B00X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Samhällskunskap 1b (SAMSAM01b) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-samh2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 2',
+    courseCode: 'SAMH2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 2 (SAMH2000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Samhällskunskap 2 (SAMSAM02) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-samh3000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 3',
+    courseCode: 'SAMH3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 3 (SAMH3000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Samhällskunskap 3 (SAMSAM03) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-serv1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Service och bemötande',
+    course: 'Service och bemötande Nivå 1',
+    courseCode: 'SERV1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ARBETSLIV,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Service och bemötande Nivå 1 (SERV1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Service och bemötande 1 (SEVSEV01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['service och bemötande', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-spei1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Vård och omsorg',
+    course: 'Specialpedagogik Nivå 1',
+    courseCode: 'SPEI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_VARD,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Specialpedagogik Nivå 1 (SPEI1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Specialpedagogik 1 (SPCSPE01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['vård och omsorg', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-sven1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 1',
+    courseCode: 'SVEN1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Svenska Nivå 1 (SVEN1000X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Svenska 1 (SVESVE01) mejlar du betygsprovning@helsingborg.se ' +
+      'efter att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['svenska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-sven2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 2',
+    courseCode: 'SVEN2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Svenska Nivå 2 (SVEN2000X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Svenska 2 (SVESVE02) mejlar du betygsprovning@helsingborg.se ' +
+      'efter att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['svenska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-sven3000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 3',
+    courseCode: 'SVEN3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Svenska Nivå 3 (SVEN3000X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Svenska 3 (SVESVE03) mejlar du betygsprovning@helsingborg.se ' +
+      'efter att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['svenska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-svea1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 1',
+    courseCode: 'SVEA1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 1 (SVEA1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Svenska som andraspråk 1 (SVASVA01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['svenska som andraspråk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-svea2000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 2',
+    courseCode: 'SVEA2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 2 (SVEA2000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Svenska som andraspråk 2 (SVASVA02) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['svenska som andraspråk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-svea3000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 3',
+    courseCode: 'SVEA3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 3 (SVEA3000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Svenska som andraspråk 3 (SVASVA03) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['svenska som andraspråk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-teki1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Teknik',
+    course: 'Teknik Nivå 1',
+    courseCode: 'TEKI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_TEKNIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Teknik Nivå 1 (TEKI1000X) hos Komvux Helsingborg, med Arena Utbildning som ' +
+      'anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan 7–11 september ' +
+      '2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 november. Vill du ' +
+      'i stället pröva Gy11-kursen Teknik 1 (TEKTEK01) mejlar du betygsprovning@helsingborg.se ' +
+      'efter att du anmält dig — det går bara om du redan har ett betyg i kursen.',
+    tags: ['teknik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-webs1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Webbserverprogrammering',
+    course: 'Webbserverprogrammering Nivå 1',
+    courseCode: 'WEBS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Webbserverprogrammering Nivå 1 (WEBS1000X) hos Komvux Helsingborg, med ' +
+      'Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Vill du i stället pröva Gy11-kursen Webbserverprogrammering 1 (WESWEB01) ' +
+      'mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan ' +
+      'har ett betyg i kursen.',
+    tags: ['webbserverprogrammering', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-webb1000x',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Webbutveckling',
+    course: 'Webbutveckling Nivå 1',
+    courseCode: 'WEBB1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Webbutveckling Nivå 1 (WEBB1000X) hos Komvux Helsingborg, med Arena ' +
+      'Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens webbansökan ' +
+      '7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 oktober–6 ' +
+      'november. Vill du i stället pröva Gy11-kursen Webbutveckling 1 (WEUWEB01) mejlar du ' +
+      'betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan har ett ' +
+      'betyg i kursen.',
+    tags: ['webbutveckling', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mody1000xfra',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Franska',
+    courseCode: 'MODY1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Franska (MODY1000XFRA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 1, ' +
+      'Franska (MODFRA01) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modg1000xfra',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Franska',
+    courseCode: 'MODG1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Franska (MODG1000XFRA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 2, ' +
+      'Franska (MODFRA02) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo1000xfra',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Franska',
+    courseCode: 'MODO1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Franska (MODO1000XFRA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 3, ' +
+      'Franska (MODFRA03) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo2000xfra',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Franska',
+    courseCode: 'MODO2000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Franska (MODO2000XFRA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 4, ' +
+      'Franska (MODFRA04) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modf1000xfra',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fördjupning Nivå 1, Franska',
+    courseCode: 'MODF1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – fördjupning Nivå 1, Franska (MODF1000XFRA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 5, ' +
+      'Franska (MODFRA05) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mody1000xdeu',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Tyska',
+    courseCode: 'MODY1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Tyska (MODY1000XDEU) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 1, ' +
+      'Tyska (MODDEU01) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modg1000xdeu',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Tyska',
+    courseCode: 'MODG1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Tyska (MODG1000XDEU) hos Komvux Helsingborg, ' +
+      'med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och prövningen görs 12 ' +
+      'oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 2, Tyska (MODDEU02) ' +
+      'mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går bara om du redan ' +
+      'har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo1000xdeu',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Tyska',
+    courseCode: 'MODO1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Tyska (MODO1000XDEU) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 3, ' +
+      'Tyska (MODDEU03) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo2000xdeu',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Tyska',
+    courseCode: 'MODO2000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Tyska (MODO2000XDEU) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 4, ' +
+      'Tyska (MODDEU04) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modf1000xdeu',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fördjupning Nivå 1, Tyska',
+    courseCode: 'MODF1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – fördjupning Nivå 1, Tyska (MODF1000XDEU) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 5, ' +
+      'Tyska (MODDEU05) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mody1000xspa',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Spanska',
+    courseCode: 'MODY1000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Spanska (MODY1000XSPA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 1, ' +
+      'Spanska (MODSPA01) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modg1000xspa',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Spanska',
+    courseCode: 'MODG1000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Spanska (MODG1000XSPA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 2, ' +
+      'Spanska (MODSPA02) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo1000xspa',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Spanska',
+    courseCode: 'MODO1000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Spanska (MODO1000XSPA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 3, ' +
+      'Spanska (MODSPA03) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo2000xspa',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Spanska',
+    courseCode: 'MODO2000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Spanska (MODO2000XSPA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 4, ' +
+      'Spanska (MODSPA04) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mody1000xita',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Italienska',
+    courseCode: 'MODY1000XITA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Italienska (MODY1000XITA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 1, ' +
+      'Italienska (MODITA01) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det ' +
+      'går bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modg1000xita',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Italienska',
+    courseCode: 'MODG1000XITA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Italienska (MODG1000XITA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 2, ' +
+      'Italienska (MODITA02) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det ' +
+      'går bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo1000xita',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Italienska',
+    courseCode: 'MODO1000XITA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Italienska (MODO1000XITA) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 3, ' +
+      'Italienska (MODITA03) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det ' +
+      'går bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mody1000xdan',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Danska',
+    courseCode: 'MODY1000XDAN',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 4: anmälan och betalning 7–11 september 2026, prövning 12 oktober–6 ' +
+        'november. Du får ett fast provdatum inom perioden och kan göra högst två prövningar per ' +
+        'period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SPRAK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Danska (MODY1000XDAN) hos Komvux ' +
+      'Helsingborg, med Arena Utbildning som anordnare och lärplattformen Exlearn. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026, avgiften ska vara betald samma dag, och ' +
+      'prövningen görs 12 oktober–6 november. Vill du i stället pröva Gy11-kursen Moderna språk 1, ' +
+      'Danska (MODDAN01) mejlar du betygsprovning@helsingborg.se efter att du anmält dig — det går ' +
+      'bara om du redan har ett betyg i kursen.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-grund-engelska',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska grundläggande nivå',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 2 på grundläggande nivå: anmälan och betalning 7–11 september 2026, ' +
+        'prövning 12 oktober–6 november. Du får ett fast provdatum inom perioden och kan göra ' +
+        'högst två prövningar per period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i engelska grundläggande nivå hos Komvux Helsingborg. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026 och avgiften ska vara betald senast 11 september; ' +
+      'prövningsperioden på grundläggande nivå är 12 oktober–6 november. Kommunen skriver ut ämnet ' +
+      'men ingen kurskod för de grundläggande prövningarna, så kontrollera i webbansökan vilken ' +
+      'nivå du anmäler dig till.',
+    tags: ['engelska', 'grundläggande', 'helsingborg', 'skåne'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-grund-matematik',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik grundläggande nivå',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 2 på grundläggande nivå: anmälan och betalning 7–11 september 2026, ' +
+        'prövning 12 oktober–6 november. Du får ett fast provdatum inom perioden och kan göra ' +
+        'högst två prövningar per period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i matematik grundläggande nivå hos Komvux Helsingborg. Anmälan görs i ' +
+      'kommunens webbansökan 7–11 september 2026 och avgiften ska vara betald senast 11 september; ' +
+      'prövningsperioden på grundläggande nivå är 12 oktober–6 november. Kommunen skriver ut ämnet ' +
+      'men ingen kurskod för de grundläggande prövningarna, så kontrollera i webbansökan vilken ' +
+      'nivå du anmäler dig till.',
+    tags: ['matematik', 'grundläggande', 'helsingborg', 'skåne'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-grund-svenska',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska grundläggande nivå',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 2 på grundläggande nivå: anmälan och betalning 7–11 september 2026, ' +
+        'prövning 12 oktober–6 november. Du får ett fast provdatum inom perioden och kan göra ' +
+        'högst två prövningar per period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i svenska grundläggande nivå hos Komvux Helsingborg. Anmälan görs i kommunens ' +
+      'webbansökan 7–11 september 2026 och avgiften ska vara betald senast 11 september; ' +
+      'prövningsperioden på grundläggande nivå är 12 oktober–6 november. Kommunen skriver ut ämnet ' +
+      'men ingen kurskod för de grundläggande prövningarna, så kontrollera i webbansökan vilken ' +
+      'nivå du anmäler dig till.',
+    tags: ['svenska', 'grundläggande', 'helsingborg', 'skåne'],
+    verifiedAt: SEP_11_VERIFIED,
+  },
+  {
+    id: 'helsingborg-grund-sva',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk grundläggande nivå',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HELSINGBORG_ADDRESS,
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Prövningsperiod 2 på grundläggande nivå: anmälan och betalning 7–11 september 2026, ' +
+        'prövning 12 oktober–6 november. Du får ett fast provdatum inom perioden och kan göra ' +
+        'högst två prövningar per period.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registrationUrl: HELSINGBORG_REGISTRATION_URL,
+    infoUrl: HELSINGBORG_INFO_URL,
+    registration: HELSINGBORG_REGISTRATION,
+    description:
+      'Betygsprövning i svenska som andraspråk grundläggande nivå hos Komvux Helsingborg. Anmälan ' +
+      'görs i kommunens webbansökan 7–11 september 2026 och avgiften ska vara betald senast 11 ' +
+      'september; prövningsperioden på grundläggande nivå är 12 oktober–6 november. Kommunen ' +
+      'skriver ut ämnet men ingen kurskod för de grundläggande prövningarna, så kontrollera i ' +
+      'webbansökan vilken nivå du anmäler dig till.',
+    tags: ['svenska som andraspråk', 'grundläggande', 'helsingborg', 'skåne'],
+    verifiedAt: SEP_11_VERIFIED,
   },
 ];
 
