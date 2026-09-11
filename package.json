@@ -16,7 +16,8 @@
     "typecheck": "tsc -b",
     "check:links": "node scripts/check-links.mjs",
     "check:dates": "node scripts/check-dates.mjs",
-    "check:forms": "node scripts/check-forms.mjs"
+    "check:forms": "node scripts/check-forms.mjs",
+    "stats:setup": "bash collector/setup.sh"
   },
   "repository": {
     "type": "git",

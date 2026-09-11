@@ -25,6 +25,26 @@ Cloudflares aktuella villkor).
 ## Sätt upp den
 
 ```sh
+npm run stats:setup                  # se först vad den gör:
+npm run stats:setup -- --dry-run
+```
+
+Skriptet gör allt: skapar databasen, skriver in `database_id` i
+[`wrangler.toml`](wrangler.toml), lägger upp tabellen, slumpar en token och
+sätter den som hemlighet hos Cloudflare, publicerar workern och — om `gh` är
+installerat och inloggat — sätter de fyra värdena i GitHub åt dig.
+
+Det enda som inte går att automatisera är inloggningen: Cloudflare måste veta
+att det är du, och den frågan kan bara du svara på i en webbläsare. Har du inget
+konto skapar `npx wrangler login` ett gratis åt dig på vägen.
+
+Skriptet går att köra om — steg som redan är gjorda hoppas över — och varje steg
+skriver ut kommandot du kan köra för hand om något går fel.
+
+<details>
+<summary>Samma sak för hand</summary>
+
+```sh
 cd collector
 npx wrangler login
 
@@ -33,12 +53,14 @@ npx wrangler d1 create provningar-stats
 npx wrangler d1 execute provningar-stats --remote --file=./schema.sql
 
 # 2. Nyckeln som GitHub Actions hämtar summorna med. Spara den, den visas inte igen.
-openssl rand -base64 32
+openssl rand -hex 32
 npx wrangler secret put EXPORT_TOKEN
 
 # 3. Publicera. Adressen som skrivs ut är den appen ska posta till.
 npx wrangler deploy
 ```
+
+</details>
 
 Kontrollera att `ALLOWED_ORIGINS` i [`wrangler.toml`](wrangler.toml) räknar upp
 sajtens riktiga adress. Origin-kontrollen stoppar inte den som skickar med
@@ -46,6 +68,8 @@ sajtens riktiga adress. Origin-kontrollen stoppar inte den som skickar med
 får sina besökare räknade som våra.
 
 ## Koppla in appen och jobbet
+
+Det här gör `npm run stats:setup` åt dig när `gh` finns. Annars, för hand:
 
 **Repository variables** (Settings → Secrets and variables → Actions →
 Variables) — de här hamnar i bundlen och är inga hemligheter:

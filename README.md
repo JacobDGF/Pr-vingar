@@ -529,6 +529,17 @@ stället för att lova något som inte händer. En `http`-URL eller en halv
 konfiguration avvisas: hellre ingen statistik än en nedgradering gjord åt
 användaren.
 
+Med appens egen räknare gör [`collector/setup.sh`](collector/setup.sh) hela
+uppsättningen — databas, token, publicering och variablerna i GitHub — i ett
+kommando:
+
+```sh
+npm run stats:setup -- --dry-run   # vad den skulle göra
+npm run stats:setup                # gör det
+```
+
+Det enda steget som inte går att automatisera är inloggningen hos Cloudflare.
+
 Med `endpoint` behöver jobbet dessutom två _secrets_: `STATS_ENDPOINT` (samma
 adress utan `/e`) och `STATS_TOKEN` (samma sträng som workerns `EXPORT_TOKEN`).
 Saknas de hoppar [`scripts/update-stats.mjs`](scripts/update-stats.mjs) över
