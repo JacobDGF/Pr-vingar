@@ -6,9 +6,12 @@ import { BottomNav } from './components/BottomNav';
 import { Sidebar } from './components/Sidebar';
 import { ExamDetail } from './components/ExamDetail';
 import { FaqSheet } from './components/FaqSheet';
+import { ConsentPanel } from './components/ConsentPanel';
 import { UpdateBanner } from './components/UpdateBanner';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useVersionCheck } from './hooks/useVersionCheck';
+import { useConsent } from './hooks/useConsent';
+import { track } from './lib/analytics';
 import { NAV_ITEMS } from './lib/navItems';
 import { Discover } from './tabs/Discover';
 import { TabId } from './types';
@@ -62,10 +65,18 @@ function TabPanel({ tab, active }: { tab: TabId; active: boolean }) {
 }
 
 export default function App() {
-  const { activeTab, showingExamDetail, setShowingExamDetail, showingFaq, setShowingFaq } =
-    useStore();
+  const {
+    activeTab,
+    showingExamDetail,
+    setShowingExamDetail,
+    showingFaq,
+    setShowingFaq,
+    showingConsent,
+    setShowingConsent,
+  } = useStore();
   const [loading, setLoading] = useState(true);
   const updateAvailable = useVersionCheck();
+  const consent = useConsent();
 
   // Tabs are kept mounted once visited (not unmounted on switch-away) so scroll
   // position and in-progress state survive tab switches; only the initial tab
@@ -80,6 +91,20 @@ export default function App() {
   useEffect(() => {
     document.body.style.overflow = 'hidden';
   }, []);
+
+  // Ett besök, en gång per webbläsarsession — det närmaste appen kommer "hur
+  // många som varit här" utan att lägga något efter sig hos användaren. Tyst
+  // tills samtycket finns, och räknas då om.
+  useEffect(() => {
+    track.visit();
+  }, []);
+
+  // Appen har en enda URL och sex flikar, så flikbytet *är* sidvisningen. Utan
+  // det här skulle mätningen se ett besök och sedan ingenting alls om vad
+  // besöket gick ut på. Anropet är tyst tills samtycket finns.
+  useEffect(() => {
+    track.tabView(activeTab, TAB_LABELS[activeTab]);
+  }, [activeTab]);
 
   const handleLoadingDone = () => {
     setLoading(false);
@@ -122,6 +147,15 @@ export default function App() {
           <FaqSheet onClose={() => setShowingFaq(false)} />
         </ErrorBoundary>
       )}
+
+      {/* Frågan om statistik ställs en gång, när splashen släppt taget, och
+          ligger över allt annat tills den fått ett svar. Panelen öppnas sedan
+          om från Profil för den som vill ändra sig. Ingen felgräns runt den:
+          en kraschad samtyckesruta får inte gå att klicka bort till ett läge
+          där appen mäter utan att ha frågat — den syns hellre trasig. */}
+      {!loading && consent.choice === 'undecided' && <ConsentPanel mode="gate" />}
+      {showingConsent && <ConsentPanel mode="settings" onClose={() => setShowingConsent(false)} />}
+
       {updateAvailable && <UpdateBanner />}
     </div>
   );

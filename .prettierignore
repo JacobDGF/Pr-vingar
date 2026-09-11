@@ -2,3 +2,6 @@ dist
 node_modules
 package-lock.json
 public/version.json
+
+# Genererad av scripts/update-stats.mjs — formateras av skriptet, inte av prettier.
+stats/

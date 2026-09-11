@@ -226,6 +226,34 @@ fältet som bär det som inte har någon kolumn — landskapet under länet,
 läroplanen en kurs hör till (`gy11`/`gy25`) — och varje sådant är ett ord någon
 skriver i rutan.
 
+### Kursen har två namn
+
+Sedan Gy25 började tillämpas 1 juli 2025 publicerar anordnarna samma prövning
+under två namn och två koder. Datan håller dem isär, för det är två anmälningar
+med var sitt förberedelsedokument — men användaren känner bara till det ena
+namnet, det som stod på hens eget betyg. En sökning på "Matematik 3b" missade
+därför varje listning som heter Matematik – fortsättning Nivå 1b, alltså precis
+de prövningar som prövar hens kurs.
+
+[`src/lib/courseSystems.ts`](src/lib/courseSystems.ts) är paren, och sökningen
+läser dem: träffar frågan kursens andra namn eller andra kurskod är listningen
+en träff. Två saker håller det ärligt.
+
+- **Paren är lästa, inte härledda.** `MATMAT03b → MATO1B00X` går inte att gissa
+  fram ur koden. Paren kommer ur Komvux Örebros prövningstabell, som är den
+  källa i datan som skriver ut båda systemen på samma rad. Kurser som bara finns
+  i ett system — Fysik 1a, Fysik nivå 1b — står inte där, och då säger appen
+  ingenting om övergången.
+- **Namnen är datans egen stavning.** Ett test i
+  [`src/lib/courseSystems.test.ts`](src/lib/courseSystems.test.ts) jämför varje
+  par mot `EXAMS`, så en omdöpt kurs inte kan lämna sökningen med ett namn inget
+  kort bär.
+
+Detaljvyn säger vilken av de två som är din, med anordnarens egen regel: läste
+du kursen före juli 2025 är det Gy11-kursen du ska pröva, annars ämnesnivån. Det
+är en mening under rubriken, inte ett val att göra — appen vet redan vilken kod
+listningen har.
+
 ## Profil och community
 
 Profilen svarar på en fråga innan alla andra: hur många av dina sparade
@@ -378,6 +406,145 @@ Därför två utvägar, båda helt lokala:
 - Profilfliken exporterar allt appen vet om användaren som JSON. Allt ligger i
   en enda webbläsares `localStorage`, så exporten är den enda säkerhetskopia som
   finns — den ligger direkt ovanför knappen som raderar originalet.
+
+## Statistik och samtycke
+
+Appen behöver veta två saker för att bli bättre: hur många som hittar hit, och
+vilka delar av den som faktiskt används — det är så nästa kommun i
+prioritetsordningen väljs. Den frågan får dock inte ställas genom att mäta
+först och berätta sen.
+
+**Regeln är absolut: ingenting laddas och ingenting skickas förrän någon tryckt
+på en knapp.** Leverantörens skript skapas i `ensureScript`, som bara nås av ett
+`granted` samtycke. Säger användaren nej har koden aldrig funnits på sidan, och
+då finns inget anrop att lita på att den låter bli att göra.
+[`src/lib/analytics.test.ts`](src/lib/analytics.test.ts) håller gränsen med ett
+test per väg in: före svaret, efter ett nej, efter ett ångrat ja, och i ett
+bygge som saknar leverantör.
+
+### Rutan som frågar
+
+[`src/components/ConsentPanel.tsx`](src/components/ConsentPanel.tsx) är samma
+panel i två lägen — grinden vid första besöket, som inte går att klicka bort,
+och samma text öppnad från Profil för den som vill ändra sig. Två knappar, lika
+stora, bredvid varandra: en ruta där "godkänn" är en knapp och "neka" är en länk
+i sidfoten har inte frågat, den har tjatat. Under "Vad mäts?" står de sex
+händelserna utskrivna, och under dem det som aldrig mäts.
+
+Svaret bor i [`src/lib/consent.ts`](src/lib/consent.ts) under en egen nyckel i
+`localStorage`, utanför `useStore`. Det måste gå att läsa innan React monterar
+och innan zustand hydrerar — annars hinner ett mätanrop iväg under första
+framen, och då spelar det ingen roll vad rutan sedan säger. Tre saker till:
+
+- **Ett nej sparas lika bestämt som ett ja**, så frågan inte kommer tillbaka
+  vid nästa besök.
+- **Webbläsarens signal vinner.** Skickar den Global Privacy Control eller Do
+  Not Track är svaret nej, och rutan ställer inte frågan alls — att be om
+  samtycke av någon som redan sagt nej i sina inställningar är att fråga tills
+  man får rätt svar.
+- **`CONSENT_VERSION` höjs när det som mäts ändras.** Ett gammalt ja till en ny
+  fråga är inget ja, så en höjning ställer frågan på nytt i stället för att anta.
+
+### Vad som mäts, och vad som aldrig mäts
+
+Sju händelser, alla i [`src/lib/analytics.ts`](src/lib/analytics.ts) som var sin
+funktion: besök, flikbyte (som sidvisning), prövning öppnad, till anmälan,
+prövning sparad, bevakning skapad, kalenderfil hämtad och AI-fråga ställd. De
+bär kommun, ämne, kurskod och antal — värden som redan står i appens egen data.
+
+Besöket är det närmaste appen kommer "hur många som varit här", och det räknas
+med en flagga i `sessionStorage` som aldrig lämnar enheten och försvinner när
+fliken stängs. Ingen hashad IP, ingen besökarnyckel, inget som binder ihop två
+besök — priset är att den som kommer tillbaka i morgon räknas som en ny person,
+och det priset är värt att betala.
+
+Ingen av funktionerna tar emot fritext. Det som skrivs i sökrutan eller till
+AI-prövning är användarens egen mening och lämnar aldrig enheten; av en fråga
+till AI-prövning skickas bara utfallet (antal träffar, om tolkningen bar, om
+sökningen fick vidgas). Det är inte en policy någon ska minnas, det är vad
+API:et tillåter — `sanitizeProps` kapar dessutom allt som inte är en sträng, en
+siffra eller en boolean, allt över 48 tecken och allt utöver sex fält.
+
+Appen har en URL och sex flikar, så flikbytet _är_ sidvisningen: `/discover`,
+`/ai`, `/exams` och så vidare. Leverantörens egen automatiska sidräkning stängs
+därför av i skripttaggen — annars räknas första besöket två gånger, och resten
+av besöket inte alls.
+
+### Var siffrorna hamnar
+
+Statistiken bor i det här repot, i [`stats/`](stats/). Det finns ingen
+instrumentpanel någon annanstans och ingen tredje part som ser besökarna:
+[`stats/README.md`](stats/README.md) är hela rapporten, renderad av GitHub, och
+[`stats/usage.json`](stats/usage.json) är samma siffror per dygn — med git-historik,
+så en förändring går att spåra till den natt den kom.
+
+Vägen dit har tre steg, och mellanledet finns av ett skäl som är värt att förstå:
+
+```
+webbläsaren ──POST /e──▶ collector/worker.js (Cloudflare)
+                              │  summor per dygn i en D1-databas
+                              ▼
+           .github/workflows/stats.yml ──GET /export──▶ stats/ i det här repot
+```
+
+GitHub Pages är en filserver som varken kör kod eller lämnar ut loggar, och för
+att skriva till GitHub krävs en token. En token i en statisk app är publik —
+bygget publiceras dessutom till `gh-pages` i samma repo, så den skulle ligga i
+klartext i repot och kunna skriva till det. Workern är därför det minsta
+möjliga som kan hålla hemligheten: 200 rader utan beroenden, på en gratisnivå,
+och det enda den kan är att räkna upp en siffra. Uppsättningen står i
+[`collector/README.md`](collector/README.md).
+
+Jobbet pushar med `GITHUB_TOKEN`, som med flit inte startar andra workflows:
+statistiken behöver inte byggas och deployas om, eftersom appen inte läser den
+— den läses på GitHub.
+
+### Slå på det
+
+Mätningen är avstängd tills `.env.production` får räknarens adress. Den filen
+är det enda stället adressen står — Vite läser den när appen byggs, och
+[`scripts/update-stats.mjs`](scripts/update-stats.mjs) läser samma rad när
+nattjobbet hämtar summorna, så de två kan inte peka på olika räknare.
+
+```sh
+VITE_ANALYTICS_PROVIDER=endpoint
+VITE_ANALYTICS_SRC=https://provningar-stats.<konto>.workers.dev/e
+```
+
+Adressen ligger i repot i stället för bland GitHubs hemligheter, och det är
+inte slarv: den hamnar ändå i den publicerade bundlen, där vem som helst kan
+läsa den. Det som verkligen är hemligt — nyckeln som får skriva hos Cloudflare
+— har aldrig varit i närheten av repot.
+
+Samma fil tar en vanlig leverantör i stället, för den som hellre vill ha en
+färdig instrumentpanel:
+
+```sh
+VITE_ANALYTICS_PROVIDER=plausible
+VITE_ANALYTICS_SRC=https://plausible.io/js/script.manual.js
+VITE_ANALYTICS_SITE=prövningar.se
+```
+
+`endpoint` klarar sig utan `VITE_ANALYTICS_SITE`; Plausible och Umami kräver
+det, eftersom de inte vet vilken sajt datan hör till utan sitt id. En tom
+`VITE_ANALYTICS_SRC` betyder ingen mätning alls, och då säger samtyckesrutan
+rakt ut att ingenting samlas in.
+
+Värdena sätts medvetet _inte_ som repository variables i
+[`deploy.yml`](.github/workflows/deploy.yml). En osatt variable blir en tom
+sträng i miljön, en tom miljövariabel vinner över `.env`-filen i Vite, och ett
+bygge utan variabler skulle därmed tyst slå ut en fil som säger motsatsen.
+Verifierat genom att bygga åt båda hållen.
+
+Uppsättningen av själva räknaren — databas, tabell, publicering — gör
+[`collector/setup.sh`](collector/setup.sh) i ett kommando, eller så klickar man
+sig igenom Cloudflares dashboard. Båda vägarna står i
+[`collector/README.md`](collector/README.md).
+
+Räknaren behöver ingen hemlighet för att fungera. Sätts `EXPORT_TOKEN` hos
+workern krävs den av exporten, och då måste nattjobbet få samma sträng som
+`STATS_TOKEN`. Utan den är exporten öppen — den lämnar ut exakt de summor som
+ändå publiceras i `stats/`, så det finns ingenting där att skydda.
 
 ## När appen går sönder
 

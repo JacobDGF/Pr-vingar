@@ -36,11 +36,16 @@ export function isFullyBooked(exam: Exam): boolean {
  * a full round is worth asking about a cancellation, and a round that closed
  * last Tuesday is worth nothing at all — the only useful move is to look for
  * the next one. Without this the card just shows a bold date that happens to be
- * in the past, which reads as an upcoming deadline at a glance. */
-export function hasApplicationClosed(exam: Exam): boolean {
+ * in the past, which reads as an upcoming deadline at a glance.
+ *
+ * `now` exists for the callers that answer a question as of a stated date
+ * rather than as of this instant — AI-prövning reads "innan oktober" against
+ * one `today` and must weigh the deadlines against the same one. Left out, it
+ * is the clock, which is what every view wants. */
+export function hasApplicationClosed(exam: Exam, now: Date = new Date()): boolean {
   const { nextPeriod: p } = exam;
   if (!p.confirmed || !p.applicationEnd) return false;
-  return Date.now() > endOfDay(p.applicationEnd);
+  return now.getTime() > endOfDay(p.applicationEnd);
 }
 
 /**

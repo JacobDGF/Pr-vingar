@@ -6,6 +6,7 @@ import { INITIAL_POSTS } from '../data/community';
 import { isOwnPhoto } from '../lib/avatar';
 import { StatusKey } from '../lib/examStatusColor';
 import { makeWatch, matchesWatch, watchKey } from '../lib/watches';
+import { track } from '../lib/analytics';
 
 interface AppState {
   // Navigation
@@ -115,6 +116,15 @@ interface AppState {
   setShowingExamDetail: (id: string | null) => void;
   showingFaq: boolean;
   setShowingFaq: (v: boolean) => void;
+  /**
+   * Samtyckespanelen öppnad från Profil.
+   *
+   * Själva samtycket bor inte här utan i [`lib/consent.ts`](../lib/consent.ts) —
+   * det måste gå att läsa innan zustand hydrerar, och det ska inte följa med i
+   * dataexporten som en inställning bland andra. Det här är bara arket.
+   */
+  showingConsent: boolean;
+  setShowingConsent: (v: boolean) => void;
 }
 
 export const DEFAULT_USER: User = {
@@ -154,6 +164,8 @@ export const useStore = create<AppState>()(
               },
             ],
           }));
+          const exam = get().exams.find((e) => e.id === examId);
+          if (exam) track.examSaved(exam);
         }
       },
 
@@ -169,12 +181,18 @@ export const useStore = create<AppState>()(
 
       watches: [],
 
-      addWatch: (subject, city) =>
-        set((s) =>
-          s.watches.some((w) => w.id === watchKey(subject, city))
-            ? s
-            : { watches: [...s.watches, makeWatch(subject, city)] },
-        ),
+      addWatch: (subject, city) => {
+        // Kontrollen ligger kvar inne i `set`, där den är atomär; mätningen
+        // ligger utanför, eftersom en uppdaterare ska kunna köras utan att
+        // något lämnar enheten som bieffekt.
+        let created = false;
+        set((s) => {
+          if (s.watches.some((w) => w.id === watchKey(subject, city))) return s;
+          created = true;
+          return { watches: [...s.watches, makeWatch(subject, city)] };
+        });
+        if (created) track.watchCreated(subject, city);
+      },
 
       removeWatch: (id) => set((s) => ({ watches: s.watches.filter((w) => w.id !== id) })),
 
@@ -364,6 +382,8 @@ export const useStore = create<AppState>()(
       showingExamDetail: null,
       setShowingExamDetail: (id) => {
         if (id) {
+          const exam = get().exams.find((e) => e.id === id);
+          if (exam) track.examOpened(exam);
           set((s) => ({
             showingExamDetail: id,
             viewedExams: [
@@ -377,6 +397,8 @@ export const useStore = create<AppState>()(
       },
       showingFaq: false,
       setShowingFaq: (v) => set({ showingFaq: v }),
+      showingConsent: false,
+      setShowingConsent: (v) => set({ showingConsent: v }),
     }),
     {
       name: 'provningar-storage',

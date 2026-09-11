@@ -127,9 +127,17 @@ function vocabulary(exams: Exam[], pick: (e: Exam) => string): string[] {
   return [...new Set(exams.map(pick))].sort((a, b) => b.length - a.length);
 }
 
-/** Still worth acting on: the deadline hasn't passed and the round isn't full. */
-function stillActionable(exam: Exam): boolean {
-  return !hasApplicationClosed(exam) && !isFullyBooked(exam);
+/**
+ * Still worth acting on: the deadline hasn't passed and the round isn't full.
+ *
+ * Judged as of the same `today` the sentence was read against. It used to read
+ * the clock instead, which meant a question about "innan oktober" could keep a
+ * round the deadline reader had already counted as open — two answers to the
+ * same question inside one call, and a test pinned to a fixed date that started
+ * failing on the day the real calendar disagreed with it.
+ */
+function stillActionable(exam: Exam, today: Date): boolean {
+  return !hasApplicationClosed(exam, today) && !isFullyBooked(exam);
 }
 
 function fallsBefore(exam: Exam, cutoff: string): boolean {
@@ -189,7 +197,7 @@ export function answerAsk(question: string, exams: Exam[], today = new Date()): 
   });
 
   const strict = named.filter(
-    (e) => stillActionable(e) && (!ask.before || fallsBefore(e, ask.before)),
+    (e) => stillActionable(e, today) && (!ask.before || fallsBefore(e, ask.before)),
   );
   const matches = (strict.length ? strict : named).slice().sort(compareByPeriod);
   return { ask, matches, widened: strict.length === 0 && named.length > 0 };

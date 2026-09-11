@@ -5,6 +5,7 @@ import { ExamCard } from '../components/ExamCard';
 import { Exam } from '../types';
 import { answerAsk, describeAsk, hasConstraints } from '../lib/askProvningar';
 import { askClaude, isAiConfigured } from '../lib/aiProvning';
+import { track } from '../lib/analytics';
 
 /**
  * AI-prövning: skriv meningen, få prövningarna.
@@ -86,6 +87,10 @@ export function AiProvning() {
 
     setDraft('');
     setThread((t) => [...t, turn]);
+    // Utfallet, aldrig frågan: antal träffar, om tolkningen bar och om
+    // sökningen fick vidgas. En fråga som "jag bor i Göteborg och vill höja
+    // Matte 2b" är användarens egen mening och lämnar aldrig enheten.
+    track.aiAsked({ hits: result.matches.length, widened: result.widened, understood });
 
     if (!isAiConfigured() || !understood || result.matches.length === 0) return;
 

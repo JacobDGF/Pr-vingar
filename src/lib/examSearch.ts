@@ -1,4 +1,5 @@
 import { Exam } from '../types';
+import { courseCounterpart } from './courseSystems';
 
 /**
  * Which fields the free-text search reads.
@@ -15,10 +16,19 @@ import { Exam } from '../types';
  * where the dataset keeps what has no column — the landskap under the län, the
  * curriculum a course belongs to (gy11/gy25) — and every one of those is a word
  * a user would type.
+ *
+ * The last pair of fields aren't the listning's own. Since Gy25 the same
+ * prövning is published under two names, and the user knows the one that stood
+ * on their own betyg: someone typing "Matematik 3b" means the course now called
+ * Matematik – fortsättning Nivå 1b just as much, and half the prövningar that
+ * examine their course would otherwise never appear. `courseSystems` holds the
+ * pairs a provider has published side by side, so the match is a fact from the
+ * data rather than a guess from the course code.
  */
 export function matchesQuery(exam: Exam, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
+  const other = courseCounterpart(exam.courseCode)?.other;
   return (
     exam.schoolName.toLowerCase().includes(q) ||
     exam.subject.toLowerCase().includes(q) ||
@@ -26,6 +36,8 @@ export function matchesQuery(exam: Exam, query: string): boolean {
     exam.city.toLowerCase().includes(q) ||
     exam.courseCode.toLowerCase().includes(q) ||
     exam.provider.toLowerCase().includes(q) ||
-    exam.tags.some((tag) => tag.toLowerCase().includes(q))
+    exam.tags.some((tag) => tag.toLowerCase().includes(q)) ||
+    (other !== undefined &&
+      (other.name.toLowerCase().includes(q) || other.code.toLowerCase().includes(q)))
   );
 }

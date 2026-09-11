@@ -4,6 +4,125 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-11 (räknaren i drift)
+
+Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är
+kontrollerad i sin helhet mot den riktiga workern innan den lades in: den tar
+emot ett besök och en händelse (204), den avvisar en främmande sajts `Origin`
+(403), och exporten svarar med summorna. `scripts/update-stats.mjs` hittar
+adressen ur `.env.production` och når den.
+
+De två anropen i kontrollen var inte torrkörningar utan riktiga rader: första
+dygnets siffror innehåller därför **ett testbesök och en test-händelse**
+("Till anmälan", Örebro) som inte kommer från någon användare. De försvinner
+av sig själva när dygnet rullar ur rapportens fönster.
+
+## 2026-09-11 (senare)
+
+**Produkt: statistiken bor i repot.** Appen räknar nu sina besök själv, och
+siffrorna hamnar som en fil i det här repot i stället för hos en leverantör:
+[`stats/README.md`](stats/README.md) är hela rapporten, renderad av GitHub, med
+git-historik per natt.
+
+- **Kedjan är tre steg**: webbläsaren postar till en 200 rader lång Cloudflare
+  Worker ([`collector/`](collector/README.md)), som räknar upp en summa per
+  dygn i en D1-databas, och ett nattligt Actions-jobb hämtar summorna och
+  committar dem till `stats/`. Mellanledet finns för att GitHub Pages varken
+  kör kod eller lämnar ut loggar — och för att en GitHub-token som kan skriva
+  till repot aldrig får ligga i en statisk app, allra minst i en som publicerar
+  sitt bygge till `gh-pages` i samma repo.
+- **Räknaren litar inte på appen.** Den tar bara emot appens sju händelser och
+  flikarnas egna sidvägar, kapar all fritext till 48 tecken och högst sex fält,
+  och avvisar en annan sajts `Origin`. Den lagrar ingen IP-adress, ingen user
+  agent, ingen referrer och inget besökar-id: en rad är en summa för ett dygn,
+  aldrig en händelse för en person.
+- **Besök räknas en gång per webbläsarsession**, med en flagga i
+  `sessionStorage` som aldrig lämnar enheten. Den som kommer tillbaka i morgon
+  räknas som ny — priset för att slippa allt som binder ihop två besök.
+- **Verifierat i Chromium mot ett riktigt bygge och en riktig worker**: noll
+  anrop före ja:t, därefter besök, sidvisning och "Prövning öppnad" med kommun,
+  ämne och kurskod — som POST utan preflight — och noll igen efter ett nej.
+  Genomkörningen hittade också en bugg ingen enhetstest såg: räknaren krävde
+  tre bokstäver i sidvägen och slängde därför varenda sidvisning från `/ai`.
+- Dygnet räknas i svensk tid, inte UTC. Skillnaden är kvällen, och kvällen är
+  när folk letar prövningar.
+
+## 2026-09-11
+
+**Produkt: statistik, med samtycke först.** Appen kan nu mäta hur den används —
+hur många som hittar hit, vilka flikar som öppnas och hur många som går vidare
+till en anmälan — men bara efter att användaren tryckt på en knapp.
+
+- **Rutan kommer före mätningen, inte tvärtom.** Ett förstabesök möts av en
+  panel som inte går att klicka bort, med två lika stora knappar: "Bara
+  nödvändigt" och "Godkänn statistik". Leverantörens skript skapas först av ett
+  ja — säger man nej har koden aldrig funnits på sidan. Verifierat i Chromium
+  mot ett riktigt bygge: noll anrop före valet, ett skript och en sidvisning
+  efter ja, och noll igen så fort samtycket dras tillbaka (skriptet plockas
+  bort, den globala funktionen städas, Umamis sessionsnyckel raderas).
+- **Vad som mäts står utskrivet i rutan**, samma sex händelser som finns i
+  koden. Ingen av dem tar emot fritext: det som skrivs i sökrutan eller till
+  AI-prövning lämnar aldrig enheten, och av en AI-fråga skickas bara utfallet.
+- **Webbläsarens signal vinner.** Global Privacy Control eller Do Not Track
+  betyder nej, och då ställs frågan inte alls.
+- **Valet ändras i Profil**, som också visar vad man svarade och när, och kan
+  glömma svaret så frågan kommer tillbaka.
+- Mätningen är avstängd tills bygget får `VITE_ANALYTICS_PROVIDER`, `_SRC` och
+  `_SITE` (Plausible eller Umami, båda kakfria); utan dem säger rutan rakt ut
+  att ingenting samlas in. Se [README](README.md#statistik-och-samtycke).
+
+## 2026-09-10
+
+**Data: +82 prövningar.** Hela Komvux Örebros prövningstabell för hösten 2026,
+läst rad för rad ur kommunens egen tabell. Datasetet går från 506 till 588
+listningar.
+
+| Kommun   | Listningar | Källa                                                              |
+| -------- | ---------- | ------------------------------------------------------------------ |
+| Örebro   | 1 → 83     | Komvux Örebros prövningstabell hösten 2026 (grund, gymnasial, sfi) |
+| Västerås | 1 → 1      | Västerås stads egen prövningssida (omgången är fullbokad)          |
+
+Prioritetsordningen säger Uppsala och Västerås före Örebro, och båda lästes om
+först. Uppsala publicerar ingen kurslista: NTI-skolan sköter kommunens
+teoretiska prövningar, höstens ansökan stängde 14 augusti, och det enda kortet
+säger redan exakt det. Västerås publicerar en kurskatalog men ingen tabell — och
+har hunnit skriva ut att årets omgång är fullbokad. Örebro är den första kommun
+efter dem som lägger hela sitt utbud i en tabell med kurskod, regi och period.
+
+- **Anmälan är öppen nu**, 14–27 september, med antagningsbesked 1 oktober och
+  sista svarsdag 6 oktober. Prövningarna görs 26 oktober–13 november.
+- **Två anordnare, två upplägg.** Kolumnen "Regi" avgör vad kortet lovar:
+  Komvux egna prövningar (Matematik 2a–2c) har ett utsatt skriftligt prov 6
+  november på Campus Risbergska, Talentis löper över tre veckor där läraren
+  sätter dagen — minst en inlämningsuppgift, ett salsprov på plats och en
+  muntlig uppgift, enligt anordnarens eget prövningsinformationsblad.
+- **Gy11 och Gy25 är två kort, som datan kräver.** Örebro publicerar dem på
+  samma rad men som två anmälningar: har du läst kursen före juli 2025 söker du
+  den gamla kursen, annars ämnesnivån. 76 gymnasiala listningar, 4
+  grundskolekurser (vars provdatum kommunen inte publicerat än) och 3
+  sfi-kurser.
+- **Adressen är utskriven**: Campus Risbergska ligger på Hagagatan 53, inte på
+  "adress bekräftas vid anmälan" mitt i stan, och nålen är flyttad dit.
+  Samhällskunskap 1b:s Gy25-kod står som `SAMH1B00X` — tabellen skriver
+  `SAMH1B0X`, vilket resten av datan och Skolverkets kodmönster säger är ett
+  skrivfel.
+- Kvar att göra: `check:dates` pekar ut åtta listningar vars omgång helt har
+  passerat (Växjö, Värnamo, Kunskapsförbundet Väst, Kristinehamn, Katrineholm,
+  Trollhättan, ABF Stockholm, Iris Upplands Väsby). De behöver läsas om mot
+  anordnarens sida, inte skrivas om på gissning.
+
+**Produkt: kursen har två namn.** En sökning på "Matematik 3b" hittar nu också
+de prövningar som publiceras som Matematik – fortsättning Nivå 1b, och tvärtom.
+Paren är lästa ur Örebros tabell — den enda källa i datan som skriver ut båda
+systemen på samma rad — aldrig gissade ur kurskoden, och en kurs som bara finns
+i ett system får ingen motsvarighet. Detaljvyn säger med anordnarens egen regel
+vilken av de två som är din. Se [README](README.md#kursen-har-två-namn).
+
+Dessutom: AI-prövning vägde deadlines mot systemklockan i stället för mot det
+`today` frågan lästes med, så en fråga om "innan oktober" kunde behålla en
+omgång deadline-läsaren redan räknat som stängd — två svar på samma fråga inom
+ett anrop, och ett test som började falla den dag kalendern sa emot det.
+
 ## 2026-08-31
 
 **Data: +132 prövningar.** NTI-skolans publicerade prövningsutbud för

@@ -12,6 +12,7 @@ import {
   Check,
   Pencil,
   Plus,
+  BarChart3,
 } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { useStore } from '../store/useStore';
@@ -20,6 +21,7 @@ import { useEscapeKey } from '../hooks/useEscapeKey';
 import { fileToAvatarDataUrl, initialsOf } from '../lib/avatar';
 import { CompletedExamSheet, CompletedExamDraft } from '../components/CompletedExamSheet';
 import { summarizeGrades, gradeBadgeClass } from '../lib/grades';
+import { useConsent } from '../hooks/useConsent';
 
 function SettingRow({
   icon,
@@ -57,9 +59,11 @@ export function Profile() {
     savedExams,
     setActiveTab,
     setShowingFaq,
+    setShowingConsent,
     updateCompletedExam,
     removeCompletedExam,
   } = useStore();
+  const consent = useConsent();
   const [showPhotoSheet, setShowPhotoSheet] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [examEditor, setExamEditor] = useState<'new' | number | null>(null);
@@ -122,6 +126,9 @@ export function Profile() {
       exporteradDen: new Date().toISOString(),
       profil: currentUser,
       sparadePrövningar: savedExams,
+      // Samtycket är också något appen vet om dig, och den enda plats det står
+      // utanför den här filen är en rad i localStorage.
+      statistiksamtycke: consent.choice,
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: 'application/json;charset=utf-8',
@@ -350,6 +357,21 @@ export function Profile() {
             label="Vanliga frågor"
             value="kostnad, regler, anmälan"
             onClick={() => setShowingFaq(true)}
+          />
+          <SettingRow
+            icon={<BarChart3 size={18} className="text-brand-500" />}
+            tint="bg-brand-50"
+            label="Statistik om användningen"
+            value={
+              consent.source === 'signal'
+                ? 'av, enligt din webbläsare'
+                : consent.choice === 'granted'
+                  ? 'du har sagt ja'
+                  : consent.choice === 'denied'
+                    ? 'du har sagt nej'
+                    : 'inte besvarad'
+            }
+            onClick={() => setShowingConsent(true)}
           />
           <SettingRow
             icon={<Download size={18} className="text-ink-soft" />}

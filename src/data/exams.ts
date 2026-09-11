@@ -426,6 +426,75 @@ function ntiAutumn2026(): NextPeriod {
   };
 }
 
+// Svepet 2026-09-10: hela Komvux Örebros prövningstabell för hösten 2026, läst
+// rad för rad ur kommunens egen tabell — grundskolekurser, gymnasiekurser och
+// sfi, med kurskod, regi och prövningsperiod som anordnaren skriver dem. Samma
+// dag lästes Uppsalas och Västerås egna sidor om, eftersom de två står före
+// Örebro i prioritetsordningen: Uppsala publicerar ingen kurslista alls (NTI
+// tar deras teoretiska prövningar), och Västerås hade hunnit skriva ut att
+// årets omgång är fullbokad.
+const SEP_10_VERIFIED = '2026-09-10';
+
+const OREBRO_PRICE_NOTE =
+  '500 kr per kurs. Avgiftsfritt om du har F eller IG i kursen från komvux — betygskopian ska ' +
+  'bifogas direkt i anmälan, som inte går att komplettera i efterhand. Anmälan är bindande från ' +
+  'att du tackat ja till platsen; fakturan kan komma efter prövningen och stryks bara mot ' +
+  'läkarintyg.';
+
+/**
+ * Örebro delar sitt prövningsutbud mellan två anordnare, och upplägget skiljer
+ * sig så mycket att det inte går att skriva som ett moment: Komvux egna
+ * prövningar har ett utsatt provdatum i kommunens tabell, Talentis löper över
+ * en treveckorsperiod där läraren sätter dagen. Kolumnen "Regi" i tabellen är
+ * det som avgör vilken av de här listorna en listning bär.
+ */
+const COMPONENTS_OREBRO_KOMVUX: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: 'På utsatt provdatum',
+    description:
+      'Skrivs på Campus Risbergska på det datum kommunens prövningstabell anger. Giltig legitimation krävs.',
+  },
+  {
+    name: 'Muntliga och/eller praktiska uppgifter',
+    duration: 'Annan dag än det skriftliga provet',
+    description:
+      'Ansvarig lärare skickar upplägget och datumen ungefär tre veckor före det första provet.',
+  },
+];
+
+const COMPONENTS_OREBRO_TALENTI: ExamComponent[] = [
+  {
+    name: 'Inlämningsuppgifter',
+    duration: 'Minst en, före salsprovet',
+    description:
+      'Görs på egen hand och ska vara klara innan salsprovet, om inget annat avtalats med läraren. Inlämnade uppgifter går inte att komplettera.',
+  },
+  {
+    name: 'Salsprov',
+    duration: 'Inom prövningsperioden',
+    description:
+      'Skrivs på plats i Örebro med legitimation. Tiden bestäms tillsammans med ansvarig lärare, som hör av sig en vecka innan perioden börjar.',
+  },
+  {
+    name: 'Muntlig uppgift',
+    duration: 'Varierar',
+    description: 'Avslutande muntlig examination hos läraren, oftast en annan dag än salsprovet.',
+  },
+];
+
+const COMPONENTS_OREBRO_TALENTI_LAB: ExamComponent[] = [
+  COMPONENTS_OREBRO_TALENTI[0],
+  {
+    name: 'Laborativt eller praktiskt moment',
+    duration: 'Varierar',
+    description:
+      'Kan ingå i kursen, och görs på plats om du inte lämnat in ett intyg som ersätter momentet.',
+  },
+  COMPONENTS_OREBRO_TALENTI[1],
+  COMPONENTS_OREBRO_TALENTI[2],
+];
+
 export const EXAMS: Exam[] = [
   {
     id: 'sodermalm-kemi1',
@@ -5933,7 +6002,7 @@ export const EXAMS: Exam[] = [
   },
   {
     id: 'vuxenutbildningscentrum-vasteras-edstromska-m-fl-vasteras-fl',
-    schoolName: 'Vuxenutbildningscentrum Västerås (Edströmska m.fl.)',
+    schoolName: 'Vuxenutbildningscentrum Västerås',
     provider: 'Västerås stad',
     subject: 'Flera ämnen',
     course: 'Flera kurser (kontakta skolan för kurskod)',
@@ -5945,14 +6014,23 @@ export const EXAMS: Exam[] = [
     lat: 59.6099,
     lng: 16.5448,
     price: 500,
-    priceNote: '500 kr per kurs, betalning via Swish; återbetalas endast vid styrkt sjukdom',
+    priceNote:
+      '500 kr per kurs, betalas med Swish och kvittot bifogas anmälan; högst två ämnen per ' +
+      'period. Avgiften återbetalas bara mot läkarintyg.',
+    // Läst 2026-09-10: kommunen skriver rakt ut "Prövningsperioden för 2026 är
+    // fullbokad". Datumen nedan står kvar, eftersom de säger vilken omgång som
+    // tog slut, men `full` stänger nedräkningen och bokningsknappen — annars
+    // hade kortet bjudit in till en anmälan staden inte tar emot.
     nextPeriod: {
-      label: 'Prövningsperiod vecka 41–44, 2026',
+      label:
+        'Prövningsperioden vecka 41–44 2026 är fullbokad enligt Västerås stad. Anmälan var öppen ' +
+        '17–31 augusti; nästa periods datum publiceras i kurskatalogen.',
       applicationStart: '2026-08-17',
       applicationEnd: '2026-08-31',
       examWindowStart: '2026-10-05',
       examWindowEnd: '2026-11-01',
       confirmed: true,
+      full: true,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
@@ -5962,9 +6040,12 @@ export const EXAMS: Exam[] = [
     infoUrl:
       'https://www.vasteras.se/barn-och-utbildning/vuxenutbildning/nivatest-och-provning-infor-vuxenutbildning.html',
     description:
-      'Västerås stad samordnar prövning i sfi, grundläggande och gymnasiala kurser hos flera anordnare (bl.a. Edströmska); anmälan är öppen 17–31 augusti inför prövningsperiod vecka 41–44, 2026.',
+      'Västerås stad samordnar prövning i sfi, grundläggande och gymnasiala kurser hos nio ' +
+      'anordnare — ABF (endast grundläggande), Agila institutet vux, Astar, Hermods, Jensen, ' +
+      'KUI, Nercia, NTI och Vuxenutbildningscentrum (endast sfi D). Anmälan görs i ' +
+      'kurskatalogen, och årets prövningsperiod är fullbokad; sfi B och C anmäls i receptionen.',
     tags: ['flera ämnen', 'gymnasial', 'västmanland'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: SEP_10_VERIFIED,
   },
   {
     id: 'komvux-orebro-campus-risbergska-orebro-flera-kurser-kontakta',
@@ -5976,15 +6057,20 @@ export const EXAMS: Exam[] = [
     level: 'Komvux',
     city: 'Örebro',
     region: 'Örebro',
-    address: 'Campus Risbergska, Örebro (adress bekräftas vid anmälan)',
-    lat: 59.2753,
-    lng: 15.2134,
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
     price: 500,
-    priceNote: '500 kr per prövning, avgiftsfritt vid styrkt F från vuxenutbildningen i ämnet',
+    priceNote: OREBRO_PRICE_NOTE,
     nextPeriod: {
-      label: 'Anmälan till höstens prövningar 2026',
+      label:
+        'Anmälan till höstens prövningar är öppen 14–27 september 2026. Prövningarna görs 26 ' +
+        'oktober–13 november; grundskolekursernas datum är ännu inte publicerade. ' +
+        'Antagningsbesked 1 oktober, svar senast 6 oktober.',
       applicationStart: '2026-09-14',
       applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -6002,9 +6088,14 @@ export const EXAMS: Exam[] = [
     infoUrl:
       'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
     description:
-      'Komvux Örebro öppnar anmälan till prövningar i grundskole-, gymnasiala- och sfi-kurser hösten 2026 den 14–27 september; anmälan görs i Komvux ansökningswebb med e-legitimation. Antagningsbesked skickas per e-post den 1 oktober och du måste tacka ja eller nej — anmälan är bindande efter sista svarsdag.',
+      'Komvux Örebro öppnar anmälan till prövningar i grundskole-, gymnasiala och sfi-kurser ' +
+      'hösten 2026 den 14–27 september; anmälan görs i Komvux ansökningswebb med e-legitimation. ' +
+      'Antagningsbesked skickas per e-post den 1 oktober och du måste tacka ja eller nej — ' +
+      'anmälan är bindande efter sista svarsdag. Hela höstens tabell ligger som en egen listning ' +
+      'per kurs, i Komvux egen regi på Campus Risbergska eller i Talentis regi; det här kortet ' +
+      'är hela omgången på ett ställe.',
     tags: ['flera ämnen', 'gymnasial', 'örebro'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: SEP_10_VERIFIED,
   },
   {
     id: 'vuxnas-larande-karlskoga-karlskoga-engelska-6',
@@ -16701,6 +16792,3261 @@ export const EXAMS: Exam[] = [
       'Betygsprövning i Svenska som andraspråk grundläggande nivå (GRNSVA2) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs fredag 16 oktober 2026 kl. 13.00–17.00 på Studium Styrmansgatan 21B.',
     tags: ['svenska som andraspråk', 'göteborg', 'västra götaland', 'gy11'],
     verifiedAt: GOTEBORG_VERIFIED,
+  },
+  {
+    id: 'orebro-biobio01',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Biologi',
+    course: 'Biologi 1',
+    courseCode: 'BIOBIO01',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Biologi 1 (BIOBIO01) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Biologi Nivå 1 — har du läst kursen ' +
+      'före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['biologi', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-biog1000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 1',
+    courseCode: 'BIOG1000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Biologi Nivå 1 (BIOG1000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Biologi 1, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['biologi', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-biobio02',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Biologi',
+    course: 'Biologi 2',
+    courseCode: 'BIOBIO02',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Biologi 2 (BIOBIO02) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Biologi Nivå 2 — har du läst kursen ' +
+      'före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['biologi', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-biog2000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 2',
+    courseCode: 'BIOG2000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Biologi Nivå 2 (BIOG2000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Biologi 2, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['biologi', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-engeng05',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Engelska',
+    course: 'Engelska 5',
+    courseCode: 'ENGENG05',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Engelska 5 (ENGENG05) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Engelska Nivå 1 — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['engelska', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-enge1000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 1',
+    courseCode: 'ENGE1000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Engelska Nivå 1 (ENGE1000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Engelska 5, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['engelska', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-engeng06',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Engelska',
+    course: 'Engelska 6',
+    courseCode: 'ENGENG06',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Engelska 6 (ENGENG06) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Engelska Nivå 2 — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['engelska', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-enge2000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 2',
+    courseCode: 'ENGE2000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Engelska Nivå 2 (ENGE2000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Engelska 6, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['engelska', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-engeng07',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Engelska',
+    course: 'Engelska 7',
+    courseCode: 'ENGENG07',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Engelska 7 (ENGENG07) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Engelska Nivå 3 — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['engelska', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-enge3000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 3',
+    courseCode: 'ENGE3000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Engelska Nivå 3 (ENGE3000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Engelska 7, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['engelska', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-fysfys01a',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Fysik',
+    course: 'Fysik 1a',
+    courseCode: 'FYSFYS01a',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Fysik 1a (FYSFYS01a) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen.',
+    tags: ['fysik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-fysk1b00x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1b',
+    courseCode: 'FYSK1B00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Fysik Nivå 1b (FYSK1B00X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen.',
+    tags: ['fysik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-fysfys02',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Fysik',
+    course: 'Fysik 2',
+    courseCode: 'FYSFYS02',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Fysik 2 (FYSFYS02) hos Komvux Örebro, i Talentis regi, med ett salsprov ' +
+      'på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september 2026 och ' +
+      'görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till platsen. Samma ' +
+      'kurs prövas också som Gy25-ämnesnivån Fysik Nivå 2 — har du läst kursen före juli 2025 ' +
+      'är det den här Gy11-varianten du ska söka.',
+    tags: ['fysik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-fysk2000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 2',
+    courseCode: 'FYSK2000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Fysik Nivå 2 (FYSK2000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Fysik 2, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['fysik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-hishis01a1',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Historia',
+    course: 'Historia 1a1',
+    courseCode: 'HISHIS01a1',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Historia 1a1 (HISHIS01a1) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Historia Nivå 1a1 — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['historia', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-hist1a10x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a1',
+    courseCode: 'HIST1A10X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Historia Nivå 1a1 (HIST1A10X) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Historia 1a1, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['historia', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-hishis01a2',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Historia',
+    course: 'Historia 1a2',
+    courseCode: 'HISHIS01a2',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Historia 1a2 (HISHIS01a2) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Historia Nivå 1a2 — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['historia', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-hist1a20x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a2',
+    courseCode: 'HIST1A20X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Historia Nivå 1a2 (HIST1A20X) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Historia 1a2, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['historia', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-hishis01b',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Historia',
+    course: 'Historia 1b',
+    courseCode: 'HISHIS01b',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Historia 1b (HISHIS01b) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Historia Nivå 1b — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['historia', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-hist1b00x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Historia',
+    course: 'Historia Nivå 1b',
+    courseCode: 'HIST1B00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Historia Nivå 1b (HIST1B00X) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Historia 1b, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['historia', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-kemkem01',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Kemi',
+    course: 'Kemi 1',
+    courseCode: 'KEMKEM01',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Kemi 1 (KEMKEM01) hos Komvux Örebro, i Talentis regi, med ett salsprov ' +
+      'på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september 2026 och ' +
+      'görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till platsen. Samma ' +
+      'kurs prövas också som Gy25-ämnesnivån Kemi Nivå 1 — har du läst kursen före juli 2025 är ' +
+      'det den här Gy11-varianten du ska söka.',
+    tags: ['kemi', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-kemi1000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 1',
+    courseCode: 'KEMI1000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Kemi Nivå 1 (KEMI1000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Kemi 1, som är den variant du söker ' +
+      'om du läste kursen före juli 2025.',
+    tags: ['kemi', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-kemkem02',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Kemi',
+    course: 'Kemi 2',
+    courseCode: 'KEMKEM02',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Kemi 2 (KEMKEM02) hos Komvux Örebro, i Talentis regi, med ett salsprov ' +
+      'på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september 2026 och ' +
+      'görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till platsen. Samma ' +
+      'kurs prövas också som Gy25-ämnesnivån Kemi Nivå 2 — har du läst kursen före juli 2025 är ' +
+      'det den här Gy11-varianten du ska söka.',
+    tags: ['kemi', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-kemi2000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 2',
+    courseCode: 'KEMI2000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Kemi Nivå 2 (KEMI2000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Kemi 2, som är den variant du söker ' +
+      'om du läste kursen före juli 2025.',
+    tags: ['kemi', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matmat01a',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik 1a',
+    courseCode: 'MATMAT01a',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik 1a (MATMAT01a) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Matematik Nivå 1a — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['matematik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-mate1a00x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1a',
+    courseCode: 'MATE1A00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik Nivå 1a (MATE1A00X) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Matematik 1a, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matmat01b',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik 1b',
+    courseCode: 'MATMAT01b',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik 1b (MATMAT01b) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Matematik Nivå 1b — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['matematik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-mate1b00x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1b',
+    courseCode: 'MATE1B00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik Nivå 1b (MATE1B00X) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Matematik 1b, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matmat01c',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik 1c',
+    courseCode: 'MATMAT01c',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik 1c (MATMAT01c) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Matematik Nivå 1c — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['matematik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-mate1c00x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1c',
+    courseCode: 'MATE1C00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik Nivå 1c (MATE1C00X) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Matematik 1c, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matmat02a',
+    schoolName: 'Komvux Örebro (Campus Risbergska)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik 2a',
+    courseCode: 'MATMAT02a',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och det ' +
+        'skriftliga provet skrivs 6 november på Campus Risbergska. Antagningsbesked 1 oktober, ' +
+        'svar senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_KOMVUX,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik 2a (MATMAT02a) hos Komvux Örebro, i Komvux egen regi på ' +
+      'Campus Risbergska, med det skriftliga provet 6 november. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma kurs prövas också som Gy25-ämnesnivån Matematik Nivå 2a — har du ' +
+      'läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['matematik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-mate2a00x',
+    schoolName: 'Komvux Örebro (Campus Risbergska)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2a',
+    courseCode: 'MATE2A00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och det ' +
+        'skriftliga provet skrivs 6 november på Campus Risbergska. Antagningsbesked 1 oktober, ' +
+        'svar senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_KOMVUX,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik Nivå 2a (MATE2A00X) hos Komvux Örebro, i Komvux egen regi på ' +
+      'Campus Risbergska, med det skriftliga provet 6 november. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Matematik 2a, som är den ' +
+      'variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matmat02b',
+    schoolName: 'Komvux Örebro (Campus Risbergska)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik 2b',
+    courseCode: 'MATMAT02b',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och det ' +
+        'skriftliga provet skrivs 6 november på Campus Risbergska. Antagningsbesked 1 oktober, ' +
+        'svar senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_KOMVUX,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik 2b (MATMAT02b) hos Komvux Örebro, i Komvux egen regi på ' +
+      'Campus Risbergska, med det skriftliga provet 6 november. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma kurs prövas också som Gy25-ämnesnivån Matematik Nivå 2b — har du ' +
+      'läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['matematik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-mate2b00x',
+    schoolName: 'Komvux Örebro (Campus Risbergska)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2b',
+    courseCode: 'MATE2B00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och det ' +
+        'skriftliga provet skrivs 6 november på Campus Risbergska. Antagningsbesked 1 oktober, ' +
+        'svar senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_KOMVUX,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik Nivå 2b (MATE2B00X) hos Komvux Örebro, i Komvux egen regi på ' +
+      'Campus Risbergska, med det skriftliga provet 6 november. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Matematik 2b, som är den ' +
+      'variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matmat02c',
+    schoolName: 'Komvux Örebro (Campus Risbergska)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik 2c',
+    courseCode: 'MATMAT02c',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och det ' +
+        'skriftliga provet skrivs 6 november på Campus Risbergska. Antagningsbesked 1 oktober, ' +
+        'svar senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_KOMVUX,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik 2c (MATMAT02c) hos Komvux Örebro, i Komvux egen regi på ' +
+      'Campus Risbergska, med det skriftliga provet 6 november. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma kurs prövas också som Gy25-ämnesnivån Matematik Nivå 2c — har du ' +
+      'läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['matematik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-mate2c00x',
+    schoolName: 'Komvux Örebro (Campus Risbergska)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2c',
+    courseCode: 'MATE2C00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och det ' +
+        'skriftliga provet skrivs 6 november på Campus Risbergska. Antagningsbesked 1 oktober, ' +
+        'svar senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_KOMVUX,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik Nivå 2c (MATE2C00X) hos Komvux Örebro, i Komvux egen regi på ' +
+      'Campus Risbergska, med det skriftliga provet 6 november. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Matematik 2c, som är den ' +
+      'variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matmat03b',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik 3b',
+    courseCode: 'MATMAT03b',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik 3b (MATMAT03b) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Matematik – fortsättning Nivå 1b — ' +
+      'har du läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['matematik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-mato1b00x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1b',
+    courseCode: 'MATO1B00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 1b (MATO1B00X) hos Komvux Örebro, i ' +
+      'Talentis regi, med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är ' +
+      'öppen 14–27 september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när ' +
+      'du tackat ja till platsen. Samma innehåll prövas också som Gy11-kursen Matematik 3b, som ' +
+      'är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matmat03c',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik 3c',
+    courseCode: 'MATMAT03c',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik 3c (MATMAT03c) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Matematik – fortsättning Nivå 1c — ' +
+      'har du läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['matematik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-mato1c00x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1c',
+    courseCode: 'MATO1C00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 1c (MATO1C00X) hos Komvux Örebro, i ' +
+      'Talentis regi, med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är ' +
+      'öppen 14–27 september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när ' +
+      'du tackat ja till platsen. Samma innehåll prövas också som Gy11-kursen Matematik 3c, som ' +
+      'är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matmat04',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik 4',
+    courseCode: 'MATMAT04',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik 4 (MATMAT04) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Matematik – fortsättning Nivå 2 — ' +
+      'har du läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['matematik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-mato2000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 2',
+    courseCode: 'MATO2000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 2 (MATO2000X) hos Komvux Örebro, i ' +
+      'Talentis regi, med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är ' +
+      'öppen 14–27 september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när ' +
+      'du tackat ja till platsen. Samma innehåll prövas också som Gy11-kursen Matematik 4, som ' +
+      'är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matmat05',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik 5',
+    courseCode: 'MATMAT05',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik 5 (MATMAT05) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Matematik – fördjupning Nivå 1 — ' +
+      'har du läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['matematik', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-matf1000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik – fördjupning Nivå 1',
+    courseCode: 'MATF1000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik – fördjupning Nivå 1 (MATF1000X) hos Komvux Örebro, i ' +
+      'Talentis regi, med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är ' +
+      'öppen 14–27 september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när ' +
+      'du tackat ja till platsen. Samma innehåll prövas också som Gy11-kursen Matematik 5, som ' +
+      'är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-naknak01a1',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1a1',
+    courseCode: 'NAKNAK01a1',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Naturkunskap 1a1 (NAKNAK01a1) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Naturkunskap Nivå 1a1 — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['naturkunskap', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-natu1a10x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a1',
+    courseCode: 'NATU1A10X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1a1 (NATU1A10X) hos Komvux Örebro, i Talentis regi, ' +
+      'med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Naturkunskap 1a1, som är den ' +
+      'variant du söker om du läste kursen före juli 2025.',
+    tags: ['naturkunskap', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-naknak01a2',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1a2',
+    courseCode: 'NAKNAK01a2',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Naturkunskap 1a2 (NAKNAK01a2) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Naturkunskap Nivå 1a2 — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['naturkunskap', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-natu1a20x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a2',
+    courseCode: 'NATU1A20X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1a2 (NATU1A20X) hos Komvux Örebro, i Talentis regi, ' +
+      'med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Naturkunskap 1a2, som är den ' +
+      'variant du söker om du läste kursen före juli 2025.',
+    tags: ['naturkunskap', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-naknak01b',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1b',
+    courseCode: 'NAKNAK01b',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Naturkunskap 1b (NAKNAK01b) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Naturkunskap Nivå 1b — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['naturkunskap', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-natu1b00x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1b',
+    courseCode: 'NATU1B00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1b (NATU1B00X) hos Komvux Örebro, i Talentis regi, ' +
+      'med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Naturkunskap 1b, som är den ' +
+      'variant du söker om du läste kursen före juli 2025.',
+    tags: ['naturkunskap', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-naknak02',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 2',
+    courseCode: 'NAKNAK02',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Naturkunskap 2 (NAKNAK02) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Naturkunskap Nivå 2 — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['naturkunskap', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-natu2000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 2',
+    courseCode: 'NATU2000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI_LAB,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 2 (NATU2000X) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Naturkunskap 2, som är den variant ' +
+      'du söker om du läste kursen före juli 2025.',
+    tags: ['naturkunskap', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-pskpsy01',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Psykologi',
+    course: 'Psykologi 1',
+    courseCode: 'PSKPSY01',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Psykologi 1 (PSKPSY01) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Psykologi Nivå 1 — har du läst ' +
+      'kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['psykologi', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-psyl1000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 1',
+    courseCode: 'PSYL1000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Psykologi Nivå 1 (PSYL1000X) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Psykologi 1, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['psykologi', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-psyl2000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 2',
+    courseCode: 'PSYL2000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Psykologi Nivå 2 (PSYL2000X) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen.',
+    tags: ['psykologi', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-relrel01',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap 1',
+    courseCode: 'RELREL01',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_RELIGION,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Religionskunskap 1 (RELREL01) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Religionskunskap Nivå 1 — har du ' +
+      'läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['religionskunskap', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-reli1000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 1',
+    courseCode: 'RELI1000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_RELIGION,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Religionskunskap Nivå 1 (RELI1000X) hos Komvux Örebro, i Talentis regi, ' +
+      'med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Religionskunskap 1, som är den ' +
+      'variant du söker om du läste kursen före juli 2025.',
+    tags: ['religionskunskap', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-samsam01a1',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1a1',
+    courseCode: 'SAMSAM01a1',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Samhällskunskap 1a1 (SAMSAM01a1) hos Komvux Örebro, i Talentis regi, ' +
+      'med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma kurs prövas också som Gy25-ämnesnivån Samhällskunskap Nivå 1a1 — har ' +
+      'du läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['samhällskunskap', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-samh1a10x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a1',
+    courseCode: 'SAMH1A10X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1a1 (SAMH1A10X) hos Komvux Örebro, i Talentis ' +
+      'regi, med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Samhällskunskap 1a1, som är ' +
+      'den variant du söker om du läste kursen före juli 2025.',
+    tags: ['samhällskunskap', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-samsam01a2',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1a2',
+    courseCode: 'SAMSAM01a2',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Samhällskunskap 1a2 (SAMSAM01a2) hos Komvux Örebro, i Talentis regi, ' +
+      'med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma kurs prövas också som Gy25-ämnesnivån Samhällskunskap Nivå 1a2 — har ' +
+      'du läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['samhällskunskap', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-samh1a20x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a2',
+    courseCode: 'SAMH1A20X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1a2 (SAMH1A20X) hos Komvux Örebro, i Talentis ' +
+      'regi, med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Samhällskunskap 1a2, som är ' +
+      'den variant du söker om du läste kursen före juli 2025.',
+    tags: ['samhällskunskap', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-samsam01b',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1b',
+    courseCode: 'SAMSAM01b',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Samhällskunskap 1b (SAMSAM01b) hos Komvux Örebro, i Talentis regi, med ' +
+      'ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Samhällskunskap Nivå 1b — har du ' +
+      'läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['samhällskunskap', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-samh1b00x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1b',
+    courseCode: 'SAMH1B00X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1b (SAMH1B00X) hos Komvux Örebro, i Talentis regi, ' +
+      'med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Samhällskunskap 1b, som är den ' +
+      'variant du söker om du läste kursen före juli 2025.',
+    tags: ['samhällskunskap', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-svesve01',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska',
+    course: 'Svenska 1',
+    courseCode: 'SVESVE01',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska 1 (SVESVE01) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Svenska Nivå 1 — har du läst kursen ' +
+      'före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['svenska', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-sven1000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 1',
+    courseCode: 'SVEN1000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska Nivå 1 (SVEN1000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Svenska 1, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['svenska', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-svesve02',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska',
+    course: 'Svenska 2',
+    courseCode: 'SVESVE02',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska 2 (SVESVE02) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Svenska Nivå 2 — har du läst kursen ' +
+      'före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['svenska', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-sven2000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 2',
+    courseCode: 'SVEN2000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska Nivå 2 (SVEN2000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Svenska 2, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['svenska', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-svesve03',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska',
+    course: 'Svenska 3',
+    courseCode: 'SVESVE03',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska 3 (SVESVE03) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma kurs prövas också som Gy25-ämnesnivån Svenska Nivå 3 — har du läst kursen ' +
+      'före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['svenska', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-sven3000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 3',
+    courseCode: 'SVEN3000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska Nivå 3 (SVEN3000X) hos Komvux Örebro, i Talentis regi, med ett ' +
+      'salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 september ' +
+      '2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja till ' +
+      'platsen. Samma innehåll prövas också som Gy11-kursen Svenska 3, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['svenska', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-svasva01',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 1',
+    courseCode: 'SVASVA01',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska som andraspråk 1 (SVASVA01) hos Komvux Örebro, i Talentis regi, ' +
+      'med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma kurs prövas också som Gy25-ämnesnivån Svenska som andraspråk Nivå 1 ' +
+      '— har du läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['svenska som andraspråk', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-svea1000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 1',
+    courseCode: 'SVEA1000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 1 (SVEA1000X) hos Komvux Örebro, i Talentis ' +
+      'regi, med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Svenska som andraspråk 1, som ' +
+      'är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['svenska som andraspråk', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-svasva02',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 2',
+    courseCode: 'SVASVA02',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska som andraspråk 2 (SVASVA02) hos Komvux Örebro, i Talentis regi, ' +
+      'med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma kurs prövas också som Gy25-ämnesnivån Svenska som andraspråk Nivå 2 ' +
+      '— har du läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['svenska som andraspråk', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-svea2000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 2',
+    courseCode: 'SVEA2000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 2 (SVEA2000X) hos Komvux Örebro, i Talentis ' +
+      'regi, med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Svenska som andraspråk 2, som ' +
+      'är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['svenska som andraspråk', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-svasva03',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 3',
+    courseCode: 'SVASVA03',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska som andraspråk 3 (SVASVA03) hos Komvux Örebro, i Talentis regi, ' +
+      'med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma kurs prövas också som Gy25-ämnesnivån Svenska som andraspråk Nivå 3 ' +
+      '— har du läst kursen före juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['svenska som andraspråk', 'örebro', 'gy11'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-svea3000x',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 3',
+    courseCode: 'SVEA3000X',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 3 (SVEA3000X) hos Komvux Örebro, i Talentis ' +
+      'regi, med ett salsprov på plats i Örebro under prövningsperioden. Anmälan är öppen 14–27 ' +
+      'september 2026 och görs i Komvux ansökningswebb; anmälan blir bindande när du tackat ja ' +
+      'till platsen. Samma innehåll prövas också som Gy11-kursen Svenska som andraspråk 3, som ' +
+      'är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['svenska som andraspråk', 'örebro', 'gy25'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-grneng2',
+    schoolName: 'Komvux Örebro (Campus Risbergska)',
+    provider: 'Örebro kommun',
+    subject: 'Engelska',
+    course: 'Engelska grundläggande nivå',
+    courseCode: 'GRNENG2',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
+        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_KOMVUX,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Engelska grundläggande nivå (GRNENG2) hos Komvux Örebro. Anmälan är ' +
+      'öppen 14–27 september 2026, men prövningsdagen är inte publicerad än — kommunens tabell ' +
+      'säger oktober/november och "återkommer med datum inom kort". Antagningsbesked skickas 1 ' +
+      'oktober och du måste tacka ja senast 6 oktober.',
+    tags: ['engelska', 'grundläggande', 'örebro'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-grnmat2',
+    schoolName: 'Komvux Örebro (Campus Risbergska)',
+    provider: 'Örebro kommun',
+    subject: 'Matematik',
+    course: 'Matematik grundläggande nivå',
+    courseCode: 'GRNMAT2',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
+        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_KOMVUX,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Matematik grundläggande nivå (GRNMAT2) hos Komvux Örebro. Anmälan är ' +
+      'öppen 14–27 september 2026, men prövningsdagen är inte publicerad än — kommunens tabell ' +
+      'säger oktober/november och "återkommer med datum inom kort". Antagningsbesked skickas 1 ' +
+      'oktober och du måste tacka ja senast 6 oktober.',
+    tags: ['matematik', 'grundläggande', 'örebro'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-grnsve2',
+    schoolName: 'Komvux Örebro (Campus Risbergska)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska',
+    course: 'Svenska grundläggande nivå',
+    courseCode: 'GRNSVE2',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
+        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_KOMVUX,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska grundläggande nivå (GRNSVE2) hos Komvux Örebro. Anmälan är ' +
+      'öppen 14–27 september 2026, men prövningsdagen är inte publicerad än — kommunens tabell ' +
+      'säger oktober/november och "återkommer med datum inom kort". Antagningsbesked skickas 1 ' +
+      'oktober och du måste tacka ja senast 6 oktober.',
+    tags: ['svenska', 'grundläggande', 'örebro'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-grnsva2',
+    schoolName: 'Komvux Örebro (Campus Risbergska)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk grundläggande nivå',
+    courseCode: 'GRNSVA2',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Campus Risbergska, Hagagatan 53, Örebro',
+    lat: 59.2699,
+    lng: 15.1667,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
+        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_KOMVUX,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Betygsprövning i Svenska som andraspråk grundläggande nivå (GRNSVA2) hos Komvux Örebro. ' +
+      'Anmälan är öppen 14–27 september 2026, men prövningsdagen är inte publicerad än — ' +
+      'kommunens tabell säger oktober/november och "återkommer med datum inom kort". ' +
+      'Antagningsbesked skickas 1 oktober och du måste tacka ja senast 6 oktober.',
+    tags: ['svenska som andraspråk', 'grundläggande', 'örebro'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-sfikub92',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska för invandrare',
+    course: 'Prövning i svenska för invandrare kurs B, studieväg 2',
+    courseCode: 'SFIKUB92',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Prövning i svenska för invandrare kurs B, studieväg 2 (SFIKUB92) hos Komvux Örebro, i ' +
+      'Talentis regi. Anmälan är öppen 14–27 september 2026 och prövningen görs under perioden ' +
+      '26 oktober–13 november; ditt eget datum inom perioden bestäms av ansvarig lärare.',
+    tags: ['svenska för invandrare', 'sfi', 'örebro'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-sfikuc92',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska för invandrare',
+    course: 'Prövning i svenska för invandrare kurs C, studieväg 2',
+    courseCode: 'SFIKUC92',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Prövning i svenska för invandrare kurs C, studieväg 2 (SFIKUC92) hos Komvux Örebro, i ' +
+      'Talentis regi. Anmälan är öppen 14–27 september 2026 och prövningen görs under perioden ' +
+      '26 oktober–13 november; ditt eget datum inom perioden bestäms av ansvarig lärare.',
+    tags: ['svenska för invandrare', 'sfi', 'örebro'],
+    verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'orebro-sfikud92',
+    schoolName: 'Komvux Örebro (Talenti)',
+    provider: 'Örebro kommun',
+    subject: 'Svenska för invandrare',
+    course: 'Prövning i svenska för invandrare kurs D, studieväg 2',
+    courseCode: 'SFIKUD92',
+    level: 'Komvux',
+    city: 'Örebro',
+    region: 'Örebro',
+    address: 'Talenti, Örebro (lokal och tid bestäms av ansvarig lärare)',
+    lat: 59.2747,
+    lng: 15.2151,
+    price: 500,
+    priceNote: OREBRO_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan 14–27 september 2026. Prövningsperioden är 26 oktober–13 november och ditt ' +
+        'eget datum inom den bestäms av ansvarig lärare. Antagningsbesked 1 oktober, svar ' +
+        'senast 6 oktober.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-27',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-13',
+      confirmed: true,
+    },
+    components: COMPONENTS_OREBRO_TALENTI,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://open24.ist-asp.com/orebro/vux/Vux/MyAccount',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Prövning i svenska för invandrare kurs D, studieväg 2 (SFIKUD92) hos Komvux Örebro, i ' +
+      'Talentis regi. Anmälan är öppen 14–27 september 2026 och prövningen görs under perioden ' +
+      '26 oktober–13 november; ditt eget datum inom perioden bestäms av ansvarig lärare.',
+    tags: ['svenska för invandrare', 'sfi', 'örebro'],
+    verifiedAt: SEP_10_VERIFIED,
   },
 ];
 

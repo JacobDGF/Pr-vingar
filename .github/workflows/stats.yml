@@ -1,0 +1,68 @@
+name: Statistik
+
+# Hämtar summorna från appens egen räknare (collector/) och lägger dem i
+# stats/ som en fil i repot. Det är där statistiken bor: det finns ingen
+# instrumentpanel någon annanstans, och ingen tredje part som ser besökarna.
+#
+# Jobbet är tyst i ett repo som inte satt upp någon räknare — saknas
+# STATS_ENDPOINT och STATS_TOKEN avslutar skriptet med 0 utan att skriva något.
+# Ett nattligt jobb som lyser rött för att en valfri funktion inte används är
+# ett larm ingen läser, och ett larm ingen läser döljer de riktiga.
+#
+# Pushen sker med GITHUB_TOKEN, som med flit inte startar andra workflows:
+# statistiken behöver inte byggas och deployas om — appen läser den inte, den
+# läses på GitHub. Nästa vanliga push till main tar med filen ändå.
+
+on:
+  schedule:
+    # 02:17 UTC = 04:17 svensk sommartid. Dygnet räknaren summerar är då slut
+    # med marginal, och minuten är udda för att inte hamna i timslaget då hela
+    # världens cron-jobb startar samtidigt och GitHub köar dem.
+    - cron: '17 2 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: stats
+  cancel-in-progress: false
+
+jobs:
+  samla:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Hämta summorna
+        env:
+          STATS_ENDPOINT: ${{ secrets.STATS_ENDPOINT }}
+          STATS_TOKEN: ${{ secrets.STATS_TOKEN }}
+        run: node scripts/update-stats.mjs
+
+      - name: Lägg dem i repot
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain stats)" ]; then
+            echo "Inga nya siffror sedan förra körningen."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stats
+          git commit -m "Statistik t.o.m. $(TZ=Europe/Stockholm date +%F)"
+
+          # main kan ha rört sig medan jobbet hämtade — dataomgångarna pushar
+          # till samma gren. En rebase och ett försök till räcker; två
+          # misslyckade push i rad är något annat än en kapplöpning.
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "Push nummer $attempt misslyckades, hämtar om och försöker igen."
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            sleep $((attempt * 5))
+          done
+          exit 1

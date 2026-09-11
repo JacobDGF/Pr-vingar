@@ -64,4 +64,36 @@ describe('matchesQuery', () => {
       expect.arrayContaining(['SVEA1000X', 'SVEA3000X']),
     );
   });
+
+  /**
+   * The Gy25 half of the dataset, found under the name the user actually knows.
+   * "Matematik 3b" is what stood on their betyg; the prövning that examines it
+   * is published as Matematik – fortsättning Nivå 1b, and before the pairs were
+   * read every one of those rows was invisible to that search.
+   */
+  it('finds a course under the name the other läroplan gave it', () => {
+    const found = EXAMS.filter((e) => matchesQuery(e, 'Matematik 3b'));
+    const codes = new Set(found.map((e) => e.courseCode));
+    expect(codes).toContain('MATMAT03b');
+    expect(codes).toContain('MATO1B00X');
+
+    // And the same search from the other direction.
+    const gy25 = EXAMS.filter((e) => matchesQuery(e, 'MATO1B00X'));
+    expect(new Set(gy25.map((e) => e.courseCode))).toContain('MATMAT03b');
+  });
+
+  it('does not let the pairing widen a search to a course that is not the same', () => {
+    const e = exam({
+      schoolName: 'Komvux Örebro (Talenti)',
+      subject: 'Matematik',
+      course: 'Matematik – fortsättning Nivå 1b',
+      courseCode: 'MATO1B00X',
+      city: 'Örebro',
+      provider: 'Örebro kommun',
+      tags: [],
+    });
+    expect(matchesQuery(e, 'Matematik 3b')).toBe(true);
+    expect(matchesQuery(e, 'Matematik 3c')).toBe(false);
+    expect(matchesQuery(e, 'Matematik 2b')).toBe(false);
+  });
 });

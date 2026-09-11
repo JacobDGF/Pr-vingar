@@ -50,6 +50,13 @@ jobs:
       # anything else (a commit SHA, a timestamp) desyncs it from the value
       # already embedded in the JS, and every visitor sees a false "update
       # available" banner permanently, even on the current build.
+      #
+      # Statistikens adress står i .env.production, som Vite läser själv — inte
+      # som repository variables här. Det är inte bekvämlighet: en osatt
+      # variable blir en tom sträng i miljön, och en tom miljövariabel vinner
+      # över .env-filen i Vite. Ett bygge med "ingen mätning" skulle alltså
+      # tyst slå ut en fil som säger motsatsen. Verifierat genom att bygga åt
+      # båda hållen. Se README, "Statistik och samtycke".
       - run: npm run build
 
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'

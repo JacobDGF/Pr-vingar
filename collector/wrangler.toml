@@ -1,0 +1,23 @@
+# Räknaren, som den ser ut hos Cloudflare.
+#
+# Kopiera database_id från `npx wrangler d1 create provningar-stats`.
+# EXPORT_TOKEN är en hemlighet och sätts med `wrangler secret put`, aldrig här.
+
+name = "provningar-stats"
+main = "worker.js"
+compatibility_date = "2026-09-11"
+
+[[d1_databases]]
+binding = "STATS"
+database_name = "provningar-stats"
+database_id = "KLISTRA_IN_DITT_DATABASE_ID"
+
+[vars]
+# Vilka sajter som får räknas. En annan webbplats ska inte kunna peka hit och
+# få sina besökare inräknade i våra siffror.
+ALLOWED_ORIGINS = "https://xn--prvningar-17a.se,http://localhost:5173,http://localhost:4173"
+
+# Hur länge summorna ligger kvar hos räknaren. Historiken bor i repot, så det
+# här behöver bara vara längre än avståndet mellan två körningar av
+# .github/workflows/stats.yml — med marginal för en trasig vecka.
+RETENTION_DAYS = "90"
