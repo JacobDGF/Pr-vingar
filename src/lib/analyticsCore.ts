@@ -35,19 +35,30 @@ export type PropValue = string | number | boolean;
 export type EventProps = Record<string, PropValue>;
 
 export type TrackCall =
+  | { kind: 'visit' }
   | { kind: 'pageview'; path: string; title: string }
   | { kind: 'event'; name: EventName; props?: EventProps };
 
-export const ANALYTICS_PROVIDERS = ['plausible', 'umami'] as const;
+export const ANALYTICS_PROVIDERS = ['endpoint', 'plausible', 'umami'] as const;
 export type AnalyticsProvider = (typeof ANALYTICS_PROVIDERS)[number];
 
 export interface AnalyticsConfig {
   provider: AnalyticsProvider;
-  /** Skriptets URL hos leverantören, alltid https. */
+  /**
+   * Skriptets URL hos leverantören — eller, för `endpoint`, adressen till vår
+   * egen räknare (`collector/worker.js`). Alltid https.
+   */
   src: string;
-  /** Domännamnet (Plausible) eller webbplats-id:t (Umami). */
+  /**
+   * Domännamnet (Plausible), webbplats-id:t (Umami) eller sajtens namn i vår
+   * egen räknare, som kan delas av flera sajter. Bara de två första kräver
+   * den; `endpoint` klarar sig med ett standardnamn.
+   */
   site: string;
 }
+
+/** Sajtnamnet vår egen räknare bokför under när inget annat är satt. */
+export const DEFAULT_SITE = 'provningar';
 
 interface RawEnv {
   VITE_ANALYTICS_PROVIDER?: string;
@@ -71,8 +82,13 @@ interface RawEnv {
 export function readAnalyticsConfig(env: RawEnv): AnalyticsConfig | null {
   const provider = (env.VITE_ANALYTICS_PROVIDER ?? '').trim().toLowerCase();
   const src = (env.VITE_ANALYTICS_SRC ?? '').trim();
-  const site = (env.VITE_ANALYTICS_SITE ?? '').trim();
-  if (!isProvider(provider) || !src || !site) return null;
+  const named = (env.VITE_ANALYTICS_SITE ?? '').trim();
+  if (!isProvider(provider) || !src) return null;
+
+  // Plausible och Umami vet inte vilken sajt datan hör till utan sitt id. Vår
+  // egen räknare har bara en sajt att bokföra under tills någon säger annat.
+  const site = named || (provider === 'endpoint' ? DEFAULT_SITE : '');
+  if (!site) return null;
 
   let url: URL;
   try {
@@ -80,7 +96,11 @@ export function readAnalyticsConfig(env: RawEnv): AnalyticsConfig | null {
   } catch {
     return null;
   }
-  if (url.protocol !== 'https:') return null;
+  // `http` accepteras bara mot den egna maskinen, där webbläsaren ändå räknar
+  // sidan som säker. Det är inte en lucka utan hela sättet att testa räknaren
+  // innan den finns på riktigt: `wrangler dev` svarar på http://localhost:8787.
+  const local = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+  if (url.protocol !== 'https:' && !(url.protocol === 'http:' && local)) return null;
 
   return { provider, src: url.toString(), site };
 }
@@ -99,15 +119,38 @@ function isProvider(value: string): value is AnalyticsProvider {
  * sidvisning, och leverantörens automatik måste vara ur vägen för att de inte
  * ska dubbelräknas.
  */
-export function scriptAttributes(config: AnalyticsConfig): Record<string, string> {
+export function scriptAttributes(config: AnalyticsConfig): Record<string, string> | null {
+  if (config.provider === 'endpoint') return null;
   return config.provider === 'plausible'
     ? { src: config.src, defer: '', 'data-domain': config.site }
     : { src: config.src, defer: '', 'data-website-id': config.site, 'data-auto-track': 'false' };
 }
 
-/** Namnet på det globala objekt leverantörens skript lägger på `window`. */
-export function providerGlobal(provider: AnalyticsProvider): 'plausible' | 'umami' {
-  return provider;
+/**
+ * Namnet på det globala objekt leverantörens skript lägger på `window`, eller
+ * `null` för vår egen räknare, som inte laddar något skript alls: appen postar
+ * själv, med `fetch`.
+ */
+export function providerGlobal(provider: AnalyticsProvider): 'plausible' | 'umami' | null {
+  return provider === 'endpoint' ? null : provider;
+}
+
+/**
+ * Händelsen som räknaren i `collector/worker.js` vill ha den.
+ *
+ * Med flit tunn och tråkig: `v` så formatet kan ändras utan att gamla bygg
+ * börjar räknas fel, och sedan bara sorten, namnet och de sanerade
+ * egenskaperna. Ingen tidsstämpel (räknaren sätter dygnet själv, i svensk tid),
+ * inget id, ingenting om webbläsaren.
+ */
+export function endpointPayload(config: AnalyticsConfig, call: TrackCall): string {
+  const body =
+    call.kind === 'visit'
+      ? { v: 1, site: config.site, k: 'visit' }
+      : call.kind === 'pageview'
+        ? { v: 1, site: config.site, k: 'pageview', n: call.path }
+        : { v: 1, site: config.site, k: 'event', n: call.name, p: call.props };
+  return JSON.stringify(body);
 }
 
 /**
@@ -119,6 +162,10 @@ export function providerGlobal(provider: AnalyticsProvider): 'plausible' | 'umam
  * händelsen. Skillnaden bor här, en gång, i stället för i varje anropsställe.
  */
 export function providerArgs(config: AnalyticsConfig, call: TrackCall, origin: string): unknown[] {
+  // Besöket är vår egen räknares begrepp. Plausible och Umami räknar besök
+  // själva, ur sina sidvisningar, så det skickas aldrig dit.
+  if (call.kind === 'visit') return [];
+
   if (config.provider === 'plausible') {
     return call.kind === 'pageview'
       ? ['pageview', { u: origin + call.path }]

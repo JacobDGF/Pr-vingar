@@ -44,6 +44,7 @@ function fakeProviderScript() {
 
 beforeEach(() => {
   window.localStorage.clear();
+  window.sessionStorage.clear();
   script()?.remove();
   delete (window as unknown as Record<string, unknown>).plausible;
 });
@@ -208,6 +209,112 @@ describe('analytics', () => {
 
     expect(script()).toBeNull();
     expect(calls).toEqual([]);
+  });
+
+  /* ------------------------------------------------- appens egen räknare */
+
+  describe('den egna räknaren', () => {
+    const ENDPOINT = {
+      VITE_ANALYTICS_PROVIDER: 'endpoint',
+      VITE_ANALYTICS_SRC: 'https://provningar-stats.exempel.workers.dev/e',
+      VITE_ANALYTICS_SITE: '',
+    };
+
+    /** Alla POST:ar räknaren fått, som tolkade objekt. */
+    function captureFetch() {
+      const sent: { url: string; body: unknown; init: RequestInit }[] = [];
+      vi.stubGlobal(
+        'fetch',
+        vi.fn((url: string, init: RequestInit) => {
+          sent.push({ url, body: JSON.parse(String(init.body)), init });
+          return Promise.resolve(new Response(null, { status: 204 }));
+        }),
+      );
+      return sent;
+    }
+
+    it('postar ingenting före ett ja, och laddar aldrig något skript', async () => {
+      const { analytics } = await boot(ENDPOINT);
+      const sent = captureFetch();
+
+      analytics.track.visit();
+      analytics.track.tabView('discover', 'Upptäck');
+      analytics.track.examOpened(EXAM);
+
+      expect(sent).toEqual([]);
+      expect(script()).toBeNull();
+    });
+
+    it('postar besök, sidvisning och händelse efter ett ja', async () => {
+      const { analytics, consent } = await boot(ENDPOINT);
+      const sent = captureFetch();
+
+      // Besöket räknas innan svaret finns — och ska då skickas när ja:t kommer.
+      analytics.track.visit();
+      consent.setConsent(true);
+
+      analytics.track.tabView('ai', 'AI-prövning');
+      analytics.track.registrationClicked(EXAM, true);
+
+      // Besöket köades före valet och skickas när svaret kommer.
+      expect(sent.map((s) => s.body)).toEqual([
+        { v: 1, site: 'provningar', k: 'visit' },
+        { v: 1, site: 'provningar', k: 'pageview', n: '/ai' },
+        {
+          v: 1,
+          site: 'provningar',
+          k: 'event',
+          n: 'Till anmälan',
+          p: { kommun: EXAM.city, kurskod: EXAM.courseCode, öppen: true },
+        },
+      ]);
+      expect(sent[0].url).toBe(ENDPOINT.VITE_ANALYTICS_SRC);
+      // Ingen preflight (text/plain) och anropet överlever att sidan lämnas.
+      expect(sent[0].init.headers).toMatchObject({ 'Content-Type': 'text/plain;charset=UTF-8' });
+      expect(sent[0].init).toMatchObject({ keepalive: true, credentials: 'omit' });
+      expect(script()).toBeNull();
+    });
+
+    it('räknar besöket en gång per session, inte en gång per flikbyte', async () => {
+      const { analytics, consent } = await boot(ENDPOINT);
+      consent.setConsent(true);
+      const sent = captureFetch();
+
+      analytics.track.visit();
+      analytics.track.visit();
+      analytics.track.tabView('exams', 'Mina prövningar');
+
+      expect(sent.filter((s) => (s.body as { k: string }).k === 'visit')).toHaveLength(1);
+    });
+
+    it('tystnar när samtycket dras tillbaka', async () => {
+      const { analytics, consent } = await boot(ENDPOINT);
+      consent.setConsent(true);
+      const sent = captureFetch();
+      consent.setConsent(false);
+
+      analytics.track.tabView('profile', 'Profil');
+      analytics.track.examSaved(EXAM);
+
+      expect(sent).toEqual([]);
+    });
+
+    it('låter appen gå vidare även när räknaren är nere', async () => {
+      const { analytics, consent } = await boot(ENDPOINT);
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(() => Promise.reject(new Error('offline'))),
+      );
+      consent.setConsent(true);
+      expect(() => analytics.track.tabView('discover', 'Upptäck')).not.toThrow();
+    });
+
+    it('säger att statistiken är appens egen, för panelen', async () => {
+      const { analytics } = await boot(ENDPOINT);
+      expect(analytics.isSelfHostedAnalytics()).toBe(true);
+      expect(analytics.analyticsProviderName()).toBe('Prövningars egen räknare');
+      expect(analytics.analyticsHost()).toBe('provningar-stats.exempel.workers.dev');
+    });
   });
 
   it('säger vem mätningen görs av, för panelen som ska berätta det', async () => {

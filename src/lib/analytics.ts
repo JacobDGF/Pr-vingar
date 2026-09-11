@@ -1,15 +1,23 @@
 /**
- * Limmet mellan samtycket och leverantörens skript.
+ * Limmet mellan samtycket och räknaren.
  *
  * Ingenting här är ett beslut — vad som får mätas och hur anropet ser ut bor i
- * [`analyticsCore.ts`](analyticsCore.ts). Den här filen gör tre saker: laddar
- * skriptet när (och bara när) någon sagt ja, plockar bort det igen när någon
- * ångrar sig, och håller en kort kö för de sekunder skriptet är på väg ned.
+ * [`analyticsCore.ts`](analyticsCore.ts). Den här filen gör tre saker: ser till
+ * att mätningen finns när (och bara när) någon sagt ja, plockar bort den igen
+ * när någon ångrar sig, och håller en kort kö för de sekunder ett externt
+ * skript är på väg ned.
  *
- * Ordningen är hela poängen. Skripttaggen skapas först i `ensureScript`, som
- * bara nås av ett `granted` samtycke: säger användaren nej har leverantörens
- * kod aldrig funnits på sidan, och då finns inget anrop att lita på att den
- * låter bli att göra.
+ * Ordningen är hela poängen. Skripttaggen skapas först i `ensureScript`, och
+ * `post` skickar först efter samma kontroll: säger användaren nej har
+ * leverantörens kod aldrig funnits på sidan och inget anrop har gjorts.
+ *
+ * Två sorters mätning ryms i samma flöde:
+ *
+ * - **`endpoint`** — appens egen räknare i [`collector/`](../../collector),
+ *   som appen postar till själv. Inget skript laddas, ingen tredje part ser
+ *   besökaren, och summorna hamnar som en fil i projektets GitHub-repo.
+ * - **`plausible` / `umami`** — en vanlig leverantör med egen instrumentpanel,
+ *   för den som hellre vill ha det.
  */
 
 import { Exam, TabId } from '../types';
@@ -19,6 +27,7 @@ import {
   EventName,
   EventProps,
   TrackCall,
+  endpointPayload,
   providerArgs,
   providerGlobal,
   readAnalyticsConfig,
@@ -29,25 +38,31 @@ import {
 const CONFIG: AnalyticsConfig | null = readAnalyticsConfig(import.meta.env);
 const SCRIPT_ID = 'provningar-analytics';
 
-/** Så många anrop sparas medan skriptet laddar. Fler än så är inte ett besök. */
+/** Nyckeln som gör ett besök till ett besök: en flikssession, inget mer. */
+const VISIT_KEY = 'provningar-visit';
+
+/** Så många anrop sparas medan ett externt skript laddar. Fler än så är inte ett besök. */
 const QUEUE_LIMIT = 20;
 
 let started = false;
 let queue: TrackCall[] = [];
 /** Senaste fliken, så det första ja:t räknas som en sidvisning i stället för tystnad. */
 let currentView: TrackCall | null = null;
+/** Ett besök som väntar på ett svar i rutan. */
+let pendingVisit = false;
 
 export function isAnalyticsConfigured(): boolean {
   return CONFIG !== null;
 }
 
-/** Leverantörens namn, för samtyckespanelen — den ska kunna säga vem datan går till. */
+/** Vem mätningen görs av, för samtyckespanelen — den ska kunna berätta det. */
 export function analyticsProviderName(): string | null {
   if (!CONFIG) return null;
+  if (CONFIG.provider === 'endpoint') return 'Prövningars egen räknare';
   return CONFIG.provider === 'plausible' ? 'Plausible Analytics' : 'Umami';
 }
 
-/** Värden hos leverantören, som panelen visar under "vart datan går". */
+/** Värden mätningen går till, som panelen visar. */
 export function analyticsHost(): string | null {
   if (!CONFIG) return null;
   try {
@@ -55,6 +70,11 @@ export function analyticsHost(): string | null {
   } catch {
     return null;
   }
+}
+
+/** True när statistiken samlas in av appen själv och hamnar i projektets repo. */
+export function isSelfHostedAnalytics(): boolean {
+  return CONFIG?.provider === 'endpoint';
 }
 
 /**
@@ -77,6 +97,12 @@ function applyConsent(): void {
     ensureScript();
     const pending = queue;
     queue = [];
+
+    if (pendingVisit) {
+      pendingVisit = false;
+      send({ kind: 'visit' });
+      markVisitCounted();
+    }
     // Den flik användaren står på räknas när ja:t kommer — annars hade ett
     // samtycke mitt i besöket gett händelser utan en enda sidvisning. Men bara
     // om kön inte redan bär den: `applyConsent` körs två gånger (en gång på
@@ -90,13 +116,18 @@ function applyConsent(): void {
   }
 }
 
+/* --------------------------------------------------------------- transport */
+
 function ensureScript(): void {
   if (!CONFIG || typeof document === 'undefined') return;
+  const attributes = scriptAttributes(CONFIG);
+  // Vår egen räknare har inget skript att ladda: appen postar själv.
+  if (!attributes) return;
   if (document.getElementById(SCRIPT_ID)) return;
 
   const script = document.createElement('script');
   script.id = SCRIPT_ID;
-  for (const [name, value] of Object.entries(scriptAttributes(CONFIG))) {
+  for (const [name, value] of Object.entries(attributes)) {
     if (name === 'src') script.src = value;
     else if (name === 'defer') script.defer = true;
     else script.setAttribute(name, value);
@@ -133,9 +164,19 @@ function removeScript(): void {
 
 function send(call: TrackCall): void {
   if (!CONFIG || !hasAnalyticsConsent() || typeof window === 'undefined') return;
+  if (CONFIG.provider === 'endpoint') {
+    post(CONFIG, call);
+    return;
+  }
 
   const globals = window as unknown as Record<string, unknown>;
-  const fn = globals[providerGlobal(CONFIG.provider)];
+  const name = providerGlobal(CONFIG.provider);
+  const args = providerArgs(CONFIG, call, window.location.origin);
+  // Tomt betyder att leverantören inte har något begrepp för anropet — besöket
+  // är vår egen räknares, och Plausible och Umami räknar det själva.
+  if (!name || !args.length) return;
+
+  const fn = globals[name];
   if (typeof fn !== 'function') {
     // Skriptet är på väg ned. Kön är kort med flit: det som inte hunnit fram
     // när någon lämnar sidan är inte värt att hålla kvar.
@@ -143,11 +184,61 @@ function send(call: TrackCall): void {
     return;
   }
   try {
-    (fn as (...args: unknown[]) => void)(...providerArgs(CONFIG, call, window.location.origin));
+    (fn as (...args: unknown[]) => void)(...args);
   } catch {
     // En blockerad eller havererad mätning får aldrig märkas i appen.
   }
 }
+
+/**
+ * Posten till vår egen räknare.
+ *
+ * `text/plain` är inte slarv: det är den enda innehållstypen som slipper en
+ * preflight, så varje händelse blir ett anrop i stället för två — och räknaren
+ * läser ändå JSON ur kroppen. `keepalive` gör att det sista anropet hinner iväg
+ * när någon klickar sig vidare till anordnarens anmälan, vilket är just den
+ * händelse som betyder mest.
+ */
+function post(config: AnalyticsConfig, call: TrackCall): void {
+  try {
+    void fetch(config.src, {
+      method: 'POST',
+      body: endpointPayload(config, call),
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      keepalive: true,
+      mode: 'cors',
+      credentials: 'omit',
+      // Referrer-Policy no-referrer: räknaren behöver inte veta vilken sida
+      // anropet kom från, och det vi inte skickar kan ingen spara.
+      referrerPolicy: 'no-referrer',
+    }).catch(() => {
+      // Räknaren nere, blockerad eller offline. Appen märker ingenting.
+    });
+  } catch {
+    // Samma sak, för webbläsare som kastar i stället för att avvisa.
+  }
+}
+
+/* ------------------------------------------------------------------ besök */
+
+function visitCounted(): boolean {
+  try {
+    return window.sessionStorage.getItem(VISIT_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function markVisitCounted(): void {
+  try {
+    window.sessionStorage.setItem(VISIT_KEY, '1');
+  } catch {
+    // Utan lager räknas besöket om vid nästa sidladdning. Ett besök för mycket
+    // är ett bättre fel än ett spår som överlever sessionen.
+  }
+}
+
+/* ------------------------------------------------------------------ track */
 
 function event(name: EventName, props?: Record<string, unknown>): void {
   const clean: EventProps | undefined = sanitizeProps(props);
@@ -155,13 +246,33 @@ function event(name: EventName, props?: Record<string, unknown>): void {
 }
 
 /**
- * Det appen mäter, som sex funktioner.
+ * Det appen mäter, som sju funktioner.
  *
  * Ingen av dem tar emot fritext. Den som vill veta vad som skickas läser den
  * här listan — samma rader står i samtyckespanelen, på svenska.
  */
 export const track = {
-  /** Flikbyte som sidvisning: `/upptack`, `/ai` … Appen har inga andra sidor. */
+  /**
+   * Ett besök, en gång per webbläsarsession.
+   *
+   * Det närmaste appen kommer "hur många som varit här", och det räknas med en
+   * flagga i `sessionStorage` som aldrig lämnar enheten och försvinner när
+   * fliken stängs. Ingen hashad IP, ingen besökarnyckel, inget som binder ihop
+   * två besök — priset är att den som kommer tillbaka i morgon räknas som en ny
+   * person, och det priset är värt att betala.
+   */
+  visit(): void {
+    if (visitCounted()) return;
+    if (!CONFIG || !hasAnalyticsConsent()) {
+      // Frågan är inte besvarad än. Besöket räknas om och när svaret blir ja.
+      pendingVisit = true;
+      return;
+    }
+    send({ kind: 'visit' });
+    markVisitCounted();
+  },
+
+  /** Flikbyte som sidvisning: `/discover`, `/ai` … Appen har inga andra sidor. */
   tabView(tab: TabId, title: string): void {
     const call: TrackCall = { kind: 'pageview', path: `/${tab}`, title };
     currentView = call;

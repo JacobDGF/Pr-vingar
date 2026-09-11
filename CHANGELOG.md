@@ -4,6 +4,36 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-11 (senare)
+
+**Produkt: statistiken bor i repot.** Appen räknar nu sina besök själv, och
+siffrorna hamnar som en fil i det här repot i stället för hos en leverantör:
+[`stats/README.md`](stats/README.md) är hela rapporten, renderad av GitHub, med
+git-historik per natt.
+
+- **Kedjan är tre steg**: webbläsaren postar till en 200 rader lång Cloudflare
+  Worker ([`collector/`](collector/README.md)), som räknar upp en summa per
+  dygn i en D1-databas, och ett nattligt Actions-jobb hämtar summorna och
+  committar dem till `stats/`. Mellanledet finns för att GitHub Pages varken
+  kör kod eller lämnar ut loggar — och för att en GitHub-token som kan skriva
+  till repot aldrig får ligga i en statisk app, allra minst i en som publicerar
+  sitt bygge till `gh-pages` i samma repo.
+- **Räknaren litar inte på appen.** Den tar bara emot appens sju händelser och
+  flikarnas egna sidvägar, kapar all fritext till 48 tecken och högst sex fält,
+  och avvisar en annan sajts `Origin`. Den lagrar ingen IP-adress, ingen user
+  agent, ingen referrer och inget besökar-id: en rad är en summa för ett dygn,
+  aldrig en händelse för en person.
+- **Besök räknas en gång per webbläsarsession**, med en flagga i
+  `sessionStorage` som aldrig lämnar enheten. Den som kommer tillbaka i morgon
+  räknas som ny — priset för att slippa allt som binder ihop två besök.
+- **Verifierat i Chromium mot ett riktigt bygge och en riktig worker**: noll
+  anrop före ja:t, därefter besök, sidvisning och "Prövning öppnad" med kommun,
+  ämne och kurskod — som POST utan preflight — och noll igen efter ett nej.
+  Genomkörningen hittade också en bugg ingen enhetstest såg: räknaren krävde
+  tre bokstäver i sidvägen och slängde därför varenda sidvisning från `/ai`.
+- Dygnet räknas i svensk tid, inte UTC. Skillnaden är kvällen, och kvällen är
+  när folk letar prövningar.
+
 ## 2026-09-11
 
 **Produkt: statistik, med samtycke först.** Appen kan nu mäta hur den används —

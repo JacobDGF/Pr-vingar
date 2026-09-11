@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
+  DEFAULT_SITE,
   EVENT_NAMES,
+  endpointPayload,
   providerArgs,
   providerGlobal,
   readAnalyticsConfig,
@@ -12,6 +14,12 @@ const PLAUSIBLE = {
   VITE_ANALYTICS_PROVIDER: 'plausible',
   VITE_ANALYTICS_SRC: 'https://plausible.io/js/script.manual.js',
   VITE_ANALYTICS_SITE: 'xn--prvningar-z2a.se',
+};
+
+const ENDPOINT = {
+  VITE_ANALYTICS_PROVIDER: 'endpoint',
+  VITE_ANALYTICS_SRC: 'https://provningar-stats.exempel.workers.dev/e',
+  VITE_ANALYTICS_SITE: 'provningar',
 };
 
 const UMAMI = {
@@ -47,6 +55,70 @@ describe('readAnalyticsConfig', () => {
       readAnalyticsConfig({ ...PLAUSIBLE, VITE_ANALYTICS_SRC: 'http://plausible.io/js/x.js' }),
     ).toBeNull();
     expect(readAnalyticsConfig({ ...PLAUSIBLE, VITE_ANALYTICS_SRC: 'inte en url' })).toBeNull();
+  });
+
+  /** Undantaget som gör räknaren testbar innan den finns på riktigt. */
+  it('släpper igenom http mot den egna maskinen', () => {
+    expect(
+      readAnalyticsConfig({ ...ENDPOINT, VITE_ANALYTICS_SRC: 'http://localhost:8787/e' })?.src,
+    ).toBe('http://localhost:8787/e');
+    expect(
+      readAnalyticsConfig({ ...ENDPOINT, VITE_ANALYTICS_SRC: 'http://127.0.0.1:8787/e' })?.src,
+    ).toBe('http://127.0.0.1:8787/e');
+    expect(
+      readAnalyticsConfig({ ...ENDPOINT, VITE_ANALYTICS_SRC: 'http://räknaren.example/e' }),
+    ).toBeNull();
+  });
+
+  describe('den egna räknaren', () => {
+    it('klarar sig utan sajtnamn, till skillnad från de andra', () => {
+      expect(readAnalyticsConfig({ ...ENDPOINT, VITE_ANALYTICS_SITE: '' })).toEqual({
+        provider: 'endpoint',
+        src: ENDPOINT.VITE_ANALYTICS_SRC,
+        site: DEFAULT_SITE,
+      });
+      expect(readAnalyticsConfig({ ...PLAUSIBLE, VITE_ANALYTICS_SITE: '' })).toBeNull();
+    });
+
+    it('laddar inget skript och har ingen global att ropa på', () => {
+      expect(scriptAttributes(readAnalyticsConfig(ENDPOINT)!)).toBeNull();
+      expect(providerGlobal('endpoint')).toBeNull();
+    });
+
+    it('skickar besök, sidvisning och händelse som räknaren vill ha dem', () => {
+      const config = readAnalyticsConfig(ENDPOINT)!;
+      expect(JSON.parse(endpointPayload(config, { kind: 'visit' }))).toEqual({
+        v: 1,
+        site: 'provningar',
+        k: 'visit',
+      });
+      expect(
+        JSON.parse(endpointPayload(config, { kind: 'pageview', path: '/ai', title: 'AI' })),
+      ).toEqual({ v: 1, site: 'provningar', k: 'pageview', n: '/ai' });
+      expect(
+        JSON.parse(
+          endpointPayload(config, {
+            kind: 'event',
+            name: 'Till anmälan',
+            props: { kommun: 'Örebro' },
+          }),
+        ),
+      ).toEqual({
+        v: 1,
+        site: 'provningar',
+        k: 'event',
+        n: 'Till anmälan',
+        p: { kommun: 'Örebro' },
+      });
+    });
+
+    /** Besöket är vårt begrepp; de andra räknar besök själva ur sidvisningarna. */
+    it('skickar aldrig besöket till Plausible eller Umami', () => {
+      expect(providerArgs(readAnalyticsConfig(PLAUSIBLE)!, { kind: 'visit' }, 'https://x')).toEqual(
+        [],
+      );
+      expect(providerArgs(readAnalyticsConfig(UMAMI)!, { kind: 'visit' }, 'https://x')).toEqual([]);
+    });
   });
 
   it('bryr sig inte om versaler eller blanksteg', () => {

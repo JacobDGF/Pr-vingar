@@ -447,10 +447,16 @@ framen, och då spelar det ingen roll vad rutan sedan säger. Tre saker till:
 
 ### Vad som mäts, och vad som aldrig mäts
 
-Sex händelser, alla i [`src/lib/analytics.ts`](src/lib/analytics.ts) som var sin
-funktion: flikbyte (som sidvisning), prövning öppnad, till anmälan, prövning
-sparad, bevakning skapad, kalenderfil hämtad och AI-fråga ställd. De bär kommun,
-ämne, kurskod och antal — värden som redan står i appens egen data.
+Sju händelser, alla i [`src/lib/analytics.ts`](src/lib/analytics.ts) som var sin
+funktion: besök, flikbyte (som sidvisning), prövning öppnad, till anmälan,
+prövning sparad, bevakning skapad, kalenderfil hämtad och AI-fråga ställd. De
+bär kommun, ämne, kurskod och antal — värden som redan står i appens egen data.
+
+Besöket är det närmaste appen kommer "hur många som varit här", och det räknas
+med en flagga i `sessionStorage` som aldrig lämnar enheten och försvinner när
+fliken stängs. Ingen hashad IP, ingen besökarnyckel, inget som binder ihop två
+besök — priset är att den som kommer tillbaka i morgon räknas som en ny person,
+och det priset är värt att betala.
 
 Ingen av funktionerna tar emot fritext. Det som skrivs i sökrutan eller till
 AI-prövning är användarens egen mening och lämnar aldrig enheten; av en fråga
@@ -464,24 +470,56 @@ Appen har en URL och sex flikar, så flikbytet _är_ sidvisningen: `/discover`,
 därför av i skripttaggen — annars räknas första besöket två gånger, och resten
 av besöket inte alls.
 
+### Var siffrorna hamnar
+
+Statistiken bor i det här repot, i [`stats/`](stats/). Det finns ingen
+instrumentpanel någon annanstans och ingen tredje part som ser besökarna:
+[`stats/README.md`](stats/README.md) är hela rapporten, renderad av GitHub, och
+[`stats/usage.json`](stats/usage.json) är samma siffror per dygn — med git-historik,
+så en förändring går att spåra till den natt den kom.
+
+Vägen dit har tre steg, och mellanledet finns av ett skäl som är värt att förstå:
+
+```
+webbläsaren ──POST /e──▶ collector/worker.js (Cloudflare)
+                              │  summor per dygn i en D1-databas
+                              ▼
+           .github/workflows/stats.yml ──GET /export──▶ stats/ i det här repot
+```
+
+GitHub Pages är en filserver som varken kör kod eller lämnar ut loggar, och för
+att skriva till GitHub krävs en token. En token i en statisk app är publik —
+bygget publiceras dessutom till `gh-pages` i samma repo, så den skulle ligga i
+klartext i repot och kunna skriva till det. Workern är därför det minsta
+möjliga som kan hålla hemligheten: 200 rader utan beroenden, på en gratisnivå,
+och det enda den kan är att räkna upp en siffra. Uppsättningen står i
+[`collector/README.md`](collector/README.md).
+
+Jobbet pushar med `GITHUB_TOKEN`, som med flit inte startar andra workflows:
+statistiken behöver inte byggas och deployas om, eftersom appen inte läser den
+— den läses på GitHub.
+
 ### Slå på det
 
-Mätningen är avstängd tills bygget får tre miljövariabler. Båda leverantörerna
+Mätningen är avstängd tills bygget får sina miljövariabler. Båda leverantörerna
 är kakfria och EU-vänliga, och identifierar sajten med ett publikt domännamn
 respektive id — inget av dem är en hemlighet, vilket är tur, för ett statiskt
 bygge kan inte hålla en.
 
 ```sh
-# Plausible (script.manual.js — appen skickar sina sidvisningar själv)
+# Appens egen räknare — statistiken hamnar i repot
+VITE_ANALYTICS_PROVIDER=endpoint
+VITE_ANALYTICS_SRC=https://provningar-stats.<konto>.workers.dev/e
+
+# eller en vanlig leverantör med egen instrumentpanel
 VITE_ANALYTICS_PROVIDER=plausible
 VITE_ANALYTICS_SRC=https://plausible.io/js/script.manual.js
 VITE_ANALYTICS_SITE=prövningar.se
-
-# eller Umami
-VITE_ANALYTICS_PROVIDER=umami
-VITE_ANALYTICS_SRC=https://cloud.umami.is/script.js
-VITE_ANALYTICS_SITE=<webbplats-id>
 ```
+
+`endpoint` klarar sig utan `VITE_ANALYTICS_SITE` — det fältet finns för den dag
+flera sajter delar samma räknare. Plausible och Umami kräver det, eftersom de
+inte vet vilken sajt datan hör till utan sitt id.
 
 I den publicerade appen sätts de som _repository variables_ (Settings → Secrets
 and variables → Actions → Variables), som
@@ -491,9 +529,12 @@ stället för att lova något som inte händer. En `http`-URL eller en halv
 konfiguration avvisas: hellre ingen statistik än en nedgradering gjord åt
 användaren.
 
-Siffrorna — besök, sidvisningar, vilka flikar och vilka händelser — läses sedan
-i leverantörens egen instrumentpanel. Appen har ingen server och sparar ingen
-statistik själv.
+Med `endpoint` behöver jobbet dessutom två _secrets_: `STATS_ENDPOINT` (samma
+adress utan `/e`) och `STATS_TOKEN` (samma sträng som workerns `EXPORT_TOKEN`).
+Saknas de hoppar [`scripts/update-stats.mjs`](scripts/update-stats.mjs) över
+körningen och avslutar med 0 — ett nattligt jobb som lyser rött för att en
+valfri funktion inte används är ett larm ingen läser, och ett larm ingen läser
+döljer de riktiga.
 
 ## När appen går sönder
 

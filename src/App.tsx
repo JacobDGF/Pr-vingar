@@ -92,6 +92,13 @@ export default function App() {
     document.body.style.overflow = 'hidden';
   }, []);
 
+  // Ett besök, en gång per webbläsarsession — det närmaste appen kommer "hur
+  // många som varit här" utan att lägga något efter sig hos användaren. Tyst
+  // tills samtycket finns, och räknas då om.
+  useEffect(() => {
+    track.visit();
+  }, []);
+
   // Appen har en enda URL och sex flikar, så flikbytet *är* sidvisningen. Utan
   // det här skulle mätningen se ett besök och sedan ingenting alls om vad
   // besöket gick ut på. Anropet är tyst tills samtycket finns.

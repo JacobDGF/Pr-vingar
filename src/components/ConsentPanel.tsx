@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { BarChart3, Check, ChevronDown, ShieldCheck, X } from 'lucide-react';
+import { BarChart3, Check, ChevronDown, ExternalLink, ShieldCheck, X } from 'lucide-react';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { useConsent } from '../hooks/useConsent';
 import { clearConsent, setConsent } from '../lib/consent';
-import { analyticsHost, analyticsProviderName, isAnalyticsConfigured } from '../lib/analytics';
+import {
+  analyticsHost,
+  analyticsProviderName,
+  isAnalyticsConfigured,
+  isSelfHostedAnalytics,
+} from '../lib/analytics';
 
 /**
  * Frågan, och svaret på den.
@@ -20,11 +25,12 @@ import { analyticsHost, analyticsProviderName, isAnalyticsConfigured } from '../
  *   varandra och har samma avstånd till tummen. En ruta där "godkänn" är en
  *   knapp och "neka" är en länk i sidfoten har inte frågat, den har tjatat.
  * - **Listan är inte en sammanfattning.** Raderna under "Vad mäts?" är samma
- *   sex händelser som finns i `analytics.ts`, för ett löfte man inte kan
+ *   händelser som finns i `analytics.ts`, för ett löfte man inte kan
  *   kontrollera är inget löfte.
  */
 
 const MEASURED = [
+  'Att ett besök börjat — en gång per webbläsarsession, utan något som följer med till nästa',
   'Vilken flik du öppnar, som en sidvisning',
   'Att en prövning öppnats — kommun, ämne och kurskod',
   'Att någon gått vidare till anordnarens anmälan',
@@ -71,6 +77,7 @@ export function ConsentPanel({ mode, onClose }: ConsentPanelProps) {
 
   const provider = analyticsProviderName();
   const host = analyticsHost();
+  const selfHosted = isSelfHostedAnalytics();
   const signalled = consent.source === 'signal';
 
   return (
@@ -113,8 +120,8 @@ export function ConsentPanel({ mode, onClose }: ConsentPanelProps) {
           <p className="text-ink-soft text-sm leading-relaxed">
             Prövningar har ingen inloggning och tjänar inga pengar på dig. Men för att veta vilka
             kommuner som behöver läggas till härnäst behöver vi se hur många som hittar hit och
-            vilka delar av appen som används. Statistiken är anonym och går inte att koppla till
-            dig.
+            vilka delar av appen som används. Statistiken är anonym, går inte att koppla till dig,
+            och siffrorna är öppna — de ligger i projektets eget GitHub-repo.
           </p>
 
           <p className="text-ink-soft text-sm leading-relaxed">
@@ -159,10 +166,22 @@ export function ConsentPanel({ mode, onClose }: ConsentPanelProps) {
                   </ul>
                 </div>
                 <p className="text-ink-faint text-[12px] leading-relaxed">
-                  {provider && host
-                    ? `Mätningen görs av ${provider} (${host}), utan kakor och utan att din IP-adress sparas. Du kan ändra ditt val när som helst under Profil.`
-                    : 'Det här bygget har ingen statistikleverantör konfigurerad, så ingenting skickas i dag oavsett vad du väljer. Svaret gäller från den dag en finns på plats.'}
+                  {!provider || !host
+                    ? 'Det här bygget har ingen räknare konfigurerad, så ingenting skickas i dag oavsett vad du väljer. Svaret gäller från den dag en finns på plats.'
+                    : selfHosted
+                      ? `Siffrorna räknas av appens egen räknare (${host}) och summeras en gång per dygn till en fil i projektets öppna GitHub-repo. Ingen instrumentpanel, ingen tredje part, inga kakor — och ingen IP-adress sparas. Du kan ändra ditt val när som helst under Profil.`
+                      : `Mätningen görs av ${provider} (${host}), utan kakor och utan att din IP-adress sparas. Du kan ändra ditt val när som helst under Profil.`}
                 </p>
+                {selfHosted && (
+                  <a
+                    href="https://github.com/JacobDGF/Provningar/blob/main/stats/README.md"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[12px] font-semibold text-brand-600 underline"
+                  >
+                    Se siffrorna <ExternalLink size={11} />
+                  </a>
+                )}
                 {/* Kartrutorna är en funktion, inte mätning — men de är ett
                     anrop till någon annan, och en ruta som räknar upp vad appen
                     gör ska inte hoppa över det. */}

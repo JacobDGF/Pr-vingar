@@ -52,10 +52,12 @@ jobs:
       # available" banner permanently, even on the current build.
       #
       # Statistikvariablerna är repository variables (Settings → Secrets and
-      # variables → Actions → Variables), inte secrets: ett domännamn och ett
+      # variables → Actions → Variables), inte secrets: räknarens adress och ett
       # publikt webbplats-id är inga hemligheter, och de hamnar ändå i bundlen.
-      # Är de osatta byggs appen utan mätning — samtyckesrutan säger då att
-      # ingenting samlas in. Se README, "Statistik och samtycke".
+      # Hemligheten — token som hämtar summorna — bor i workern och i
+      # stats.yml, aldrig här. Är variablerna osatta byggs appen utan mätning,
+      # och samtyckesrutan säger då att ingenting samlas in. Se README,
+      # "Statistik och samtycke".
       - run: npm run build
         env:
           VITE_ANALYTICS_PROVIDER: ${{ vars.VITE_ANALYTICS_PROVIDER }}
