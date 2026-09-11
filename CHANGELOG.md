@@ -4,6 +4,30 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-11
+
+**Produkt: statistik, med samtycke först.** Appen kan nu mäta hur den används —
+hur många som hittar hit, vilka flikar som öppnas och hur många som går vidare
+till en anmälan — men bara efter att användaren tryckt på en knapp.
+
+- **Rutan kommer före mätningen, inte tvärtom.** Ett förstabesök möts av en
+  panel som inte går att klicka bort, med två lika stora knappar: "Bara
+  nödvändigt" och "Godkänn statistik". Leverantörens skript skapas först av ett
+  ja — säger man nej har koden aldrig funnits på sidan. Verifierat i Chromium
+  mot ett riktigt bygge: noll anrop före valet, ett skript och en sidvisning
+  efter ja, och noll igen så fort samtycket dras tillbaka (skriptet plockas
+  bort, den globala funktionen städas, Umamis sessionsnyckel raderas).
+- **Vad som mäts står utskrivet i rutan**, samma sex händelser som finns i
+  koden. Ingen av dem tar emot fritext: det som skrivs i sökrutan eller till
+  AI-prövning lämnar aldrig enheten, och av en AI-fråga skickas bara utfallet.
+- **Webbläsarens signal vinner.** Global Privacy Control eller Do Not Track
+  betyder nej, och då ställs frågan inte alls.
+- **Valet ändras i Profil**, som också visar vad man svarade och när, och kan
+  glömma svaret så frågan kommer tillbaka.
+- Mätningen är avstängd tills bygget får `VITE_ANALYTICS_PROVIDER`, `_SRC` och
+  `_SITE` (Plausible eller Umami, båda kakfria); utan dem säger rutan rakt ut
+  att ingenting samlas in. Se [README](README.md#statistik-och-samtycke).
+
 ## 2026-09-10
 
 **Data: +82 prövningar.** Hela Komvux Örebros prövningstabell för hösten 2026,

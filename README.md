@@ -407,6 +407,94 @@ Därför två utvägar, båda helt lokala:
   en enda webbläsares `localStorage`, så exporten är den enda säkerhetskopia som
   finns — den ligger direkt ovanför knappen som raderar originalet.
 
+## Statistik och samtycke
+
+Appen behöver veta två saker för att bli bättre: hur många som hittar hit, och
+vilka delar av den som faktiskt används — det är så nästa kommun i
+prioritetsordningen väljs. Den frågan får dock inte ställas genom att mäta
+först och berätta sen.
+
+**Regeln är absolut: ingenting laddas och ingenting skickas förrän någon tryckt
+på en knapp.** Leverantörens skript skapas i `ensureScript`, som bara nås av ett
+`granted` samtycke. Säger användaren nej har koden aldrig funnits på sidan, och
+då finns inget anrop att lita på att den låter bli att göra.
+[`src/lib/analytics.test.ts`](src/lib/analytics.test.ts) håller gränsen med ett
+test per väg in: före svaret, efter ett nej, efter ett ångrat ja, och i ett
+bygge som saknar leverantör.
+
+### Rutan som frågar
+
+[`src/components/ConsentPanel.tsx`](src/components/ConsentPanel.tsx) är samma
+panel i två lägen — grinden vid första besöket, som inte går att klicka bort,
+och samma text öppnad från Profil för den som vill ändra sig. Två knappar, lika
+stora, bredvid varandra: en ruta där "godkänn" är en knapp och "neka" är en länk
+i sidfoten har inte frågat, den har tjatat. Under "Vad mäts?" står de sex
+händelserna utskrivna, och under dem det som aldrig mäts.
+
+Svaret bor i [`src/lib/consent.ts`](src/lib/consent.ts) under en egen nyckel i
+`localStorage`, utanför `useStore`. Det måste gå att läsa innan React monterar
+och innan zustand hydrerar — annars hinner ett mätanrop iväg under första
+framen, och då spelar det ingen roll vad rutan sedan säger. Tre saker till:
+
+- **Ett nej sparas lika bestämt som ett ja**, så frågan inte kommer tillbaka
+  vid nästa besök.
+- **Webbläsarens signal vinner.** Skickar den Global Privacy Control eller Do
+  Not Track är svaret nej, och rutan ställer inte frågan alls — att be om
+  samtycke av någon som redan sagt nej i sina inställningar är att fråga tills
+  man får rätt svar.
+- **`CONSENT_VERSION` höjs när det som mäts ändras.** Ett gammalt ja till en ny
+  fråga är inget ja, så en höjning ställer frågan på nytt i stället för att anta.
+
+### Vad som mäts, och vad som aldrig mäts
+
+Sex händelser, alla i [`src/lib/analytics.ts`](src/lib/analytics.ts) som var sin
+funktion: flikbyte (som sidvisning), prövning öppnad, till anmälan, prövning
+sparad, bevakning skapad, kalenderfil hämtad och AI-fråga ställd. De bär kommun,
+ämne, kurskod och antal — värden som redan står i appens egen data.
+
+Ingen av funktionerna tar emot fritext. Det som skrivs i sökrutan eller till
+AI-prövning är användarens egen mening och lämnar aldrig enheten; av en fråga
+till AI-prövning skickas bara utfallet (antal träffar, om tolkningen bar, om
+sökningen fick vidgas). Det är inte en policy någon ska minnas, det är vad
+API:et tillåter — `sanitizeProps` kapar dessutom allt som inte är en sträng, en
+siffra eller en boolean, allt över 48 tecken och allt utöver sex fält.
+
+Appen har en URL och sex flikar, så flikbytet _är_ sidvisningen: `/discover`,
+`/ai`, `/exams` och så vidare. Leverantörens egen automatiska sidräkning stängs
+därför av i skripttaggen — annars räknas första besöket två gånger, och resten
+av besöket inte alls.
+
+### Slå på det
+
+Mätningen är avstängd tills bygget får tre miljövariabler. Båda leverantörerna
+är kakfria och EU-vänliga, och identifierar sajten med ett publikt domännamn
+respektive id — inget av dem är en hemlighet, vilket är tur, för ett statiskt
+bygge kan inte hålla en.
+
+```sh
+# Plausible (script.manual.js — appen skickar sina sidvisningar själv)
+VITE_ANALYTICS_PROVIDER=plausible
+VITE_ANALYTICS_SRC=https://plausible.io/js/script.manual.js
+VITE_ANALYTICS_SITE=prövningar.se
+
+# eller Umami
+VITE_ANALYTICS_PROVIDER=umami
+VITE_ANALYTICS_SRC=https://cloud.umami.is/script.js
+VITE_ANALYTICS_SITE=<webbplats-id>
+```
+
+I den publicerade appen sätts de som _repository variables_ (Settings → Secrets
+and variables → Actions → Variables), som
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) skickar in i
+byggsteget. Saknas de byggs appen utan mätning, och rutan säger det rakt ut i
+stället för att lova något som inte händer. En `http`-URL eller en halv
+konfiguration avvisas: hellre ingen statistik än en nedgradering gjord åt
+användaren.
+
+Siffrorna — besök, sidvisningar, vilka flikar och vilka händelser — läses sedan
+i leverantörens egen instrumentpanel. Appen har ingen server och sparar ingen
+statistik själv.
+
 ## När appen går sönder
 
 Fem av sex flikar hämtas med `import()` första gången de öppnas, och varje

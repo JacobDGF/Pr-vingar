@@ -50,7 +50,17 @@ jobs:
       # anything else (a commit SHA, a timestamp) desyncs it from the value
       # already embedded in the JS, and every visitor sees a false "update
       # available" banner permanently, even on the current build.
+      #
+      # Statistikvariablerna är repository variables (Settings → Secrets and
+      # variables → Actions → Variables), inte secrets: ett domännamn och ett
+      # publikt webbplats-id är inga hemligheter, och de hamnar ändå i bundlen.
+      # Är de osatta byggs appen utan mätning — samtyckesrutan säger då att
+      # ingenting samlas in. Se README, "Statistik och samtycke".
       - run: npm run build
+        env:
+          VITE_ANALYTICS_PROVIDER: ${{ vars.VITE_ANALYTICS_PROVIDER }}
+          VITE_ANALYTICS_SRC: ${{ vars.VITE_ANALYTICS_SRC }}
+          VITE_ANALYTICS_SITE: ${{ vars.VITE_ANALYTICS_SITE }}
 
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4

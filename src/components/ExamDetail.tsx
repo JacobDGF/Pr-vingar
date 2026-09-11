@@ -28,6 +28,7 @@ import { getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getExamAction } from '../lib/examAction';
 import { courseCounterpart } from '../lib/courseSystems';
+import { track } from '../lib/analytics';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 
@@ -316,6 +317,9 @@ export function ExamDetail() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title={action.primary.title}
+                // Den enda händelsen som säger om appen gör sitt jobb: att
+                // någon faktiskt gick vidare till anordnarens anmälan.
+                onClick={() => track.registrationClicked(exam, action.live)}
                 className={`group rounded-2xl p-5 flex items-start justify-between gap-3 transition-transform active:scale-98 ${
                   action.variant === 'full'
                     ? 'bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/25'
@@ -443,7 +447,10 @@ export function ExamDetail() {
                     </p>
                     {calendarEvents.length > 0 && !passed && action.live && (
                       <button
-                        onClick={() => downloadCalendar(exam)}
+                        onClick={() => {
+                          track.calendarExported(exam);
+                          downloadCalendar(exam);
+                        }}
                         className="w-full flex items-center justify-center gap-2 bg-ink hover:bg-black text-cream text-[15px] font-bold py-3.5 rounded-2xl transition-colors active:scale-98"
                       >
                         <CalendarPlus size={17} />
