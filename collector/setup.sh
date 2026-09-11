@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Sätter upp räknaren, hela vägen: databas, nyckel, publicering och de
+# Sätter upp räknaren, hela vägen: databas, publicering, nyckel och de
 # variabler appen och nattjobbet behöver.
 #
 #   npm run stats:setup
@@ -55,7 +55,7 @@ run_capture() {
 command -v node >/dev/null || fail 'node saknas. Installera Node 20 eller senare först.'
 
 say 'Räknaren för Prövningar'
-note 'Fyra steg: databas, nyckel, publicering, inkoppling.'
+note 'Fyra steg: databas, publicering, nyckel, inkoppling.'
 [ "$DRY_RUN" = 1 ] && note '(torrkörning — ingenting utförs)'
 
 # ---------------------------------------------------------------- 1. databas
@@ -66,25 +66,28 @@ if grep -q 'KLISTRA_IN_DITT_DATABASE_ID' wrangler.toml; then
   create_out="$(run_capture npx --yes wrangler d1 create "$DB_NAME" 2>&1 || true)"
   printf '%s\n' "$create_out" | sed 's/^/  /'
 
-  # Wrangler har bytt utskriftsformat flera gånger, men id:t är alltid ett
-  # uuid. Finns databasen redan (ett andra försök efter ett avbrott) plockas
-  # id:t ur listan i stället, så skriptet går att köra om.
-  database_id="$(printf '%s' "$create_out" |
-    grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1 || true)"
-
-  if [ -z "$database_id" ] && [ "$DRY_RUN" = 0 ]; then
-    note 'Hittade inget id i svaret — letar i listan över dina databaser.'
-    database_id="$(npx --yes wrangler d1 list --json 2>/dev/null |
+  # Id:t läses ur `d1 info --json`, inte ur utskriften ovan. Den mänskliga
+  # utskriften har bytt form flera gånger mellan wrangler-versioner; `--json`
+  # är ett dokumenterat gränssnitt, och det svarar likadant vare sig databasen
+  # skapades nyss eller fanns sedan ett avbrutet försök.
+  if [ "$DRY_RUN" = 0 ]; then
+    database_id="$(npx --yes wrangler d1 info "$DB_NAME" --json 2>/dev/null |
       node -e "
         let raw = '';
         process.stdin.on('data', (c) => (raw += c));
         process.stdin.on('end', () => {
           try {
-            const match = JSON.parse(raw).find((d) => d.name === '$DB_NAME');
-            if (match) process.stdout.write(match.uuid ?? match.database_id ?? '');
+            const info = JSON.parse(raw);
+            process.stdout.write(info.uuid ?? info.database_id ?? info.uid ?? '');
           } catch {}
         });
       " || true)"
+
+    # Sista utvägen: uuid:t står i klartext i svaret från create.
+    if [ -z "$database_id" ]; then
+      database_id="$(printf '%s' "$create_out" |
+        grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1 || true)"
+    fi
   fi
 
   if [ "$DRY_RUN" = 1 ]; then
@@ -114,27 +117,16 @@ if ! run npx --yes wrangler d1 execute "$DB_NAME" --remote --file=./schema.sql -
   run npx --yes wrangler d1 execute "$DB_NAME" --remote --file=./schema.sql
 fi
 
-# ----------------------------------------------------------------- 2. nyckel
+# ------------------------------------------------------------ 2. publicering
 
-say '2/4  Nyckeln som nattjobbet hämtar summorna med'
+# Publiceringen ligger före hemligheten med flit. `wrangler secret put` är
+# ingen inställning utan en deploy: den skapar en ny version av workern och
+# lägger ut den direkt. Finns ingen worker att göra en ny version av har den
+# ingenting att arbeta på — så koden först, nyckeln sedan. Att workern lever
+# en kort stund utan EXPORT_TOKEN är ofarligt: exporten svarar 401 tills den
+# finns, vilket är exakt vad den ska göra.
 
-if [ "$DRY_RUN" = 1 ]; then
-  export_token='<slumpad token>'
-  printf '  $ %s\n' 'openssl rand -hex 32'
-else
-  export_token="$(node -e "process.stdout.write(require('crypto').randomBytes(32).toString('hex'))")"
-fi
-
-if [ "$DRY_RUN" = 1 ]; then
-  printf '  $ %s\n' "echo <token> | npx wrangler secret put EXPORT_TOKEN"
-else
-  printf '%s' "$export_token" | npx --yes wrangler secret put EXPORT_TOKEN
-fi
-note 'EXPORT_TOKEN satt hos Cloudflare (den lagras aldrig i repot).'
-
-# ------------------------------------------------------------ 3. publicering
-
-say '3/4  Publicerar räknaren'
+say '2/4  Publicerar räknaren'
 
 deploy_out="$(run_capture npx --yes wrangler deploy 2>&1 || true)"
 printf '%s\n' "$deploy_out" | sed 's/^/  /'
@@ -148,6 +140,22 @@ fi
   fail "Hittade ingen workers.dev-adress i svaret. Kör 'npx wrangler deploy' för hand och koppla in adressen enligt README.md."
 
 note "Räknaren svarar på $worker_url"
+
+# ----------------------------------------------------------------- 3. nyckel
+
+say '3/4  Nyckeln som nattjobbet hämtar summorna med'
+
+if [ "$DRY_RUN" = 1 ]; then
+  export_token='<slumpad token>'
+  printf '  $ %s\n' 'node -e "randomBytes(32).toString(\"hex\")"'
+  printf '  $ %s\n' 'echo <token> | npx wrangler secret put EXPORT_TOKEN'
+else
+  export_token="$(node -e "process.stdout.write(require('crypto').randomBytes(32).toString('hex'))")"
+  # Token via stdin, aldrig som argument: argument syns i processlistan och
+  # hamnar i skalets historik.
+  printf '%s' "$export_token" | npx --yes wrangler secret put EXPORT_TOKEN
+fi
+note 'EXPORT_TOKEN satt hos Cloudflare (den lagras aldrig i repot).'
 
 # ------------------------------------------------------------- 4. inkoppling
 

@@ -48,16 +48,19 @@ skriver ut kommandot du kan köra för hand om något går fel.
 cd collector
 npx wrangler login
 
-# 1. Databasen. Kommandot skriver ut ett database_id — klistra in det i wrangler.toml.
+# 1. Databasen. Id:t läser du med `d1 info --json` och klistrar in i wrangler.toml.
 npx wrangler d1 create provningar-stats
-npx wrangler d1 execute provningar-stats --remote --file=./schema.sql
+npx wrangler d1 info provningar-stats --json
+npx wrangler d1 execute provningar-stats --remote --file=./schema.sql --yes
 
-# 2. Nyckeln som GitHub Actions hämtar summorna med. Spara den, den visas inte igen.
+# 2. Publicera. Adressen som skrivs ut är den appen ska posta till.
+npx wrangler deploy
+
+# 3. Nyckeln som GitHub Actions hämtar summorna med. Spara den, den visas inte igen.
+#    Efter deployen, inte före: `secret put` gör en ny version av workern och
+#    lägger ut den direkt, så den behöver en worker att arbeta på.
 openssl rand -hex 32
 npx wrangler secret put EXPORT_TOKEN
-
-# 3. Publicera. Adressen som skrivs ut är den appen ska posta till.
-npx wrangler deploy
 ```
 
 </details>
