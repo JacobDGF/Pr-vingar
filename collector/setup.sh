@@ -60,43 +60,57 @@ note 'Fyra steg: databas, publicering, nyckel, inkoppling.'
 
 # ---------------------------------------------------------------- 1. databas
 
+# Id:t läses ur `d1 info --json`, aldrig ur den mänskliga utskriften. Den har
+# bytt form flera gånger mellan wrangler-versioner; `--json` är ett
+# dokumenterat gränssnitt som svarar likadant oavsett version.
+lookup_database_id() {
+  npx --yes wrangler d1 info "$DB_NAME" --json 2>/dev/null |
+    node -e "
+      let raw = '';
+      process.stdin.on('data', (c) => (raw += c));
+      process.stdin.on('end', () => {
+        try {
+          const info = JSON.parse(raw);
+          process.stdout.write(info.uuid ?? info.database_id ?? info.uid ?? '');
+        } catch {}
+      });
+    " || true
+}
+
 say '1/4  Databasen'
 
 if grep -q 'KLISTRA_IN_DITT_DATABASE_ID' wrangler.toml; then
-  create_out="$(run_capture npx --yes wrangler d1 create "$DB_NAME" 2>&1 || true)"
-  printf '%s\n' "$create_out" | sed 's/^/  /'
+  # Fråga innan du skapar. Ordningen spelar roll för den som satte upp
+  # räknaren i Cloudflares dashboard och kör skriptet efteråt: då finns
+  # databasen redan, full av siffror, och den ska adopteras — inte ersättas.
+  # Ett `d1 create` mot ett namn som redan finns svarar troligen bara "finns
+  # redan", men "troligen" är fel ord att bygga på när priset är en tom
+  # databas som workern pekas om till. Att fråga först kan inte bli fel.
+  if [ "$DRY_RUN" = 1 ]; then
+    printf '  $ %s\n' "npx wrangler d1 info $DB_NAME --json"
+    database_id='00000000-0000-4000-8000-000000000000'
+    note "(torrkörning: låtsas-id $database_id)"
+  else
+    database_id="$(lookup_database_id)"
 
-  # Id:t läses ur `d1 info --json`, inte ur utskriften ovan. Den mänskliga
-  # utskriften har bytt form flera gånger mellan wrangler-versioner; `--json`
-  # är ett dokumenterat gränssnitt, och det svarar likadant vare sig databasen
-  # skapades nyss eller fanns sedan ett avbrutet försök.
-  if [ "$DRY_RUN" = 0 ]; then
-    database_id="$(npx --yes wrangler d1 info "$DB_NAME" --json 2>/dev/null |
-      node -e "
-        let raw = '';
-        process.stdin.on('data', (c) => (raw += c));
-        process.stdin.on('end', () => {
-          try {
-            const info = JSON.parse(raw);
-            process.stdout.write(info.uuid ?? info.database_id ?? info.uid ?? '');
-          } catch {}
-        });
-      " || true)"
+    if [ -n "$database_id" ]; then
+      note 'Databasen finns redan — den används som den är, med sitt innehåll.'
+    else
+      note 'Ingen databas med det namnet ännu — skapar en.'
+      create_out="$(npx --yes wrangler d1 create "$DB_NAME" 2>&1 || true)"
+      printf '%s\n' "$create_out" | sed 's/^/  /'
+      database_id="$(lookup_database_id)"
 
-    # Sista utvägen: uuid:t står i klartext i svaret från create.
-    if [ -z "$database_id" ]; then
-      database_id="$(printf '%s' "$create_out" |
-        grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1 || true)"
+      # Sista utvägen: uuid:t står i klartext i svaret från create.
+      if [ -z "$database_id" ]; then
+        database_id="$(printf '%s' "$create_out" |
+          grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1 || true)"
+      fi
     fi
   fi
 
-  if [ "$DRY_RUN" = 1 ]; then
-    database_id='00000000-0000-4000-8000-000000000000'
-    note "  (torrkörning: låtsas-id $database_id)"
-  fi
-
   [ -n "$database_id" ] ||
-    fail "Kunde inte läsa ut något database_id. Kör 'npx wrangler d1 create $DB_NAME' för hand och klistra in id:t i collector/wrangler.toml."
+    fail "Kunde inte läsa ut något database_id. Kör 'npx wrangler d1 info $DB_NAME --json' för hand och klistra in id:t i collector/wrangler.toml."
 
   run node -e "
     const fs = require('fs');

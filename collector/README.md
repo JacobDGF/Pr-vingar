@@ -110,8 +110,13 @@ in i `.env.production`.
 
 Den vägen har en baksida värd att veta om: workern i dashboarden är då en kopia
 av `worker.js`, inte en publicering av den. Ändras filen i repot händer
-ingenting hos Cloudflare förrän någon kör `npm run stats:setup` eller klistrar
-in koden på nytt.
+ingenting hos Cloudflare förrän någon klistrar in koden på nytt — eller kör
+`npm run stats:setup`, som publicerar repots version över dashboardens och gör
+slut på gliden.
+
+Att köra skriptet efteråt är ofarligt för siffrorna: det slår upp databasen
+innan det skapar någon, hittar den du redan gjort och använder den som den är.
+Tabellen läggs upp med `CREATE TABLE IF NOT EXISTS`, så inte heller den rörs.
 
 ## Kör den lokalt
 
