@@ -4,6 +4,19 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-11 (räknaren i drift)
+
+Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är
+kontrollerad i sin helhet mot den riktiga workern innan den lades in: den tar
+emot ett besök och en händelse (204), den avvisar en främmande sajts `Origin`
+(403), och exporten svarar med summorna. `scripts/update-stats.mjs` hittar
+adressen ur `.env.production` och når den.
+
+De två anropen i kontrollen var inte torrkörningar utan riktiga rader: första
+dygnets siffror innehåller därför **ett testbesök och en test-händelse**
+("Till anmälan", Örebro) som inte kommer från någon användare. De försvinner
+av sig själva när dygnet rullar ur rapportens fönster.
+
 ## 2026-09-11 (senare)
 
 **Produkt: statistiken bor i repot.** Appen räknar nu sina besök själv, och
