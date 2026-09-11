@@ -501,51 +501,50 @@ statistiken behöver inte byggas och deployas om, eftersom appen inte läser den
 
 ### Slå på det
 
-Mätningen är avstängd tills bygget får sina miljövariabler. Båda leverantörerna
-är kakfria och EU-vänliga, och identifierar sajten med ett publikt domännamn
-respektive id — inget av dem är en hemlighet, vilket är tur, för ett statiskt
-bygge kan inte hålla en.
+Mätningen är avstängd tills `.env.production` får räknarens adress. Den filen
+är det enda stället adressen står — Vite läser den när appen byggs, och
+[`scripts/update-stats.mjs`](scripts/update-stats.mjs) läser samma rad när
+nattjobbet hämtar summorna, så de två kan inte peka på olika räknare.
 
 ```sh
-# Appens egen räknare — statistiken hamnar i repot
 VITE_ANALYTICS_PROVIDER=endpoint
 VITE_ANALYTICS_SRC=https://provningar-stats.<konto>.workers.dev/e
+```
 
-# eller en vanlig leverantör med egen instrumentpanel
+Adressen ligger i repot i stället för bland GitHubs hemligheter, och det är
+inte slarv: den hamnar ändå i den publicerade bundlen, där vem som helst kan
+läsa den. Det som verkligen är hemligt — nyckeln som får skriva hos Cloudflare
+— har aldrig varit i närheten av repot.
+
+Samma fil tar en vanlig leverantör i stället, för den som hellre vill ha en
+färdig instrumentpanel:
+
+```sh
 VITE_ANALYTICS_PROVIDER=plausible
 VITE_ANALYTICS_SRC=https://plausible.io/js/script.manual.js
 VITE_ANALYTICS_SITE=prövningar.se
 ```
 
-`endpoint` klarar sig utan `VITE_ANALYTICS_SITE` — det fältet finns för den dag
-flera sajter delar samma räknare. Plausible och Umami kräver det, eftersom de
-inte vet vilken sajt datan hör till utan sitt id.
+`endpoint` klarar sig utan `VITE_ANALYTICS_SITE`; Plausible och Umami kräver
+det, eftersom de inte vet vilken sajt datan hör till utan sitt id. En tom
+`VITE_ANALYTICS_SRC` betyder ingen mätning alls, och då säger samtyckesrutan
+rakt ut att ingenting samlas in.
 
-I den publicerade appen sätts de som _repository variables_ (Settings → Secrets
-and variables → Actions → Variables), som
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) skickar in i
-byggsteget. Saknas de byggs appen utan mätning, och rutan säger det rakt ut i
-stället för att lova något som inte händer. En `http`-URL eller en halv
-konfiguration avvisas: hellre ingen statistik än en nedgradering gjord åt
-användaren.
+Värdena sätts medvetet _inte_ som repository variables i
+[`deploy.yml`](.github/workflows/deploy.yml). En osatt variable blir en tom
+sträng i miljön, en tom miljövariabel vinner över `.env`-filen i Vite, och ett
+bygge utan variabler skulle därmed tyst slå ut en fil som säger motsatsen.
+Verifierat genom att bygga åt båda hållen.
 
-Med appens egen räknare gör [`collector/setup.sh`](collector/setup.sh) hela
-uppsättningen — databas, token, publicering och variablerna i GitHub — i ett
-kommando:
+Uppsättningen av själva räknaren — databas, tabell, publicering — gör
+[`collector/setup.sh`](collector/setup.sh) i ett kommando, eller så klickar man
+sig igenom Cloudflares dashboard. Båda vägarna står i
+[`collector/README.md`](collector/README.md).
 
-```sh
-npm run stats:setup -- --dry-run   # vad den skulle göra
-npm run stats:setup                # gör det
-```
-
-Det enda steget som inte går att automatisera är inloggningen hos Cloudflare.
-
-Med `endpoint` behöver jobbet dessutom två _secrets_: `STATS_ENDPOINT` (samma
-adress utan `/e`) och `STATS_TOKEN` (samma sträng som workerns `EXPORT_TOKEN`).
-Saknas de hoppar [`scripts/update-stats.mjs`](scripts/update-stats.mjs) över
-körningen och avslutar med 0 — ett nattligt jobb som lyser rött för att en
-valfri funktion inte används är ett larm ingen läser, och ett larm ingen läser
-döljer de riktiga.
+Räknaren behöver ingen hemlighet för att fungera. Sätts `EXPORT_TOKEN` hos
+workern krävs den av exporten, och då måste nattjobbet få samma sträng som
+`STATS_TOKEN`. Utan den är exporten öppen — den lämnar ut exakt de summor som
+ändå publiceras i `stats/`, så det finns ingenting där att skydda.
 
 ## När appen går sönder
 

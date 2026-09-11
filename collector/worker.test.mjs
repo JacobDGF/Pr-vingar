@@ -170,10 +170,25 @@ describe('export', () => {
     expect((await worker.fetch(request('hemlig'), e)).status).toBe(200);
   });
 
-  it('lämnar aldrig ut något när ingen token är satt', async () => {
+  /**
+   * Utan token är exporten öppen — med flit. Den lämnar ut samma summor som
+   * ändå publiceras i repots stats/, så det finns ingenting att skydda; och
+   * utan hemlighet går uppsättningen att klicka sig igenom i dashboarden.
+   * Insamlingen är fortfarande stängd för alla utom sajtens egen Origin.
+   */
+  it('är öppen när ingen token är satt, och stängd så fort en är det', async () => {
+    const öppen = env({ EXPORT_TOKEN: undefined });
+    expect((await worker.fetch(request(), öppen)).status).toBe(200);
+
+    const stängd = env();
+    expect((await worker.fetch(request(), stängd)).status).toBe(401);
+    expect((await worker.fetch(request('hemlig'), stängd)).status).toBe(200);
+  });
+
+  it('tar fortfarande inte emot en insamling utan rätt Origin, token eller ej', async () => {
     const e = env({ EXPORT_TOKEN: undefined });
-    expect((await worker.fetch(request('hemlig'), e)).status).toBe(401);
-    expect((await worker.fetch(request(''), e)).status).toBe(401);
+    const svar = await worker.fetch(post(EVENT, { origin: 'https://kopian.example' }), e);
+    expect(svar.status).toBe(403);
   });
 
   it('gallrar gammalt och svarar med summorna', async () => {

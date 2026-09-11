@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { emptyUsage, lastDays, mergeExport, renderReport } from './statsReport.mjs';
+import {
+  emptyUsage,
+  endpointFromEnvFile,
+  lastDays,
+  mergeExport,
+  renderReport,
+} from './statsReport.mjs';
 
 const row = (day, kind, name, label = '', n = 1) => ({
   day,
@@ -118,5 +124,36 @@ describe('renderReport', () => {
     const md = renderReport(mergeExport(emptyUsage(), EXPORT), '2026-09-12');
     expect(md).toContain('Inga besökar-id');
     expect(md).toContain('samtyckesruta');
+  });
+});
+
+describe('endpointFromEnvFile', () => {
+  /**
+   * Appen och nattjobbet läser samma rad, så de kan inte peka på olika
+   * räknare. Skillnaden är bara `/e`, som webbläsaren postar till.
+   */
+  it('härleder jobbets adress ur appens', () => {
+    expect(endpointFromEnvFile('VITE_ANALYTICS_SRC=https://x.workers.dev/e')).toBe(
+      'https://x.workers.dev',
+    );
+    expect(endpointFromEnvFile('VITE_ANALYTICS_SRC="https://x.workers.dev/e"')).toBe(
+      'https://x.workers.dev',
+    );
+    expect(endpointFromEnvFile('VITE_ANALYTICS_SRC=https://x.workers.dev/')).toBe(
+      'https://x.workers.dev',
+    );
+  });
+
+  it('säger ingenting när raden är tom, bortkommenterad eller borta', () => {
+    expect(endpointFromEnvFile('VITE_ANALYTICS_SRC=')).toBe('');
+    expect(endpointFromEnvFile('# VITE_ANALYTICS_SRC=https://x.workers.dev/e')).toBe('');
+    expect(endpointFromEnvFile('VITE_ANALYTICS_PROVIDER=endpoint')).toBe('');
+    expect(endpointFromEnvFile(undefined)).toBe('');
+  });
+
+  /** En halv rad ska stänga av jobbet, inte få det att anropa "undefined". */
+  it('kräver en riktig adress', () => {
+    expect(endpointFromEnvFile('VITE_ANALYTICS_SRC=workers.dev/e')).toBe('');
+    expect(endpointFromEnvFile('VITE_ANALYTICS_SRC=ja tack')).toBe('');
   });
 });

@@ -157,10 +157,22 @@ function today() {
 /* ----------------------------------------------------------------- export */
 
 async function exportSums(request, env) {
-  const auth = request.headers.get('Authorization') ?? '';
-  const expected = `Bearer ${env.EXPORT_TOKEN ?? ''}`;
-  if (!env.EXPORT_TOKEN || auth.length !== expected.length || auth !== expected) {
-    return new Response(null, { status: 401 });
+  // EXPORT_TOKEN är valfri, och det är ett medvetet val. Summorna den lämnar
+  // ut är exakt de siffror som ändå publiceras öppet i repots stats/ — det
+  // finns ingenting här att skydda som inte redan är läsbart för vem som
+  // helst. Är token satt krävs den; är den inte satt är exporten öppen, och
+  // hela uppsättningen går då att klicka sig igenom i Cloudflares dashboard
+  // utan en enda hemlighet att hantera.
+  //
+  // Insamlingen är en annan sak: den skriver, och den är alltid begränsad till
+  // sajtens egen Origin.
+  const required = env.EXPORT_TOKEN ?? '';
+  if (required) {
+    const auth = request.headers.get('Authorization') ?? '';
+    const expected = `Bearer ${required}`;
+    if (auth.length !== expected.length || auth !== expected) {
+      return new Response(null, { status: 401 });
+    }
   }
 
   // Gallringen hör hemma här, inte i ett städjobb någon glömmer att köra:

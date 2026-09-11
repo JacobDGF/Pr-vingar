@@ -196,3 +196,27 @@ function section(title, bucket, limit, rename = (k) => k) {
     '',
   ];
 }
+
+/**
+ * Räknarens adress, läst ur `.env.production`.
+ *
+ * Appen och nattjobbet ska aldrig kunna peka på olika räknare, så adressen
+ * står på ett enda ställe: `VITE_ANALYTICS_SRC`, den URL webbläsaren postar
+ * till. Jobbet vill ha basen utan `/e` på slutet, och det är den enda
+ * skillnaden — därför härleds den i stället för att skrivas en gång till.
+ */
+export function endpointFromEnvFile(text) {
+  const line = String(text ?? '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith('#'))
+    .find((l) => l.startsWith('VITE_ANALYTICS_SRC='));
+  if (!line) return '';
+
+  const value = line
+    .slice('VITE_ANALYTICS_SRC='.length)
+    .trim()
+    .replace(/^["']|["']$/g, '');
+  if (!/^https?:\/\//.test(value)) return '';
+  return value.replace(/\/+$/, '').replace(/\/e$/, '');
+}

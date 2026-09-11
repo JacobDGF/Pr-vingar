@@ -51,18 +51,13 @@ jobs:
       # already embedded in the JS, and every visitor sees a false "update
       # available" banner permanently, even on the current build.
       #
-      # Statistikvariablerna är repository variables (Settings → Secrets and
-      # variables → Actions → Variables), inte secrets: räknarens adress och ett
-      # publikt webbplats-id är inga hemligheter, och de hamnar ändå i bundlen.
-      # Hemligheten — token som hämtar summorna — bor i workern och i
-      # stats.yml, aldrig här. Är variablerna osatta byggs appen utan mätning,
-      # och samtyckesrutan säger då att ingenting samlas in. Se README,
-      # "Statistik och samtycke".
+      # Statistikens adress står i .env.production, som Vite läser själv — inte
+      # som repository variables här. Det är inte bekvämlighet: en osatt
+      # variable blir en tom sträng i miljön, och en tom miljövariabel vinner
+      # över .env-filen i Vite. Ett bygge med "ingen mätning" skulle alltså
+      # tyst slå ut en fil som säger motsatsen. Verifierat genom att bygga åt
+      # båda hållen. Se README, "Statistik och samtycke".
       - run: npm run build
-        env:
-          VITE_ANALYTICS_PROVIDER: ${{ vars.VITE_ANALYTICS_PROVIDER }}
-          VITE_ANALYTICS_SRC: ${{ vars.VITE_ANALYTICS_SRC }}
-          VITE_ANALYTICS_SITE: ${{ vars.VITE_ANALYTICS_SITE }}
 
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4

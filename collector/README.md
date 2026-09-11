@@ -72,26 +72,46 @@ får sina besökare räknade som våra.
 
 ## Koppla in appen och jobbet
 
-Det här gör `npm run stats:setup` åt dig när `gh` finns. Annars, för hand:
+En rad, i [`.env.production`](../.env.production) i projektets rot:
 
-**Repository variables** (Settings → Secrets and variables → Actions →
-Variables) — de här hamnar i bundlen och är inga hemligheter:
+```sh
+VITE_ANALYTICS_SRC=https://provningar-stats.<konto>.workers.dev/e
+```
 
-| Variabel                  | Värde                                              |
-| ------------------------- | -------------------------------------------------- |
-| `VITE_ANALYTICS_PROVIDER` | `endpoint`                                         |
-| `VITE_ANALYTICS_SRC`      | `https://provningar-stats.<konto>.workers.dev/e`   |
-| `VITE_ANALYTICS_SITE`     | valfritt, bara om flera sajter delar samma räknare |
+Det är allt. Appen byggs med den adressen, och nattjobbet härleder sin egen
+(samma utan `/e`) ur samma rad — inga repository variables, inga secrets.
 
-**Repository secrets** (samma sida, fliken Secrets) — de här är hemliga:
+Hemligheter behövs bara om du vill stänga exporten: sätter du `EXPORT_TOKEN`
+hos workern måste `STATS_TOKEN` i repots secrets ha samma sträng, annars svarar
+räknaren 401 på nattjobbet. Utan token är exporten öppen, vilket den gott kan
+vara — den lämnar ut samma summor som ändå ligger publikt i `stats/`.
 
-| Hemlighet        | Värde                                                      |
-| ---------------- | ---------------------------------------------------------- |
-| `STATS_ENDPOINT` | `https://provningar-stats.<konto>.workers.dev` (utan `/e`) |
-| `STATS_TOKEN`    | samma sträng som workerns `EXPORT_TOKEN`                   |
+Kör `Statistik` i Actions för hand en gång för att se att kedjan går ihop.
+Jobbet går annars 04:17 varje natt och committar bara när något ändrats.
 
-Sedan: kör `Statistik` i Actions för hand en gång för att se att kedjan går
-ihop. Jobbet går annars 04:17 varje natt och committar bara när något ändrats.
+## Utan terminal, bara klick
+
+Går det inte att köra skriptet finns samma sak i Cloudflares dashboard. Fem
+moment, alla i webbläsaren:
+
+1. **Storage & databases → D1 → Create database**, namn `provningar-stats`.
+2. Öppna databasen, fliken **Console**, klistra in innehållet i
+   [`schema.sql`](schema.sql) och kör.
+3. **Compute → Workers & Pages → Create → Start with Hello World → Deploy.**
+   Döp den till `provningar-stats`.
+4. **Edit code** på den nya workern: markera allt, klistra in
+   [`worker.js`](worker.js), **Deploy**.
+5. Workerns **Settings → Bindings → Add → D1 database**: variabelnamn `STATS`,
+   databas `provningar-stats`. Lägg i samma vy till variablerna
+   `ALLOWED_ORIGINS` (sajtens adress) och `RETENTION_DAYS` (`90`).
+
+Adressen som står överst på workerns sida, med `/e` på slutet, är den som ska
+in i `.env.production`.
+
+Den vägen har en baksida värd att veta om: workern i dashboarden är då en kopia
+av `worker.js`, inte en publicering av den. Ändras filen i repot händer
+ingenting hos Cloudflare förrän någon kör `npm run stats:setup` eller klistrar
+in koden på nytt.
 
 ## Kör den lokalt
 
