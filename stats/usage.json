@@ -1,4 +1,30 @@
 {
-  "uppdaterad": null,
-  "dagar": {}
+  "uppdaterad": "2026-09-12T07:12:35.748Z",
+  "dagar": {
+    "2026-09-11": {
+      "besök": 4,
+      "sidvisningar": {
+        "/discover": 3
+      },
+      "händelser": {
+        "Prövning öppnad": 6,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Malmö": 2,
+        "Örebro": 3,
+        "Linköping": 1,
+        "Södertälje": 1
+      },
+      "ämnen": {
+        "Engelska": 6
+      },
+      "kurser": {
+        "ENGENG07": 4,
+        "Varierar": 1,
+        "ENGE3000X": 1,
+        "MATMAT02b": 1
+      }
+    }
+  }
 }

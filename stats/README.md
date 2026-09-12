@@ -8,13 +8,45 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-09-11)
+## Senaste 30 dygnen (t.o.m. 2026-09-12)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 0 | 0 | 0 |
+| 4 | 3 | 1 |
 
-Ingen data än. Första körningen efter att räknaren tagits i bruk fyller tabellen.
+### Per dygn
+
+| Dygn | Besök | Sidvisningar | Till anmälan |
+| ---- | ----- | ------------ | ------------ |
+| 2026-09-11 | 4 | 3 | 1 |
+
+### Flikar
+
+| Namn | Antal |
+| ---- | ----- |
+| Upptäck | 3 |
+
+### Händelser
+
+| Namn | Antal |
+| ---- | ----- |
+| Prövning öppnad | 6 |
+| Till anmälan | 1 |
+
+### Kommuner i öppnade prövningar
+
+| Namn | Antal |
+| ---- | ----- |
+| Örebro | 3 |
+| Malmö | 2 |
+| Linköping | 1 |
+| Södertälje | 1 |
+
+### Ämnen
+
+| Namn | Antal |
+| ---- | ----- |
+| Engelska | 6 |
 
 ## Vad som inte står här
 
@@ -24,4 +56,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Har inte körts än.</sub>
+<sub>Uppdaterad 2026-09-12T07:12:35.748Z.</sub>
