@@ -495,6 +495,82 @@ const COMPONENTS_OREBRO_TALENTI_LAB: ExamComponent[] = [
   COMPONENTS_OREBRO_TALENTI[2],
 ];
 
+// Helsingborgssvepet 2026-09-12: hela stadens prövningsutbud, läst rad för rad
+// ur kommunens egen jämförelsetabell mellan gamla Gy11-kurser och nya
+// Gy25-ämnesnivåer, och ur betygsprövningssidan som daterar omgångarna.
+const HELSINGBORG_VERIFIED = '2026-09-12';
+
+/**
+ * Helsingborg lägger de gymnasiala prövningarna hos Arena Utbildning.
+ *
+ * Kommunen skriver inte ut vilken sal proven skrivs i — bara att "vissa prov
+ * görs på plats" och att läraren kallar via Exlearn. Nålen sitter därför på
+ * anordnarens egen Helsingborgsadress, med reservationen utskriven, i stället
+ * för på kommunhuset eller på en gissad lokal. Prövningar på grundläggande
+ * nivå ligger kvar hos Komvux Helsingborg på Rönnowsgatan 10.
+ */
+const HBG_ADDRESS =
+  'Arena Utbildning, Planteringsvägen 5, Helsingborg (provlokal meddelas i Exlearn)';
+
+const HBG_PRICE_NOTE =
+  '500 kr per kurs eller ämnesnivå och prövningstillfälle, betalt senast sista anmälningsdag. ' +
+  'Kostnadsfritt om du redan har betyg F i kursen. Avgiften betalas till plusgiro 918192-6 med ' +
+  '"5060/4760/26075" och ditt namn i meddelandefältet, och kvittot mejlas till ' +
+  'betygsprovning@helsingborg.se. Inbetald avgift betalas inte tillbaka.';
+
+const HBG_REGISTRATION_URL =
+  'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx';
+
+const HBG_INFO_URL =
+  'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/';
+
+/**
+ * Betalningen ligger utanför e-tjänsten, och det är det steg som fäller folk.
+ *
+ * Den härledda e-tjänstetexten slutar med "betala avgiften enligt
+ * instruktionerna", vilket i Helsingborg betyder ett plusgiro, en
+ * meddelandesträng och ett mejl med kvittot — tre saker som ska hinnas med
+ * före sista anmälningsdag, inte efter.
+ */
+const HBG_REGISTRATION: Exam['registration'] = {
+  kind: 'eservice',
+  ctaLabel: 'Öppna webbansökan',
+  landing:
+    'Länken går till Helsingborgs webbansökan, där prövningar söks under rubriken "Prövning".',
+  steps: [
+    'Logga in, välj Prövning och vilken prövningsperiod det gäller',
+    'Välj ämnena du vill pröva i (högst två per period) och bifoga dina tidigare betyg',
+    'Betala 500 kr per kurs och mejla kvittot till betygsprovning@helsingborg.se',
+  ],
+};
+
+/**
+ * Ett upplägg för alla Helsingborgs prövningar, inte ett per kurs: kommunen
+ * räknar upp vilka delar en prövning kan bestå av, och vilka av dem just din
+ * kurs har får du veta i lärplattformen Exlearn efter anmälan.
+ */
+const COMPONENTS_HELSINGBORG: ExamComponent[] = [
+  {
+    name: 'Skriftligt prov',
+    duration: 'Fast provdatum inom perioden',
+    description:
+      'Du får ett provdatum som inte går att ändra, och skriftliga prov har fasta tider. Vissa ' +
+      'prov görs på plats — ta med legitimation.',
+  },
+  {
+    name: 'Muntligt prov',
+    duration: 'Tid du bokar själv',
+    description: 'Muntliga prov bokar du med läraren i lärplattformen Exlearn.',
+  },
+  {
+    name: 'Laborationer, praktiska prov och inlämningsuppgifter',
+    duration: 'Varierar med kursen',
+    description:
+      'En prövning kan också innehålla laborationer, praktiska prov och inlämningsuppgifter. ' +
+      'Laborationer har fasta tider; läraren beskriver kursens upplägg i Exlearn.',
+  },
+];
+
 export const EXAMS: Exam[] = [
   {
     id: 'sodermalm-kemi1',
@@ -4267,40 +4343,6 @@ export const EXAMS: Exam[] = [
       'Komvux Malmö genomför betygsprövning i Engelska 6 på plats, all examination sker på svenska anvisad lokal.',
     tags: ['engelska', 'malmo'],
     verifiedAt: VERIFIED,
-  },
-  {
-    id: 'helsingborg-ma2b',
-    schoolName: 'Komvux Helsingborg',
-    provider: 'Helsingborgs stad',
-    subject: 'Matematik',
-    course: 'Matematik 2b',
-    courseCode: 'MATMAT02b',
-    level: 'Komvux',
-    city: 'Helsingborg',
-    region: 'Skåne',
-    address: 'Rönnowsgatan 10, Helsingborg',
-    lat: 56.0465,
-    lng: 12.6945,
-    price: 500,
-    priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: {
-      label:
-        'Anmälan 7–11 september 2026 (avgiften ska vara betald senast 11/9), prövningsperiod 12 oktober – 6 november. Du kan göra högst två prövningar per period.',
-      applicationStart: '2026-09-07',
-      applicationEnd: '2026-09-11',
-      examWindowStart: '2026-10-12',
-      examWindowEnd: '2026-11-06',
-      confirmed: true,
-    },
-    components: COMPONENTS_MATEMATIK,
-    studyTips: TIPS_MATEMATIK,
-    registrationUrl:
-      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
-    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
-    description:
-      'Komvux Helsingborg erbjuder betygsprövning i gymnasiekurser, bland annat matematik.',
-    tags: ['matematik', 'helsingborg'],
-    verifiedAt: AUG_18_VERIFIED,
   },
   {
     id: 'lund-ma',
@@ -20047,6 +20089,4322 @@ export const EXAMS: Exam[] = [
       '26 oktober–13 november; ditt eget datum inom perioden bestäms av ansvarig lärare.',
     tags: ['svenska för invandrare', 'sfi', 'örebro'],
     verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'hbg-admi1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Administration Nivå 1',
+    courseCode: 'ADMI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Administration Nivå 1 (ADMI1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Administration 1 i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['företagsekonomi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-admi2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Administration Nivå 2',
+    courseCode: 'ADMI2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Administration Nivå 2 (ADMI2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Administration 2 i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['företagsekonomi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-arki1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Arkitektur',
+    course: 'Arkitektur Nivå 1',
+    courseCode: 'ARKI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Arkitektur Nivå 1 (ARKI1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Arkitektur – hus i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['arkitektur', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-biog1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 1',
+    courseCode: 'BIOG1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_BIOLOGI,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Biologi Nivå 1 (BIOG1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Biologi 1 (BIOBIO01) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['biologi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-biog2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 2',
+    courseCode: 'BIOG2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_BIOLOGI,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Biologi Nivå 2 (BIOG2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Biologi 2 (BIOBIO02) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['biologi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-datr1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Dator- och kommunikationsteknik',
+    course: 'Dator- och kommunikationsteknik Nivå 1',
+    courseCode: 'DATR1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Dator- och kommunikationsteknik Nivå 1 (DATR1000X) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Datorteknik ' +
+      '1a eller 1b i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['dator- och kommunikationsteknik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-diga1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Digitalt skapande',
+    course: 'Digitalt skapande Nivå 1',
+    courseCode: 'DIGA1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Digitalt skapande Nivå 1 (DIGA1000X) hos Komvux Helsingborg, som ' +
+      'Arena Utbildning genomför på stadens uppdrag. Motsvarar Digitalt skapande 1 i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['digitalt skapande', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-diga2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Digitalt skapande',
+    course: 'Digitalt skapande Nivå 2',
+    courseCode: 'DIGA2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Digitalt skapande Nivå 2 (DIGA2000X) hos Komvux Helsingborg, som ' +
+      'Arena Utbildning genomför på stadens uppdrag. Motsvarar Digitalt skapande 2 i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['digitalt skapande', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-enge1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 1',
+    courseCode: 'ENGE1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Engelska Nivå 1 (ENGE1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Engelska 5 (ENGENG05) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['engelska', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-enge2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 2',
+    courseCode: 'ENGE2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Engelska Nivå 2 (ENGE2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Engelska 6 (ENGENG06) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['engelska', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-enge3000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 3',
+    courseCode: 'ENGE3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Engelska Nivå 3 (ENGE3000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Engelska 7 (ENGENG07) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['engelska', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-entr1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Entreprenörskap',
+    course: 'Entreprenörskap Nivå 1',
+    courseCode: 'ENTR1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Entreprenörskap Nivå 1 (ENTR1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Entreprenörskap (ENTENR0) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['entreprenörskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-entp1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Entreprenörskap och företagande Nivå 1',
+    courseCode: 'ENTP1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Entreprenörskap och företagande Nivå 1 (ENTP1000X) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar ' +
+      'Entreprenörskap och företagande (FÖRENT0) i det gamla systemet; den prövningen söker ' +
+      'du genom att mejla betygsprovning@helsingborg.se efter anmälan, och bara om du redan ' +
+      'har ett betyg i kursen. Anmälan till höstens prövningsperiod stängde 11 september ' +
+      '2026; proven skrivs 12 oktober–6 november.',
+    tags: ['företagsekonomi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-film1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Filmkunskap',
+    course: 'Filmkunskap Nivå 1',
+    courseCode: 'FILM1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Filmkunskap Nivå 1 (FILM1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Film- och TV-kunskap i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['filmkunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-fils1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Filosofi',
+    course: 'Filosofi Nivå 1',
+    courseCode: 'FILS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Filosofi Nivå 1 (FILS1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Filosofi 1 (FIOFIO01) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['filosofi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-fils2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Filosofi',
+    course: 'Filosofi Nivå 2',
+    courseCode: 'FILS2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Filosofi Nivå 2 (FILS2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Filosofi 2 (FIOFIO02) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['filosofi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-fysk1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1b',
+    courseCode: 'FYSK1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FYSIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Fysik Nivå 1b (FYSK1B00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Fysik 1a (FYSFYS01a) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['fysik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-fysk1a10x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1a1',
+    courseCode: 'FYSK1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FYSIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Fysik Nivå 1a1 (FYSK1A10X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Fysik 1b1 (FYSFYS01b1) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['fysik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-fysk1a20x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1a2',
+    courseCode: 'FYSK1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FYSIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Fysik Nivå 1a2 (FYSK1A20X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Fysik 1b2 (FYSFYS01b2) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['fysik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-fysk2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 2',
+    courseCode: 'FYSK2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FYSIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Fysik Nivå 2 (FYSK2000X) hos Komvux Helsingborg, som Arena Utbildning ' +
+      'genomför på stadens uppdrag. Motsvarar Fysik 2 (FYSFYS02) i det gamla systemet; den ' +
+      'prövningen söker du genom att mejla betygsprovning@helsingborg.se efter anmälan, och ' +
+      'bara om du redan har ett betyg i kursen. Anmälan till höstens prövningsperiod stängde ' +
+      '11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['fysik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-foet1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi Nivå 1',
+    courseCode: 'FOET1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Företagsekonomi Nivå 1 (FOET1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Företagsekonomi 1 (FÖRFÖR01) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['företagsekonomi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-foet2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi Nivå 2',
+    courseCode: 'FOET2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Företagsekonomi Nivå 2 (FOET2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Företagsekonomi 2 (FÖRFÖR02) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['företagsekonomi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-geog1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Geografi',
+    course: 'Geografi Nivå 1',
+    courseCode: 'GEOG1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Geografi Nivå 1 (GEOG1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Geografi 1 (GEOGEO01) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['geografi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-geog2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Geografi',
+    course: 'Geografi Nivå 2',
+    courseCode: 'GEOG2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Geografi Nivå 2 (GEOG2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Geografi 2 (GEOGEO02) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['geografi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-hist1a10x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a1',
+    courseCode: 'HIST1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Historia Nivå 1a1 (HIST1A10X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Historia 1a1 (HISHIS01a1) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['historia', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-hist1a20x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a2',
+    courseCode: 'HIST1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Historia Nivå 1a2 (HIST1A20X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Historia 1a2 (HISHIS01a2) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['historia', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-hist1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1b',
+    courseCode: 'HIST1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Historia Nivå 1b (HIST1B00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Historia 1b (HISHIS01b) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['historia', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-hist2a00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 2a',
+    courseCode: 'HIST2A00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Historia Nivå 2a (HIST2A00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Historia 2a (HISHIS02a) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['historia', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-hist2b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 2b',
+    courseCode: 'HIST2B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Historia Nivå 2b (HIST2B00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Historia 2b – kultur i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['historia', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-hals1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Vård och omsorg',
+    course: 'Hälsopedagogik Nivå 1',
+    courseCode: 'HALS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_VARD,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Hälsopedagogik Nivå 1 (HALS1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Hälsopedagogik (HALHAL0) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['vård och omsorg', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-inte1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Internationell ekonomi Nivå 1',
+    courseCode: 'INTE1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Internationell ekonomi Nivå 1 (INTE1000X) hos Komvux Helsingborg, som ' +
+      'Arena Utbildning genomför på stadens uppdrag. Motsvarar Internationell ekonomi ' +
+      '(SAMINE0) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['samhällskunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-intr1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Internationella relationer Nivå 1',
+    courseCode: 'INTR1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Internationella relationer Nivå 1 (INTR1000X) hos Komvux Helsingborg, ' +
+      'som Arena Utbildning genomför på stadens uppdrag. Motsvarar Internationella relationer ' +
+      '(SAMINR0) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['samhällskunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-kemi1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 1',
+    courseCode: 'KEMI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_KEMI,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Kemi Nivå 1 (KEMI1000X) hos Komvux Helsingborg, som Arena Utbildning ' +
+      'genomför på stadens uppdrag. Motsvarar Kemi 1 (KEMKEM01) i det gamla systemet; den ' +
+      'prövningen söker du genom att mejla betygsprovning@helsingborg.se efter anmälan, och ' +
+      'bara om du redan har ett betyg i kursen. Anmälan till höstens prövningsperiod stängde ' +
+      '11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['kemi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-kemi2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 2',
+    courseCode: 'KEMI2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_KEMI,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Kemi Nivå 2 (KEMI2000X) hos Komvux Helsingborg, som Arena Utbildning ' +
+      'genomför på stadens uppdrag. Motsvarar Kemi 2 (KEMKEM02) i det gamla systemet; den ' +
+      'prövningen söker du genom att mejla betygsprovning@helsingborg.se efter anmälan, och ' +
+      'bara om du redan har ett betyg i kursen. Anmälan till höstens prövningsperiod stängde ' +
+      '11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['kemi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-lati1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Latin',
+    course: 'Latin – språk och kultur Nivå 1',
+    courseCode: 'LATI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Latin – språk och kultur Nivå 1 (LATI1000X) hos Komvux Helsingborg, ' +
+      'som Arena Utbildning genomför på stadens uppdrag. Motsvarar Latin – språk och kultur 1 ' +
+      '(LATLAT01) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['latin', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-leda1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Ledarskap och organisation',
+    course: 'Ledarskap och organisation Nivå 1',
+    courseCode: 'LEDA1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Ledarskap och organisation Nivå 1 (LEDA1000X) hos Komvux Helsingborg, ' +
+      'som Arena Utbildning genomför på stadens uppdrag. Motsvarar Ledarskap och organisation ' +
+      '(LEDLED0) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['ledarskap och organisation', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-logs1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Logistik Nivå 1',
+    courseCode: 'LOGS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Logistik Nivå 1 (LOGS1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Logistik 1 i det gamla systemet; den ' +
+      'prövningen söker du genom att mejla betygsprovning@helsingborg.se efter anmälan, och ' +
+      'bara om du redan har ett betyg i kursen. Anmälan till höstens prövningsperiod stängde ' +
+      '11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['företagsekonomi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mark1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Marknadsföring Nivå 1',
+    courseCode: 'MARK1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Marknadsföring Nivå 1 (MARK1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Marknadsföring (FÖRMAD0) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['företagsekonomi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mate1a00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1a',
+    courseCode: 'MATE1A00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik Nivå 1a (MATE1A00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Matematik 1a (MATMAT01a) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mate1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1b',
+    courseCode: 'MATE1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik Nivå 1b (MATE1B00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Matematik 1b (MATMAT01b) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mate1c00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1c',
+    courseCode: 'MATE1C00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik Nivå 1c (MATE1C00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Matematik 1c (MATMAT01c) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mate2a00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2a',
+    courseCode: 'MATE2A00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik Nivå 2a (MATE2A00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Matematik 2a (MATMAT02a) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'helsingborg-ma2b',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2b',
+    courseCode: 'MATE2B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik Nivå 2b (MATE2B00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Matematik 2b (MATMAT02b) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mate2c00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2c',
+    courseCode: 'MATE2C00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik Nivå 2c (MATE2C00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Matematik 2c (MATMAT02c) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mato1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1b',
+    courseCode: 'MATO1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 1b (MATO1B00X) hos Komvux Helsingborg, ' +
+      'som Arena Utbildning genomför på stadens uppdrag. Motsvarar Matematik 3b (MATMAT03b) i ' +
+      'det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mato1c00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1c',
+    courseCode: 'MATO1C00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 1c (MATO1C00X) hos Komvux Helsingborg, ' +
+      'som Arena Utbildning genomför på stadens uppdrag. Motsvarar Matematik 3c (MATMAT03c) i ' +
+      'det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mato2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 2',
+    courseCode: 'MATO2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 2 (MATO2000X) hos Komvux Helsingborg, ' +
+      'som Arena Utbildning genomför på stadens uppdrag. Motsvarar Matematik 4 (MATMAT04) i ' +
+      'det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-matf1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fördjupning Nivå 1',
+    courseCode: 'MATF1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik – fördjupning Nivå 1 (MATF1000X) hos Komvux Helsingborg, ' +
+      'som Arena Utbildning genomför på stadens uppdrag. Motsvarar Matematik 5 (MATMAT05) i ' +
+      'det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-masb1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – specialisering B Nivå 1',
+    courseCode: 'MASB1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik – specialisering B Nivå 1 (MASB1000X) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Matematik ' +
+      'specialisering i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-masc1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – specialisering C Nivå 1',
+    courseCode: 'MASC1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik – specialisering C Nivå 1 (MASC1000X) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Matematik ' +
+      'specialisering i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['matematik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-medp1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Medieproduktion',
+    course: 'Medieproduktion Nivå 1',
+    courseCode: 'MEDP1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Medieproduktion Nivå 1 (MEDP1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Medieproduktion 1 i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['medieproduktion', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-natu1a10x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a1',
+    courseCode: 'NATU1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_NATURKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1a1 (NATU1A10X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Naturkunskap 1a1 (NAKNAK01a1) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['naturkunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-natu1a20x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a2',
+    courseCode: 'NATU1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_NATURKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1a2 (NATU1A20X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Naturkunskap 1a2 (NAKNAK01a2) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['naturkunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-natu1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1b',
+    courseCode: 'NATU1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_NATURKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1b (NATU1B00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Naturkunskap 1b (NAKNAK01b) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['naturkunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-natu2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 2',
+    courseCode: 'NATU2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_NATURKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Naturkunskap Nivå 2 (NATU2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Naturkunskap 2 (NAKNAK02) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['naturkunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-prog1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Programmering',
+    course: 'Programmering Nivå 1',
+    courseCode: 'PROG1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PROGRAMMERING,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Programmering Nivå 1 (PROG1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Programmering 1 (PRRPRR01) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['programmering', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-prog2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Programmering',
+    course: 'Programmering Nivå 2',
+    courseCode: 'PROG2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PROGRAMMERING,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Programmering Nivå 2 (PROG2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Programmering 2 (PRRPRR02) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['programmering', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-psyk1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Vård och omsorg',
+    course: 'Psykiatri Nivå 1',
+    courseCode: 'PSYK1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_VARD,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Psykiatri Nivå 1 (PSYK1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Psykiatri 1 (PSYPSY01) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['vård och omsorg', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-psyl1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 1',
+    courseCode: 'PSYL1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PSYKOLOGI,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Psykologi Nivå 1 (PSYL1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Psykologi 1 (PSKPSY01) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['psykologi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-psyl2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 2',
+    courseCode: 'PSYL2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PSYKOLOGI,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Psykologi Nivå 2 (PSYL2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Psykologi 2a i det gamla systemet; ' +
+      'den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter anmälan, ' +
+      'och bara om du redan har ett betyg i kursen. Anmälan till höstens prövningsperiod ' +
+      'stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['psykologi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-redo1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Redovisning Nivå 1',
+    courseCode: 'REDO1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Redovisning Nivå 1 (REDO1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Redovisning 1 (FÖRRED01) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['företagsekonomi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-reli1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 1',
+    courseCode: 'RELI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_RELIGION,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Religionskunskap Nivå 1 (RELI1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Religionskunskap 1 (RELREL01) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['religionskunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-reli2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 2',
+    courseCode: 'RELI2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_RELIGION,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Religionskunskap Nivå 2 (RELI2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Religionskunskap 2 (RELREL02) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['religionskunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-reto1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Retorik Nivå 1',
+    courseCode: 'RETO1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Retorik Nivå 1 (RETO1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Retorik (SVERET0) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['svenska', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-samh1a10x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a1',
+    courseCode: 'SAMH1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1a1 (SAMH1A10X) hos Komvux Helsingborg, som ' +
+      'Arena Utbildning genomför på stadens uppdrag. Motsvarar Samhällskunskap 1a1 ' +
+      '(SAMSAM01a1) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['samhällskunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-samh1a20x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a2',
+    courseCode: 'SAMH1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1a2 (SAMH1A20X) hos Komvux Helsingborg, som ' +
+      'Arena Utbildning genomför på stadens uppdrag. Motsvarar Samhällskunskap 1a2 ' +
+      '(SAMSAM01a2) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['samhällskunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-samh1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1b',
+    courseCode: 'SAMH1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1b (SAMH1B00X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Samhällskunskap 1b (SAMSAM01b) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['samhällskunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-samh2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 2',
+    courseCode: 'SAMH2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 2 (SAMH2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Samhällskunskap 2 (SAMSAM02) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['samhällskunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-samh3000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 3',
+    courseCode: 'SAMH3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 3 (SAMH3000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Samhällskunskap 3 (SAMSAM03) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['samhällskunskap', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-serv1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Service och bemötande Nivå 1',
+    courseCode: 'SERV1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Service och bemötande Nivå 1 (SERV1000X) hos Komvux Helsingborg, som ' +
+      'Arena Utbildning genomför på stadens uppdrag. Motsvarar Service och bemötande 1 i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['företagsekonomi', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-spei1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Vård och omsorg',
+    course: 'Specialpedagogik Nivå 1',
+    courseCode: 'SPEI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_VARD,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Specialpedagogik Nivå 1 (SPEI1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Specialpedagogik 1 (SPCSPE01) i det ' +
+      'gamla systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se ' +
+      'efter anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['vård och omsorg', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-sven1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 1',
+    courseCode: 'SVEN1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Svenska Nivå 1 (SVEN1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Svenska 1 (SVESVE01) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['svenska', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-sven2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 2',
+    courseCode: 'SVEN2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Svenska Nivå 2 (SVEN2000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Svenska 2 (SVESVE02) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['svenska', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-sven3000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 3',
+    courseCode: 'SVEN3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Svenska Nivå 3 (SVEN3000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Svenska 3 (SVESVE03) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['svenska', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-svea1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 1',
+    courseCode: 'SVEA1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 1 (SVEA1000X) hos Komvux Helsingborg, som ' +
+      'Arena Utbildning genomför på stadens uppdrag. Motsvarar Svenska som andraspråk 1 ' +
+      '(SVASVA01) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['svenska som andraspråk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-svea2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 2',
+    courseCode: 'SVEA2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 2 (SVEA2000X) hos Komvux Helsingborg, som ' +
+      'Arena Utbildning genomför på stadens uppdrag. Motsvarar Svenska som andraspråk 2 ' +
+      '(SVASVA02) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['svenska som andraspråk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-svea3000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 3',
+    courseCode: 'SVEA3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 3 (SVEA3000X) hos Komvux Helsingborg, som ' +
+      'Arena Utbildning genomför på stadens uppdrag. Motsvarar Svenska som andraspråk 3 ' +
+      '(SVASVA03) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['svenska som andraspråk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-teki1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Teknik',
+    course: 'Teknik Nivå 1',
+    courseCode: 'TEKI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Teknik Nivå 1 (TEKI1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Teknik 1 (TEKTEK01) i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['teknik', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-webs1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Webbutveckling',
+    course: 'Webbserverprogrammering Nivå 1',
+    courseCode: 'WEBS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Webbserverprogrammering Nivå 1 (WEBS1000X) hos Komvux Helsingborg, ' +
+      'som Arena Utbildning genomför på stadens uppdrag. Motsvarar Webbserverprogrammering 1 ' +
+      'i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['webbutveckling', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-webb1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Webbutveckling',
+    course: 'Webbutveckling Nivå 1',
+    courseCode: 'WEBB1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Webbutveckling Nivå 1 (WEBB1000X) hos Komvux Helsingborg, som Arena ' +
+      'Utbildning genomför på stadens uppdrag. Motsvarar Webbutveckling 1 i det gamla ' +
+      'systemet; den prövningen söker du genom att mejla betygsprovning@helsingborg.se efter ' +
+      'anmälan, och bara om du redan har ett betyg i kursen. Anmälan till höstens ' +
+      'prövningsperiod stängde 11 september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['webbutveckling', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mody1000xfra',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Franska',
+    courseCode: 'MODY1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Franska (MODY1000XFRA) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '1, Franska (MODFRA01) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modg1000xfra',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Franska',
+    courseCode: 'MODG1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Franska (MODG1000XFRA) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '2, Franska (MODFRA02) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modo1000xfra',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Franska',
+    courseCode: 'MODO1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Franska (MODO1000XFRA) hos ' +
+      'Komvux Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar ' +
+      'Moderna språk 3, Franska (MODFRA03) i det gamla systemet; den prövningen söker du ' +
+      'genom att mejla betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ' +
+      'ett betyg i kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; ' +
+      'proven skrivs 12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modo2000xfra',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Franska',
+    courseCode: 'MODO2000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Franska (MODO2000XFRA) hos ' +
+      'Komvux Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar ' +
+      'Moderna språk 4, Franska (MODFRA04) i det gamla systemet; den prövningen söker du ' +
+      'genom att mejla betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ' +
+      'ett betyg i kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; ' +
+      'proven skrivs 12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modf1000xfra',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fördjupning Nivå 1, Franska',
+    courseCode: 'MODF1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – fördjupning Nivå 1, Franska (MODF1000XFRA) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '5, Franska (MODFRA05) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mody1000xdeu',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Tyska',
+    courseCode: 'MODY1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Tyska (MODY1000XDEU) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '1, Tyska (MODDEU01) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modg1000xdeu',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Tyska',
+    courseCode: 'MODG1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Tyska (MODG1000XDEU) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '2, Tyska (MODDEU02) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modo1000xdeu',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Tyska',
+    courseCode: 'MODO1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Tyska (MODO1000XDEU) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '3, Tyska (MODDEU03) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modo2000xdeu',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Tyska',
+    courseCode: 'MODO2000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Tyska (MODO2000XDEU) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '4, Tyska (MODDEU04) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modf1000xdeu',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fördjupning Nivå 1, Tyska',
+    courseCode: 'MODF1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – fördjupning Nivå 1, Tyska (MODF1000XDEU) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '5, Tyska (MODDEU05) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mody1000xspa',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Spanska',
+    courseCode: 'MODY1000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Spanska (MODY1000XSPA) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '1, Spanska (MODSPA01) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modg1000xspa',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Spanska',
+    courseCode: 'MODG1000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Spanska (MODG1000XSPA) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '2, Spanska (MODSPA02) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modo1000xspa',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Spanska',
+    courseCode: 'MODO1000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Spanska (MODO1000XSPA) hos ' +
+      'Komvux Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar ' +
+      'Moderna språk 3, Spanska (MODSPA03) i det gamla systemet; den prövningen söker du ' +
+      'genom att mejla betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ' +
+      'ett betyg i kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; ' +
+      'proven skrivs 12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modo2000xspa',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Spanska',
+    courseCode: 'MODO2000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Spanska (MODO2000XSPA) hos ' +
+      'Komvux Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar ' +
+      'Moderna språk 4, Spanska (MODSPA04) i det gamla systemet; den prövningen söker du ' +
+      'genom att mejla betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ' +
+      'ett betyg i kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; ' +
+      'proven skrivs 12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mody1000xita',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Italienska',
+    courseCode: 'MODY1000XITA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Italienska (MODY1000XITA) hos ' +
+      'Komvux Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar ' +
+      'Moderna språk 1, Italienska (MODITA01) i det gamla systemet; den prövningen söker du ' +
+      'genom att mejla betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ' +
+      'ett betyg i kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; ' +
+      'proven skrivs 12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modg1000xita',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Italienska',
+    courseCode: 'MODG1000XITA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Italienska (MODG1000XITA) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '2, Italienska (MODITA02) i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-modo1000xita',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Italienska',
+    courseCode: 'MODO1000XITA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Italienska (MODO1000XITA) hos ' +
+      'Komvux Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar ' +
+      'Moderna språk 3, Italienska (MODITA03) i det gamla systemet; den prövningen söker du ' +
+      'genom att mejla betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ' +
+      'ett betyg i kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; ' +
+      'proven skrivs 12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-mody1000xdan',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Danska',
+    courseCode: 'MODY1000XDAN',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: HBG_ADDRESS,
+    lat: 56.0276,
+    lng: 12.713,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 4) var öppen 7–11 september 2026 och är ' +
+        'stängd — 11 september var både sista anmälningsdag och sista betalningsdag. Proven ' +
+        'skrivs 12 oktober–6 november och du får ett fast provdatum inom perioden som inte går ' +
+        'att ändra. Helsingborg håller fyra prövningsperioder om året och publicerar nästa ' +
+        'periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_FLERA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Danska (MODY1000XDAN) hos Komvux ' +
+      'Helsingborg, som Arena Utbildning genomför på stadens uppdrag. Motsvarar Moderna språk ' +
+      '1, Danska i det gamla systemet; den prövningen söker du genom att mejla ' +
+      'betygsprovning@helsingborg.se efter anmälan, och bara om du redan har ett betyg i ' +
+      'kursen. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs ' +
+      '12 oktober–6 november.',
+    tags: ['moderna språk', 'helsingborg', 'gy25'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-grund-engelska',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska, grundläggande nivå',
+    courseCode: 'Ej publicerad',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Rönnowsgatan 10, Helsingborg',
+    lat: 56.037,
+    lng: 12.7008,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 2 på grundläggande nivå) var öppen 7–11 ' +
+        'september 2026 och är stängd — 11 september var både sista anmälningsdag och sista ' +
+        'betalningsdag. Proven skrivs 12 oktober–6 november och du får ett fast provdatum inom ' +
+        'perioden. Helsingborg håller två prövningsperioder om året på grundläggande nivå och ' +
+        'publicerar nästa periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Engelska på grundläggande nivå hos Komvux Helsingborg. Kommunen ' +
+      'räknar upp ämnet men publicerar ingen kurskod för det — den står i webbansökan när du ' +
+      'väljer ämne. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven ' +
+      'skrivs 12 oktober–6 november.',
+    tags: ['engelska', 'grundläggande', 'helsingborg'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-grund-matematik',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik, grundläggande nivå',
+    courseCode: 'Ej publicerad',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Rönnowsgatan 10, Helsingborg',
+    lat: 56.037,
+    lng: 12.7008,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 2 på grundläggande nivå) var öppen 7–11 ' +
+        'september 2026 och är stängd — 11 september var både sista anmälningsdag och sista ' +
+        'betalningsdag. Proven skrivs 12 oktober–6 november och du får ett fast provdatum inom ' +
+        'perioden. Helsingborg håller två prövningsperioder om året på grundläggande nivå och ' +
+        'publicerar nästa periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Matematik på grundläggande nivå hos Komvux Helsingborg. Kommunen ' +
+      'räknar upp ämnet men publicerar ingen kurskod för det — den står i webbansökan när du ' +
+      'väljer ämne. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven ' +
+      'skrivs 12 oktober–6 november.',
+    tags: ['matematik', 'grundläggande', 'helsingborg'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-grund-svenska',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska, grundläggande nivå',
+    courseCode: 'Ej publicerad',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Rönnowsgatan 10, Helsingborg',
+    lat: 56.037,
+    lng: 12.7008,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 2 på grundläggande nivå) var öppen 7–11 ' +
+        'september 2026 och är stängd — 11 september var både sista anmälningsdag och sista ' +
+        'betalningsdag. Proven skrivs 12 oktober–6 november och du får ett fast provdatum inom ' +
+        'perioden. Helsingborg håller två prövningsperioder om året på grundläggande nivå och ' +
+        'publicerar nästa periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Svenska på grundläggande nivå hos Komvux Helsingborg. Kommunen räknar ' +
+      'upp ämnet men publicerar ingen kurskod för det — den står i webbansökan när du väljer ' +
+      'ämne. Anmälan till höstens prövningsperiod stängde 11 september 2026; proven skrivs 12 ' +
+      'oktober–6 november.',
+    tags: ['svenska', 'grundläggande', 'helsingborg'],
+    verifiedAt: HELSINGBORG_VERIFIED,
+  },
+  {
+    id: 'hbg-grund-svenska-som-andrasprak',
+    schoolName: 'Komvux Helsingborg',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk, grundläggande nivå',
+    courseCode: 'Ej publicerad',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Rönnowsgatan 10, Helsingborg',
+    lat: 56.037,
+    lng: 12.7008,
+    price: 500,
+    priceNote: HBG_PRICE_NOTE,
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningsperiod (period 2 på grundläggande nivå) var öppen 7–11 ' +
+        'september 2026 och är stängd — 11 september var både sista anmälningsdag och sista ' +
+        'betalningsdag. Proven skrivs 12 oktober–6 november och du får ett fast provdatum inom ' +
+        'perioden. Helsingborg håller två prövningsperioder om året på grundläggande nivå och ' +
+        'publicerar nästa periods datum på sin egen sida.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registration: HBG_REGISTRATION,
+    registrationUrl: HBG_REGISTRATION_URL,
+    infoUrl: HBG_INFO_URL,
+    description:
+      'Betygsprövning i Svenska som andraspråk på grundläggande nivå hos Komvux Helsingborg. ' +
+      'Kommunen räknar upp ämnet men publicerar ingen kurskod för det — den står i ' +
+      'webbansökan när du väljer ämne. Anmälan till höstens prövningsperiod stängde 11 ' +
+      'september 2026; proven skrivs 12 oktober–6 november.',
+    tags: ['svenska som andraspråk', 'grundläggande', 'helsingborg'],
+    verifiedAt: HELSINGBORG_VERIFIED,
   },
 ];
 

@@ -19,14 +19,26 @@ describe('courseCounterpart', () => {
   });
 
   /**
-   * Silence is the answer for a course only one system has. Fysik 1a and Fysik
-   * nivå 1b sit on separate rows in the source table, and pairing them here
-   * because the names look adjacent would tell somebody to sit the wrong prov.
+   * Silence is the answer when no source writes the pair out, and when a source
+   * writes something that isn't a pair at all. Helsingborgs tabell lägger både
+   * Datorteknik 1a och 1b mot `DATR1000X`, och samma `MATMAT00S` mot både
+   * specialisering B och C — att välja en av två här vore att skicka någon till
+   * fel prov. `SFIKUB92` finns bara i ett system.
+   *
+   * Fysik 1a och Fysik nivå 1b stod tidigare här som ett opar-at exempel, på
+   * Örebros tabell, som listar dem var för sig. Helsingborg skriver ut dem på
+   * samma rad, och en källa som säger det är starkare än en som tiger.
    */
   it('says nothing about a course no source has paired', () => {
-    expect(courseCounterpart('FYSFYS01a')).toBeUndefined();
-    expect(courseCounterpart('FYSK1B00X')).toBeUndefined();
+    expect(courseCounterpart('DATR1000X')).toBeUndefined();
+    expect(courseCounterpart('MATMAT00S')).toBeUndefined();
+    expect(courseCounterpart('MASB1000X')).toBeUndefined();
     expect(courseCounterpart('SFIKUB92')).toBeUndefined();
+  });
+
+  /** Helsingborgs tabell, som Örebros inte tar upp. */
+  it('pairs Fysik 1a with Fysik nivå 1b, as Helsingborg writes it', () => {
+    expect(courseCounterpart('FYSFYS01a')?.other.code).toBe('FYSK1B00X');
   });
 
   it('pairs each code exactly once, and never with itself', () => {

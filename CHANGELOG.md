@@ -4,6 +4,62 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-12
+
+**Data: +101 prövningar.** Hela Helsingborgs prövningsutbud, läst rad för rad ur
+stadens egen jämförelsetabell mellan gamla kurser och Gy25-ämnesnivåer, och ur
+betygsprövningssidan som daterar omgångarna. Datasetet går från 588 till 689
+listningar.
+
+| Kommun      | Listningar | Källa                                                                      |
+| ----------- | ---------- | -------------------------------------------------------------------------- |
+| Helsingborg | 1 → 102    | Helsingborgs stads betygsprövningssida och dess kurstabell (Gy11 mot Gy25) |
+
+Helsingborg står åttonde i prioritetsordningen och hade ett kort. Staden
+publicerar i själva verket hela utbudet — 98 gymnasiala ämnesnivåer och fyra
+ämnen på grundläggande nivå — i en tabell som dessutom är den andra källan i
+datan som skriver ut båda betygssystemen på samma rad.
+
+- **Anmälan stängde i går, och det är hela poängen med raden.** Höstens omgång
+  hade anmälan 7–11 september (sista betalningsdag samma dag) och proven skrivs
+  12 oktober–6 november. Korten är därför grå "Stängde 11 sep." — men de säger
+  vad staden prövar, vad det kostar och när nästa periods datum publiceras, och
+  det är det svar den som letar i Helsingborg faktiskt behöver i dag.
+- **Du söker i Gy25, inte i Gy11.** Staden tar bara emot anmälningar till
+  ämnesnivåerna; vill du pröva den gamla kursen mejlar du
+  `betygsprovning@helsingborg.se` efter anmälan, och bara om du redan har ett
+  betyg i kursen. Därför är varje rad ett kort med Gy25-koden, med den gamla
+  kursens namn och regel i beskrivningen — inte två kort som hos Örebro, som tar
+  emot två anmälningar.
+- **Betalningen ligger utanför e-tjänsten**, och det är steget som fäller folk:
+  plusgiro 918192-6, meddelandet `5060/4760/26075` och ditt namn, och kvittot
+  mejlat — allt före sista anmälningsdag. Anmälningsstegen på kortet säger det i
+  stället för "betala enligt instruktionerna".
+- **Nålen står hos anordnaren, med reservationen utskriven.** Arena Utbildning
+  genomför de gymnasiala prövningarna (Planteringsvägen 5), staden skriver inte
+  ut vilken sal proven skrivs i, och läraren kallar via Exlearn. Grundläggande
+  nivå ligger kvar på Komvux Helsingborg, vars nål flyttats från en punkt 1,2 km
+  fel till Rönnowsgatan 10.
+- **+45 kurspar.** Tabellen ger sökningen 45 nya Gy11↔Gy25-par, bland dem Fysik
+  1a mot Fysik nivå 1b som Örebros tabell listar var för sig. Källorna säger
+  samma sak om varje par de båda tar upp. Rader där en kurs möter flera
+  ämnesnivåer (`MATMAT00S`, Datorteknik 1a/1b) får ingen motsvarighet alls.
+  Fyra kurskoder i tabellen är skrivfel som resten av datan rättar: `SPCSSPE01`,
+  `HALAHL0`, `MATE1COOX` och Psykologi 2a:s `PSYL1000X`, som är Psykologi nivå
+  1:s kod.
+- Kvar att göra: `check:dates` pekar fortfarande ut tolv listningar vars omgång
+  helt har passerat — samma åtta som sist plus Uddevalla, ABF:s Engelska 6 och
+  två Göteborgskurser vars sista anmälningsdag var 11 september.
+
+**Produkt: listan växer i sidor.** Upptäck ritade varje träff på en gång, vilket
+med 689 listningar betyder att en telefon bygger tiotusentals DOM-noder innan
+första kortet går att läsa. Nu visas 24 kort, en rad som säger var man är, och
+en enda knapp: "Visa 24 till". Raden tystnar när hela träfflistan ändå fick
+plats, sista trycket hämtar det som är kvar, och en ny sökning börjar om på
+första sidan. Kartan är oförändrad och ritar alla träffar — den frågan har inget
+sidnummer. Verifierat i Chromium mot ett riktigt bygge på 390 px. Se
+[README](README.md#listan-växer-i-sidor-kartan-gör-det-inte).
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

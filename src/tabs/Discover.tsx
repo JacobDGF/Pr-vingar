@@ -6,6 +6,7 @@ import {
   HelpCircle,
   SlidersHorizontal,
   Loader2,
+  Plus,
   X,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
@@ -18,6 +19,7 @@ import { matchesQuery } from '../lib/examSearch';
 import { isOpenForRegistration, compareByPeriod } from '../lib/examStatus';
 import { getStatusKey } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
+import { PAGE_SIZE, pageStatus, resultPage } from '../lib/resultPage';
 import { useMinuteTick } from '../hooks/useMinuteTick';
 
 const MapView = lazy(() => import('../components/MapView').then((m) => ({ default: m.MapView })));
@@ -78,6 +80,7 @@ export function Discover() {
     setShowingFaq,
   } = useStore();
   const [showFilter, setShowFilter] = useState(false);
+  const [shown, setShown] = useState(PAGE_SIZE);
   const tick = useMinuteTick();
 
   const near = filterSortBy === 'distance' && !!userLocation;
@@ -147,6 +150,31 @@ export function Discover() {
     tick,
     userLocation,
   ]);
+
+  /* A new search is a new list: keeping page three of the old one would open
+     the results halfway down somebody else's answer. Reset during render rather
+     than in an effect, so the first paint after a keystroke is already the first
+     page. The clock (`tick`) is deliberately not part of the key — it reorders
+     the list, it doesn't replace it. */
+  const resultKey = [
+    searchQuery,
+    filterSubject,
+    filterRegion,
+    filterCity,
+    filterSortBy,
+    filterDirectOnly,
+    filterOpenOnly,
+    filterStatus,
+  ].join('|');
+  const [lastResultKey, setLastResultKey] = useState(resultKey);
+  if (resultKey !== lastResultKey) {
+    setLastResultKey(resultKey);
+    setShown(PAGE_SIZE);
+  }
+
+  const page = resultPage(filtered.length, shown);
+  const visible = useMemo(() => filtered.slice(0, page.visible), [filtered, page.visible]);
+  const status = pageStatus(page.visible, filtered.length);
 
   const openNow = useMemo(
     () => exams.filter(isOpenForRegistration).length,
@@ -371,11 +399,31 @@ export function Discover() {
             </button>
           </div>
         ) : (
-          <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
-            {filtered.map((exam) => (
-              <ExamCard key={exam.id} exam={exam} showDistance={near} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+              {visible.map((exam) => (
+                <ExamCard key={exam.id} exam={exam} showDistance={near} />
+              ))}
+            </div>
+
+            {/* One line of state, one button. The line is polite rather than
+                assertive: it updates as a result of a press the user just made,
+                so it should read after the button, not interrupt it. */}
+            {status && (
+              <p aria-live="polite" className="text-center text-[13.5px] text-ink-soft tnum">
+                {status}
+              </p>
+            )}
+            {page.remaining > 0 && (
+              <button
+                onClick={() => setShown((n) => n + page.nextStep)}
+                className="self-center inline-flex items-center gap-2 bg-ink text-cream text-[14.5px] font-bold px-6 py-3.5 rounded-[22px] transition-transform hover:-translate-y-0.5"
+              >
+                <Plus size={16} strokeWidth={2.4} />
+                Visa {page.nextStep} till
+              </button>
+            )}
+          </>
         )}
       </div>
 

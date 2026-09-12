@@ -226,6 +226,28 @@ fältet som bär det som inte har någon kolumn — landskapet under länet,
 läroplanen en kurs hör till (`gy11`/`gy25`) — och varje sådant är ett ord någon
 skriver i rutan.
 
+### Listan växer i sidor, kartan gör det inte
+
+Upptäck ritade varje träff på en gång. Det höll så länge datan var tvåsiffrig;
+med 689 listningar — 215 i en enda stad — betydde "Hela Sverige" att telefonen
+byggde tiotusentals DOM-noder innan det första kortet gick att läsa, för en
+lista ingen scrollar igenom.
+
+Listan visar nu de första 24 och en enda knapp: _"Visa 24 till"_. Raden ovanför
+knappen säger var man är ("24 av 689 prövningar visas"), och den tystnar helt
+när hela träfflistan ändå fick plats på en sida — en rad som säger "6 av 6" är
+dekoration under sex kort man redan ser.
+[`src/lib/resultPage.ts`](src/lib/resultPage.ts) räknar, och sista trycket
+hämtar det som är kvar i stället för en tom sida.
+
+En ny sökning börjar om på första sidan. Det sker under renderingen, inte i en
+effekt, så första bilden efter ett tangenttryck redan är rätt sida — men
+klockan, som bara sorterar om listan, räknas inte som en ny sökning.
+
+Kartan över listan är oförändrad och ritar fortfarande alla träffar. Dess enda
+uppgift är att svara "var finns de här", och "24 av 215" hade varit fel svar på
+den frågan.
+
 ### Kursen har två namn
 
 Sedan Gy25 började tillämpas 1 juli 2025 publicerar anordnarna samma prövning
@@ -240,10 +262,16 @@ läser dem: träffar frågan kursens andra namn eller andra kurskod är listning
 en träff. Två saker håller det ärligt.
 
 - **Paren är lästa, inte härledda.** `MATMAT03b → MATO1B00X` går inte att gissa
-  fram ur koden. Paren kommer ur Komvux Örebros prövningstabell, som är den
-  källa i datan som skriver ut båda systemen på samma rad. Kurser som bara finns
-  i ett system — Fysik 1a, Fysik nivå 1b — står inte där, och då säger appen
-  ingenting om övergången.
+  fram ur koden. Paren kommer ur de två källor i datan som skriver ut båda
+  systemen på samma rad: Komvux Örebros prövningstabell och Helsingborgs stads
+  jämförelsetabell. De säger samma sak om varje par de båda tar upp, och
+  Helsingborg skriver dessutom ut par Örebro inte har — Fysik 1a mot Fysik nivå
+  1b är ett av dem, och det stod tidigare här som exempel på ett par ingen källa
+  skrivit ut. En källa som säger det vinner över en som tiger.
+- **Ett par är ett par.** Där en källa lägger flera kurser mot samma ämnesnivå
+  (Datorteknik 1a _och_ 1b mot Dator- och kommunikationsteknik nivå 1, samma
+  `MATMAT00S` mot två specialiseringar) finns ingen motsvarighet i filen. Att
+  välja ett av två svar där vore att skicka någon till fel prov.
 - **Namnen är datans egen stavning.** Ett test i
   [`src/lib/courseSystems.test.ts`](src/lib/courseSystems.test.ts) jämför varje
   par mot `EXAMS`, så en omdöpt kurs inte kan lämna sökningen med ett namn inget
