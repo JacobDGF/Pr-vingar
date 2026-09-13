@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-12T07:12:35.748Z",
+  "uppdaterad": "2026-09-13T07:30:39.486Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -24,6 +24,37 @@
         "Varierar": 1,
         "ENGE3000X": 1,
         "MATMAT02b": 1
+      }
+    },
+    "2026-09-13": {
+      "besök": 4,
+      "sidvisningar": {
+        "/community": 2,
+        "/discover": 8,
+        "/exams": 2
+      },
+      "händelser": {
+        "Prövning öppnad": 8,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Örebro": 5,
+        "Stockholm": 1,
+        "Linköping": 1,
+        "Sollentuna": 1,
+        "Norrköping": 1
+      },
+      "ämnen": {
+        "Kemi": 4,
+        "Fysik": 1,
+        "Engelska": 3
+      },
+      "kurser": {
+        "KEMKEM01": 3,
+        "FYSFYS01a": 1,
+        "ENGENG07": 2,
+        "ENGENG05 / ENGENG06 / ENGENG07 (nivå 1–3 enligt": 1,
+        "KEMI1000X": 2
       }
     }
   }
